@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace StudyMate.Wpf.ViewModels
 {
-    class MainViewModel
+    public partial class MainViewModel : ObservableObject
     {
+        [ObservableProperty] private string applicationTitle = "StudyMate";
+
     }
 }
