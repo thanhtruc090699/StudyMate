@@ -27,7 +27,8 @@ Pflegen Sie das Protokoll möglichst zeitnah, damit die Git-Historie die Entwick
 
 | Datum | Anwender der KI | Werkzeug | Nutzung kurz beschrieben | Übernahme und Anpassung kurz beschrieben |
 | --- | --- | --- | --- | --- |
-| 14.07.2026 | User | LLM (Chat) | Backend File Service Implementation - Architecture questions | Self: Created documentation folder. AI: Explained Repository vs Service pattern, FileStorageService vs StudyFileService separation, fixed bugs in UpdateFileAsync and FileStorageService path. All code reviewed and implemented by user. |
+| 14.07.2026 | Truc Trinh | Lisa Pro | Backend File Service Implementation | **AI Guidance:**<br>- Explained Repository vs Service layer architecture<br>- Explained FileStorageService vs StudyFileService separation of concerns<br>- Identified bug in UpdateFileAsync: wrong delete logic (called repo.DeleteAsync instead of storage.DeleteFileAsync)<br>- Identified bug in FileStorageService: invalid path with @-character<br>- Reviewed and validated all code implementations<br><br>**My proactive work:**<br>- Created documentation folder structure<br>- Implemented all repository classes (IStudyFileRepository, StudyFileRepository)<br>- Implemented all service classes (IStudyFileService, StudyFileService, FileStorageService)<br>- Fixed all bugs identified by AI<br>- Reviewed and tested all code before commit<br>- Made all final decisions on architecture and implementation |
+|  |  |  |  |  |
 |  |  |  |  |  |
 |  |  |  |  |  |
 
