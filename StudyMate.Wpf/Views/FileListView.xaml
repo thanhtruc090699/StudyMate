@@ -1,0 +1,163 @@
+<UserControl x:Class="StudyMate.Wpf.Views.FileListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <Style x:Key="CommandButton" TargetType="Button">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="4,0"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Folder Selection -->
+        <GroupBox Grid.Row="0" 
+                  Header="Select Folder" 
+                  Margin="0,0,0,8">
+            <StackPanel Orientation="Horizontal" Margin="8">
+                <ComboBox ItemsSource="{Binding Folders}"
+                          SelectedItem="{Binding SelectedFolder}"
+                          Width="250"
+                          Height="32">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <Button Style="{StaticResource CommandButton}"
+                        Content="Load Files"
+                        Command="{Binding LoadFilesCommand}"
+                        Margin="16,0,0,0"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- File Commands -->
+        <GroupBox Grid.Row="1" 
+                  Header="File Operations" 
+                  Margin="0,0,0,8">
+            <StackPanel Orientation="Horizontal" Margin="8">
+                <Button Style="{StaticResource CommandButton}"
+                        Content="Upload File"
+                        Command="{Binding UploadFileCommand}"/>
+
+                <Button Style="{StaticResource CommandButton}"
+                        Content="Update File"
+                        Command="{Binding UpdateFileCommand}"/>
+
+                <Button Style="{StaticResource CommandButton}"
+                        Content="Delete File"
+                        Command="{Binding DeleteFileCommand}"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Messages -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,8">
+            <TextBlock IsHitTestVisible="False"
+                       Text="{Binding ErrorMessage}"
+                       Foreground="Red"
+                       Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}"/>
+
+            <TextBlock IsHitTestVisible="False"
+                       Text="{Binding SuccessMessage}"
+                       Foreground="Green"
+                       Visibility="{Binding SuccessMessage, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}"/>
+        </StackPanel>
+
+        <!-- Files List -->
+        <GroupBox Grid.Row="3" 
+                  Header="Files">
+            <Grid>
+                <ListBox ItemsSource="{Binding Files}"
+                         SelectedItem="{Binding SelectedFile}"
+                         BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding OriginalFileName}"
+                                                   FontWeight="Bold"
+                                                   FontSize="14"/>
+                                        <TextBlock Text="{Binding FilePath}"
+                                                   FontSize="11"
+                                                   Foreground="Gray"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" 
+                                                Orientation="Horizontal"
+                                                HorizontalAlignment="Right">
+                                        <TextBlock Text="{Binding FileSizeBytes, StringFormat={}{0:F2} KB}"
+                                                   Margin="0,0,16,0"
+                                                   Foreground="Blue"/>
+                                        <TextBlock Text="{Binding UploadedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                                                   Foreground="Gray"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <WrapPanel Margin="0,4,0,0">
+                                    <Border Background="#E8F4FC"
+                                            CornerRadius="3"
+                                            Padding="4,2"
+                                            Margin="0,0,4,0">
+                                        <TextBlock Text="{Binding ContentType}"
+                                                   FontSize="10"
+                                                   Foreground="#0066CC"/>
+                                    </Border>
+                                    <Border Background="#FCE8F0"
+                                            CornerRadius="3"
+                                            Padding="4,2">
+                                        <TextBlock Text="{Binding FileExtension}"
+                                                   FontSize="10"
+                                                   Foreground="#CC0066"/>
+                                    </Border>
+                                </WrapPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Empty State -->
+                <TextBlock Text="No files in this folder. Upload a file to get started."
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="Gray"
+                           FontStyle="Italic"
+                           Visibility="{Binding Files.Count, Converter={StaticResource CountToVisibilityConverter}, FallbackValue=Visible}"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Loading Overlay -->
+        <Border Background="#80FFFFFF"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True"
+                             Width="200"
+                             Height="20"/>
+                <TextBlock Text="Loading..."
+                           HorizontalAlignment="Center"
+                           Margin="0,8,0,0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

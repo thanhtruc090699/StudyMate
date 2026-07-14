@@ -33,29 +33,31 @@ namespace StudyMate.Wpf.Services
                 contentType = "application/octet-stream"; // Default content type
             }
 
-            var storedFileName = Guid.NewGuid().ToString() + Path.GetExtension(fileName);
-            var filePath = await _fileStorageService.SaveFileAsync(fileStream, fileName, "./uploads");
+            var fileSize = fileStream.Length;
+            
+            // Save file first
+            var storedFileName = await _fileStorageService.SaveFileAsync(fileStream, fileName, "./uploads");
 
             var studyFile = new StudyFile
             {
                 FolderId = folderId,
                 OriginalFileName = fileName,
                 StoredFileName = storedFileName,
-                FilePath = filePath,
+                FilePath = storedFileName,
                 FileExtension = Path.GetExtension(fileName),
                 ContentType = contentType,
-                FileSizeBytes = fileStream.Length,
+                FileSizeBytes = fileSize,
                 UploadedAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
 
-
-
+            System.Diagnostics.Debug.WriteLine($"Saving file metadata to DB: {studyFile.OriginalFileName}, Size: {studyFile.FileSizeBytes}");
+            
             return await _fileRepository.AddAsync(studyFile);
         }
 
-        public async Task<StudyFile> GetFilesByIdAsync(int id)
+        public async Task<StudyFile> GetFileByIdAsync(int id)
         {
             return await _fileRepository.GetStudyFileAsync(id);
         }

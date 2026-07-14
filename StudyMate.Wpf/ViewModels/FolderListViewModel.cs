@@ -35,25 +35,22 @@ namespace StudyMate.Wpf.ViewModels
         {
             try
             {
-                errorMessage = null;
-                isLoading = true;
+                ErrorMessage = null;
+                IsLoading = true;
 
-                var createdFolder = await _folderService.CreateFolderAsync(newFolderName);
+                var createdFolder = await _folderService.CreateFolderAsync(NewFolderName);
 
                 Folders.Insert(0, createdFolder);
 
                 NewFolderName = string.Empty;
-
-
-
             }
-            catch (Exception ex) {
-
-                errorMessage = ex.Message;
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
             }
             finally
             {
-                isLoading = false;
+                IsLoading = false;
             }
         }
     }

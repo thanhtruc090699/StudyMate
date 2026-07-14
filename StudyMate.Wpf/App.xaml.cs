@@ -8,6 +8,7 @@ using StudyMate.Wpf.Repositories.Interfaces;
 using StudyMate.Wpf.Services;
 using StudyMate.Wpf.Services.Interfaces;
 using StudyMate.Wpf.Views;
+using StudyMate.Wpf.Converters;
 using System.Windows;
 using System.IO;
 
@@ -29,16 +30,10 @@ public partial class App : Application
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         dbContext.Database.EnsureCreated();
 
-        var mainWindow = new MainWindow
-        {
-            Content = Services.GetRequiredService<FolderListView>()
-        };
-
+        var mainWindow = new MainWindow();
         mainWindow.Show();
 
         base.OnStartup(e);
-
-
     }
 
     private void ConfigureServices(IServiceCollection services)
@@ -54,11 +49,27 @@ public partial class App : Application
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlite($"Data Source={dbPath}"));
 
+        // Repositories
         services.AddScoped<IStudyFolderRepository, StudyFolderRepository>();
-        services.AddScoped<IStudyFolderService, StudyFolderService>();
+        services.AddScoped<IStudyFileRepository, StudyFileRepository>();
 
+        // Services
+        services.AddScoped<IStudyFolderService, StudyFolderService>();
+        services.AddScoped<IFileStorageService, FileStorageService>();
+        services.AddScoped<IStudyFileService, StudyFileService>();
+
+        // ViewModels
         services.AddTransient<FolderListViewModel>();
+        services.AddTransient<FileListViewModel>();
+
+        // Views
         services.AddTransient<FolderListView>();
+        services.AddTransient<FileListView>();
+
+        // Converters
+        services.AddSingleton<NullToVisibilityConverter>();
+        services.AddSingleton<CountToVisibilityConverter>();
+        services.AddSingleton<BoolToVisibilityConverter>();
     }
 
 }

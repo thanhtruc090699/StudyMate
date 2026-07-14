@@ -4,13 +4,33 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StudyMate.Wpf"
+        xmlns:views="clr-namespace:StudyMate.Wpf.Views"
         mc:Ignorable="d"
-        Title="{Binding ApplicationTitle}" Height="450" Width="800">
+        Title="StudyMate - AI Study Assistant" 
+        Height="600" 
+        Width="1000"
+        WindowState="Maximized">
+    
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="141*"/>
-            <ColumnDefinition Width="659*"/>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        <!-- Left Panel: Folder List -->
+        <GroupBox Grid.Column="0" 
+                  Header="Folders" 
+                  Margin="8,8,4,8"
+                  Background="#F5F5F5">
+            <ContentControl x:Name="FolderListControl"/>
+        </GroupBox>
+
+        <!-- Right Panel: File List -->
+        <GroupBox Grid.Column="1" 
+                  Header="Files" 
+                  Margin="4,8,8,8"
+                  Background="White">
+            <ContentControl x:Name="FileListControl"/>
+        </GroupBox>
     </Grid>
 </Window>

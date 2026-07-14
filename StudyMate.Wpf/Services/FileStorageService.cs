@@ -7,11 +7,18 @@ namespace StudyMate.Wpf.Services
 {
     internal class FileStorageService : IFileStorageService
     {
-        private readonly IStudyFileRepository _fileRepositoryrepository;
+        private readonly string _uploadPath;
 
-        public FileStorageService(IStudyFileRepository fileRepositoryrepository)
+        public FileStorageService()
         {
-            _fileRepositoryrepository = fileRepositoryrepository;
+            // Use absolute path in AppData folder
+            var appDataPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "StudyMate",
+                "uploads"
+            );
+            Directory.CreateDirectory(appDataPath);
+            _uploadPath = appDataPath;
         }
 
         public async Task<string> SaveFileAsync(Stream fileStream, string originalFileName, string folderPath)
@@ -35,11 +42,11 @@ namespace StudyMate.Wpf.Services
 
             var uniqueFileName = $"{Guid.NewGuid()}_{sanitizedFileName}";
 
-            folderPath = Path.GetFullPath(folderPath);
-            var fullPath = Path.Combine(folderPath, uniqueFileName);
+            // Use the configured upload path
+            var fullPath = Path.Combine(_uploadPath, uniqueFileName);
+            
             try
             {
-                Directory.CreateDirectory(folderPath);
                 if(fileStream.CanSeek)
                     fileStream.Position = 0;
 
@@ -55,7 +62,6 @@ namespace StudyMate.Wpf.Services
             {
                 throw new IOException($"Failed to save file '{originalFileName}': {e.Message}", e);
             }
-           
         }
 
         public async Task<byte[]> GetFileAsync(string storedFileName)
@@ -64,11 +70,13 @@ namespace StudyMate.Wpf.Services
             {
                 throw new ArgumentException("Stored file name cannot be null or whitespace.", nameof(storedFileName));
             }
-            var filePath = Path.Combine("./uploads", storedFileName);
+            
+            var filePath = Path.Combine(_uploadPath, storedFileName);
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException($"File '{storedFileName}' not found.");
             }
+            
             return await File.ReadAllBytesAsync(filePath);
         }
 
@@ -78,7 +86,8 @@ namespace StudyMate.Wpf.Services
             {
                 throw new ArgumentException("Stored file name cannot be null or whitespace.", nameof(storedFileName));
             }
-            var filePath = Path.Combine("./uploads", storedFileName);
+            
+            var filePath = Path.Combine(_uploadPath, storedFileName);
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
@@ -91,9 +100,9 @@ namespace StudyMate.Wpf.Services
             {
                 throw new ArgumentException("Stored file name cannot be null or whitespace.", nameof(storedFileName));
             }
-            var filePath = Path.Combine("./uploads", storedFileName);
+            
+            var filePath = Path.Combine(_uploadPath, storedFileName);
             return File.Exists(filePath);
         }
-
     }
 }
