@@ -34,6 +34,5 @@ namespace StudyMate.Wpf.Services
 
         }
 
-
     }
 }
