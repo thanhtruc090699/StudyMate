@@ -1,49 +1,54 @@
-# KI-Nutzungsprotokoll zur Studienarbeit
+# AI Usage Protocol for Research Project
 
-## Angaben zur Arbeit
+## Project Information
 
-- Gruppenname: StudyMate
-- Titel der Studienarbeit: StudyMate - AI-powered Study Assistant
-- KI genutzt: ja
-- Verwendete KI-Werkzeuge: LLM Chat Assistant
+- Group name: StudyMate
+- Title of research project: StudyMate - AI-powered Study Assistant
+- AI used: yes
+- AI tools used: LLM Chat Assistant
 
-Wenn keine KI genutzt wurde, reicht hier die Angabe "nein". In diesem Fall müssen die folgenden Abschnitte nicht ausgefüllt werden.
+If no AI was used, stating "no" is sufficient here. In this case, the following sections do not need to be filled out.
 
-## Kurz-Erklärung
+## Brief Explanation
 
-Dieses Protokoll wird als Markdown-Datei im Git-Repository der Gruppe geführt.
-Wesentliche KI-Nutzungen werden hier kurz und zeitnah dokumentiert.
-Die Nachvollziehbarkeit über Versionen ergibt sich aus der Git-Historie dieser Datei.
+This protocol is maintained as a Markdown file in the group's Git repository.
+Essential AI usages are documented briefly and promptly here.
+Traceability across versions is provided by the Git history of this file.
 
-Für diese Studienarbeit wurden KI-Werkzeuge als Unterstützung verwendet.
-Die wesentlichen Nutzungen sind unten dokumentiert.
-Alle übernommenen Inhalte wurden fachlich geprüft, bei Bedarf angepasst und in die Arbeit eigenverantwortlich integriert.
+AI tools were used as support for this research project.
+The essential usages are documented below.
+All adopted content has been reviewed for technical accuracy, adapted as needed, and responsibly integrated into the work.
 
-## Übersicht der KI-Nutzung
+## Overview of AI Usage
 
-Tragen Sie hier die wesentlichen Nutzungen ein.
-Wenn ähnliche Nutzungen in engem Zusammenhang stehen, können Sie sie zusammenfassen.
-Pflegen Sie das Protokoll möglichst zeitnah, damit die Git-Historie die Entwicklung nachvollziehbar macht. Nutzen Sie KI, um Ihren Promtverlauf entsprechnd dieser Vorlage festzuhalten.  
+Enter the essential usages here.
+If similar usages are closely related, you can summarize them.
+Maintain the protocol as promptly as possible so that the Git history makes the development traceable. Use AI to record your prompt history according to this template.  
 
-| Datum | Anwender der KI | Werkzeug | Nutzung kurz beschrieben | Übernahme und Anpassung kurz beschrieben |
+| Date | User | Tool | Usage Description | Implementation & Adaptation |
 | --- | --- | --- | --- | --- |
 | 14.07.2026 | Truc Trinh | Lisa Pro | Backend File Service Implementation | **AI Guidance:**<br>- Explained Repository vs Service layer architecture<br>- Explained FileStorageService vs StudyFileService separation of concerns<br>- Identified bug in UpdateFileAsync: wrong delete logic<br>- Identified bug in FileStorageService: invalid path with @-character<br>- Reviewed and validated all code implementations<br><br>**My proactive work:**<br>- Created documentation folder<br>- Implemented all repositories and services<br>- Fixed all bugs identified by AI<br>- Reviewed and tested all code before commit |
 | 14.07.2026 | Truc Trinh | Lisa Pro | UI Implementation for File Management | **AI Guidance:**<br>- Created FileListViewModel with MVVM pattern<br>- Implemented FileListView XAML with modern UI design<br>- Added converters (NullToVisibility, CountToVisibility, BoolToVisibility)<br>- Configured DI container with new services and views<br>- Fixed XAML binding errors (DisplayMemberPath vs ItemTemplate)<br><br>**My proactive work:**<br>- Designed two-panel layout (Folders + Files)<br>- Implemented upload/delete/update file features<br>- Added file dialog integration<br>- Tested complete CRUD operations for files<br>- Verified UI responsiveness and error handling |
+| 16.07.2026 | Truc Trinh | Lisa Pro | UI Redesign - Modern Purple Theme & Two-Panel Layout | **AI Guidance:**<br>- Redesigned FolderListView and FileListView XAML with modern purple theme (#6C4CF1)<br>- Refactored MainViewModel to coordinate between FolderListViewModel and FileListViewModel<br>- Implemented folder selection communication via constructor injection<br>- Fixed ObjectDisposedException by changing DbContext lifetime from Singleton to Scoped<br>- Fixed UI state management: prevented duplicate empty states on initial load<br>- Fixed binding error: added Mode=OneWay to readonly Files.Count property<br>- Removed Mode=OneTime from dynamic bindings to enable real-time UI updates<br>- Translated all Vietnamese comments to English<br><br>**My proactive work:**<br>- Designed modern card-based UI for files with PDF icons and action menus<br>- Implemented three-state UI logic (no folder / empty folder / has files)<br>- Added visibility triggers for Upload button, headers, and file lists<br>- Integrated file dialogs for upload/replace operations<br>- Tested all UI states and transitions end-to-end<br>- Verified dependency injection scope management |
 |  |  |  |  |  |
-|  |  |  |  |  |
 
-## Optionale ergänzende Hinweise
+## Optional Supplementary Notes
 
-Hier können Sie bei Bedarf kurz ergänzen,
+**Handling incorrect AI responses:**
+- The AI initially suggested `Mode=OneTime` for Files.Count binding, which prevented UI updates. I identified this issue during testing and changed it to `Mode=OneWay` to maintain reactivity while respecting the readonly property.
 
-- wie Sie mit fehlerhaften KI-Antworten umgegangen sind,
-- welche Vorschläge Sie bewusst verworfen haben,
-- in welchen Fällen die KI nur als Sparringspartner diente.
+**Deliberately rejected suggestions:**
+- Rejected using code-behind or converters for complex visibility logic. Instead, insisted on pure XAML MultiDataTriggers for better maintainability and separation of concerns.
 
-## Eigenständigkeit und Verantwortung
+**AI as sparring partner:**
+- Used AI primarily for architecture review (Repository vs Service pattern)
+- Validated dependency injection lifetime choices (Scoped vs Singleton)
+- Code review and bug identification in existing implementations
 
-Wir bestätigen, dass die KI-Nutzung in dieser Arbeit vollständig und nach bestem Wissen dokumentiert wurde.
-Wir übernehmen die Verantwortung für die fachliche Richtigkeit, die Auswahl der übernommenen Inhalte und die gesamte abgegebene Arbeit.
+## Independence and Responsibility
 
-- Datum: 14.07.2026
-- Gruppenname: StudyMate
+We confirm that the use of AI in this work has been fully and accurately documented to the best of our knowledge.
+We take responsibility for the technical accuracy, the selection of adopted content, and the entire submitted work.
+
+- Date: 16.07.2026
+- Group name: StudyMate
