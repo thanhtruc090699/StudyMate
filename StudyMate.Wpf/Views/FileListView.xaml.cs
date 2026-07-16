@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using StudyMate.Wpf.Helpers;
 using StudyMate.Wpf.Models;
 using StudyMate.Wpf.ViewModels;
 
@@ -7,25 +8,36 @@ namespace StudyMate.Wpf.Views
 {
     public partial class FileListView : UserControl
     {
-        private readonly FileListViewModel _viewModel;
-
-        public FileListView(FileListViewModel viewModel)
+        public FileListView()
         {
             InitializeComponent();
-            _viewModel = viewModel;
-            DataContext = _viewModel;
         }
 
-        public async void InitializeAsync()
+        private void FileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            await _viewModel.LoadAsync();
-        }
-
-        private void FileMenuButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button && button.DataContext is StudyFile file)
+            if (DataContext is not FileListViewModel viewModel)
             {
-                _viewModel.SelectedFile = file;
+                DebugLogger.Log("FileListView: DataContext is not FileListViewModel");
+                return;
+            }
+
+            if (viewModel.SelectedFile is not StudyFile file)
+            {
+                DebugLogger.Log("FileListView: SelectedFile is null");
+                return;
+            }
+
+            DebugLogger.Log($"FileListView: Opening file '{file.OriginalFileName}'");
+            DebugLogger.Log($"FileListView: ViewModel instance hash = {viewModel.GetHashCode()}");
+
+            if (viewModel.OpenFileCommand.CanExecute(file))
+            {
+                DebugLogger.Log("FileListView: OpenFileCommand.CanExecute = true");
+                viewModel.OpenFileCommand.Execute(file);
+            }
+            else
+            {
+                DebugLogger.Log("FileListView: OpenFileCommand.CanExecute = false");
             }
         }
     }

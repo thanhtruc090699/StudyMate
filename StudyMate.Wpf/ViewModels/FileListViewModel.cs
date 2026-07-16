@@ -1,9 +1,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
+using StudyMate.Wpf.Helpers;
 using StudyMate.Wpf.Models;
 using StudyMate.Wpf.Services.Interfaces;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
@@ -13,6 +15,7 @@ namespace StudyMate.Wpf.ViewModels
     {
         private readonly IStudyFileService _fileService;
         private readonly IStudyFolderService _folderService;
+        private readonly FileDetailViewModel _fileDetailViewModel;
 
         [ObservableProperty] private ObservableCollection<StudyFile> files = new();
         [ObservableProperty] private ObservableCollection<StudyFolder> folders = new();
@@ -24,10 +27,12 @@ namespace StudyMate.Wpf.ViewModels
 
         public FileListViewModel(
             IStudyFileService fileService,
-            IStudyFolderService folderService)
+            IStudyFolderService folderService,
+            FileDetailViewModel fileDetailViewModel)
         {
             _fileService = fileService;
             _folderService = folderService;
+            _fileDetailViewModel = fileDetailViewModel;
         }
 
         public async Task LoadAsync()
@@ -205,28 +210,20 @@ namespace StudyMate.Wpf.ViewModels
         [RelayCommand]
         private void OpenFile(StudyFile? file)
         {
-            if (file != null)
+            DebugLogger.Log($"FileListViewModel.OpenFile called: {file?.OriginalFileName ?? "null"}");
+            DebugLogger.Log($"FileListViewModel instance hash = {GetHashCode()}");
+            DebugLogger.Log($"FileDetailViewModel instance hash = {_fileDetailViewModel.GetHashCode()}");
+
+            if (file is null)
             {
-                try
-                {
-                    if (File.Exists(file.FilePath))
-                    {
-                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                        {
-                            FileName = file.FilePath,
-                            UseShellExecute = true
-                        });
-                    }
-                    else
-                    {
-                        ErrorMessage = $"File not found: {file.FilePath}";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ErrorMessage = $"Error opening file: {ex.Message}";
-                }
+                DebugLogger.Log("FileListViewModel.OpenFile: file is null, returning");
+                return;
             }
+
+            SelectedFile = file;
+            DebugLogger.Log($"FileListViewModel: Calling LoadMockData on FileDetailViewModel...");
+            _fileDetailViewModel.LoadMockData(file);
+            DebugLogger.Log($"FileListViewModel: LoadMockData completed");
         }
 
         [RelayCommand]

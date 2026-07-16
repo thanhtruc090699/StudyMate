@@ -8,13 +8,16 @@ namespace StudyMate.Wpf.ViewModels
 
         public FolderListViewModel FolderListViewModel { get; }
         public FileListViewModel FileListViewModel { get; }
+        public FileDetailViewModel FileDetailViewModel { get; }
 
         public MainViewModel(
             FolderListViewModel folderListViewModel,
-            FileListViewModel fileListViewModel)
+            FileListViewModel fileListViewModel,
+            FileDetailViewModel fileDetailViewModel)
         {
             FolderListViewModel = folderListViewModel;
             FileListViewModel = fileListViewModel;
+            FileDetailViewModel = fileDetailViewModel;
         }
     }
 }

@@ -347,6 +347,7 @@
 
             <ListBox ItemsSource="{Binding Files}"
                      SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+                     SelectionChanged="FileList_SelectionChanged"
                      Background="Transparent"
                      BorderThickness="0"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -435,14 +436,7 @@
 
                         <Grid>
 
-                            <Grid.InputBindings>
 
-                                <MouseBinding MouseAction="LeftDoubleClick"
-                                              Command="{Binding DataContext.OpenFileCommand,
-                                                                RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                              CommandParameter="{Binding}"/>
-
-                            </Grid.InputBindings>
 
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="52"/>

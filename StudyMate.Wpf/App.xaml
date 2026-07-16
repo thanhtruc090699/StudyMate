@@ -1,12 +1,11 @@
 ﻿<Application x:Class="StudyMate.Wpf.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:StudyMate.Wpf"
-             xmlns:converters="clr-namespace:StudyMate.Wpf.Converters"
-             StartupUri="MainWindow.xaml">
+             xmlns:converters="clr-namespace:StudyMate.Wpf.Converters">
     <Application.Resources>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:ResultTextConverter x:Key="ResultTextConverter"/>
     </Application.Resources>
 </Application>

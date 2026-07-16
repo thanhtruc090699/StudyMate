@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:StudyMate.Wpf.Views"
         mc:Ignorable="d"
         Title="StudyMate - AI Study Assistant" 
         Height="600" 
@@ -12,7 +13,17 @@
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="360"/>
+            <ColumnDefinition Width="440"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+
+        <views:FolderListView Grid.Column="0"
+                              DataContext="{Binding FolderListViewModel}"/>
+
+        <views:FileListView Grid.Column="1"
+                            DataContext="{Binding FileListViewModel}"/>
+
+        <views:FileDetailView Grid.Column="2"
+                              DataContext="{Binding FileDetailViewModel}"/>
     </Grid>
 </Window>

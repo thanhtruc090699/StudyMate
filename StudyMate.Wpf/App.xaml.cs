@@ -78,6 +78,7 @@ public partial class App : Application
         services.AddScoped<IStudyFileService, StudyFileService>();
 
         // ViewModels - need scoped to share instances between views
+        services.AddScoped<FileDetailViewModel>();
         services.AddScoped<FileListViewModel>();
         services.AddScoped<FolderListViewModel>();
         services.AddScoped<MainViewModel>();
@@ -85,6 +86,7 @@ public partial class App : Application
         // Views
         services.AddTransient<FolderListView>();
         services.AddTransient<FileListView>();
+        services.AddTransient<FileDetailView>();
 
         // Converters
         services.AddSingleton<NullToVisibilityConverter>();

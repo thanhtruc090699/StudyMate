@@ -1,0 +1,749 @@
+<UserControl x:Class="StudyMate.Wpf.Views.FileDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="620"
+             d:DesignHeight="820"
+             Background="White">
+
+    <UserControl.Resources>
+
+        <SolidColorBrush x:Key="PrimaryBrush"
+                         Color="#6C4CF1"/>
+
+        <!-- Close button -->
+        <Style x:Key="CloseButtonStyle"
+               TargetType="Button">
+
+            <Setter Property="Width"
+                    Value="42"/>
+
+            <Setter Property="Height"
+                    Value="42"/>
+
+            <Setter Property="Background"
+                    Value="White"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#E3E6EC"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="Foreground"
+                    Value="#20242C"/>
+
+            <Setter Property="FontSize"
+                    Value="24"/>
+
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+
+                                <Setter TargetName="ButtonBorder"
+                                        Property="Background"
+                                        Value="#F5F5F8"/>
+
+                            </Trigger>
+
+                            <Trigger Property="IsPressed"
+                                     Value="True">
+
+                                <Setter TargetName="ButtonBorder"
+                                        Property="Background"
+                                        Value="#ECECF1"/>
+
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+        <!-- Tab style -->
+        <Style x:Key="ModernTabItemStyle"
+               TargetType="TabItem">
+
+            <Setter Property="Foreground"
+                    Value="#20242C"/>
+
+            <Setter Property="FontSize"
+                    Value="15"/>
+
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+            <Setter Property="Padding"
+                    Value="22,14"/>
+
+            <Setter Property="Margin"
+                    Value="0,0,36,0"/>
+
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+
+                        <Grid Background="Transparent"
+                              HorizontalAlignment="Left"
+                              Width="Auto">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="3"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0"
+                                    Background="Transparent">
+
+                                <ContentPresenter ContentSource="Header"
+                                                  Margin="{TemplateBinding Padding}"
+                                                  HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="Center"/>
+
+                            </Border>
+
+                            <Border x:Name="SelectedLine"
+                                    Grid.Row="1"
+                                    Height="3"
+                                    Margin="8,0"
+                                    Background="Transparent"
+                                    CornerRadius="2"/>
+
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsSelected"
+                                     Value="True">
+
+                                <Setter Property="Foreground"
+                                        Value="#6C4CF1"/>
+
+                                <Setter TargetName="SelectedLine"
+                                        Property="Background"
+                                        Value="#6C4CF1"/>
+
+                            </Trigger>
+
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+
+                                <Setter Property="Foreground"
+                                        Value="#6C4CF1"/>
+
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+        <!-- Answer option -->
+        <Style x:Key="QuizOptionStyle"
+               TargetType="RadioButton">
+
+            <Setter Property="Margin"
+                    Value="0,0,0,10"/>
+
+            <Setter Property="Padding"
+                    Value="12"/>
+
+            <Setter Property="Background"
+                    Value="White"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#E1E4EA"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="FontSize"
+                    Value="14"/>
+
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+
+                        <Border x:Name="OptionBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+
+                            <Grid>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="24"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Ellipse x:Name="OuterCircle"
+                                         Width="16"
+                                         Height="16"
+                                         Stroke="#8A909C"
+                                         StrokeThickness="1.5"
+                                         VerticalAlignment="Center"/>
+
+                                <Ellipse x:Name="InnerCircle"
+                                         Width="8"
+                                         Height="8"
+                                         Fill="Transparent"
+                                         VerticalAlignment="Center"/>
+
+                                <ContentPresenter Grid.Column="1"
+                                                  Margin="8,0,0,0"
+                                                  VerticalAlignment="Center"/>
+
+                            </Grid>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+
+                                <Setter TargetName="OptionBorder"
+                                        Property="Background"
+                                        Value="#F8F5FF"/>
+
+                                <Setter TargetName="OptionBorder"
+                                        Property="BorderBrush"
+                                        Value="#C3B2FF"/>
+
+                            </Trigger>
+
+                            <Trigger Property="IsChecked"
+                                     Value="True">
+
+                                <Setter TargetName="OptionBorder"
+                                        Property="Background"
+                                        Value="#F3EEFF"/>
+
+                                <Setter TargetName="OptionBorder"
+                                        Property="BorderBrush"
+                                        Value="#6C4CF1"/>
+
+                                <Setter TargetName="OuterCircle"
+                                        Property="Stroke"
+                                        Value="#6C4CF1"/>
+
+                                <Setter TargetName="InnerCircle"
+                                        Property="Fill"
+                                        Value="#6C4CF1"/>
+
+                            </Trigger>
+
+                            <DataTrigger Binding="{Binding IsSelected}"
+                                         Value="True">
+
+                                <Setter TargetName="OptionBorder"
+                                        Property="Background"
+                                        Value="#F3EEFF"/>
+
+                                <Setter TargetName="OptionBorder"
+                                        Property="BorderBrush"
+                                        Value="#6C4CF1"/>
+
+                                <Setter TargetName="OuterCircle"
+                                        Property="Stroke"
+                                        Value="#6C4CF1"/>
+
+                                <Setter TargetName="InnerCircle"
+                                        Property="Fill"
+                                        Value="#6C4CF1"/>
+
+                            </DataTrigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid>
+
+        <!-- State: no file selected -->
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+
+                    <Setter Property="Visibility"
+                            Value="Collapsed"/>
+
+                    <Style.Triggers>
+
+                        <DataTrigger Binding="{Binding SelectedFile}"
+                                     Value="{x:Null}">
+
+                            <Setter Property="Visibility"
+                                    Value="Visible"/>
+
+                        </DataTrigger>
+
+                    </Style.Triggers>
+
+                </Style>
+            </StackPanel.Style>
+
+            <Border Width="82"
+                    Height="82"
+                    Background="#F3EEFF"
+                    CornerRadius="18">
+
+                <TextBlock Text="PDF"
+                           FontSize="21"
+                           FontWeight="Bold"
+                           Foreground="#6C4CF1"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
+            </Border>
+
+            <TextBlock Margin="0,20,0,0"
+                       Text="Select a PDF file"
+                       FontSize="22"
+                       FontWeight="SemiBold"
+                       Foreground="#20242C"
+                       HorizontalAlignment="Center"/>
+
+            <TextBlock Margin="0,8,0,0"
+                       Text="Choose a file to view its summary and quiz."
+                       FontSize="14"
+                       Foreground="#7A808C"
+                       HorizontalAlignment="Center"/>
+
+        </StackPanel>
+
+        <!-- Main content -->
+        <Grid>
+
+            <Grid.Style>
+                <Style TargetType="Grid">
+
+                    <Setter Property="Visibility"
+                            Value="Visible"/>
+
+                    <Style.Triggers>
+
+                        <DataTrigger Binding="{Binding SelectedFile}"
+                                     Value="{x:Null}">
+
+                            <Setter Property="Visibility"
+                                    Value="Collapsed"/>
+
+                        </DataTrigger>
+
+                    </Style.Triggers>
+
+                </Style>
+            </Grid.Style>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid Grid.Row="0"
+                  Margin="28,28,28,0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="54"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- PDF icon -->
+                <Border Grid.Column="0"
+                        Width="46"
+                        Height="54"
+                        Background="#FFF3F3"
+                        BorderBrush="#F4D5D5"
+                        BorderThickness="1"
+                        CornerRadius="7">
+
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+
+                        <TextBlock Text="⌁"
+                                   FontSize="18"
+                                   Foreground="#E53935"
+                                   HorizontalAlignment="Center"/>
+
+                        <TextBlock Text="PDF"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   Foreground="#E53935"
+                                   HorizontalAlignment="Center"/>
+
+                    </StackPanel>
+
+                </Border>
+
+                <!-- File information -->
+                <StackPanel Grid.Column="1"
+                            Margin="14,0,16,0"
+                            VerticalAlignment="Center">
+
+                    <TextBlock Text="{Binding SelectedFile.OriginalFileName}"
+                               FontSize="19"
+                               FontWeight="SemiBold"
+                               Foreground="#171A21"
+                               TextTrimming="CharacterEllipsis"/>
+
+                    <StackPanel Margin="0,5,0,0"
+                                Orientation="Horizontal">
+
+                        <TextBlock Text="{Binding SelectedFile.FileSizeDisplay}"
+                                   FontSize="13"
+                                   Foreground="#737988"/>
+
+                        <TextBlock Margin="8,0"
+                                   Text="•"
+                                   Foreground="#A1A5AE"/>
+
+                        <TextBlock Text="PDF Document"
+                                   FontSize="13"
+                                   Foreground="#737988"/>
+
+                    </StackPanel>
+
+                </StackPanel>
+
+                <!-- Close -->
+                <Button Grid.Column="2"
+                        Style="{StaticResource CloseButtonStyle}"
+                        Content="×"
+                        Command="{Binding CloseCommand}"/>
+
+            </Grid>
+
+            <!-- Tabs -->
+            <TabControl Grid.Row="1"
+                        Margin="28,22,28,28"
+                        SelectedIndex="{Binding SelectedTabIndex}"
+                        Background="Transparent"
+                        BorderThickness="0">
+
+                <TabControl.Resources>
+
+                    <Style TargetType="TabPanel">
+                        <Setter Property="Background"
+                                Value="Transparent"/>
+                        <Setter Property="HorizontalAlignment"
+                                Value="Left"/>
+                        <Setter Property="VerticalAlignment"
+                                Value="Top"/>
+                    </Style>
+
+                </TabControl.Resources>
+
+                <!-- Summary -->
+                <TabItem Header="Summary"
+                         Style="{StaticResource ModernTabItemStyle}">
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Padding="0,18,0,0">
+
+                        <Border Padding="24"
+                                Background="White"
+                                BorderBrush="#E4E7EC"
+                                BorderThickness="1"
+                                CornerRadius="10">
+
+                            <StackPanel>
+
+                                <TextBlock Text="Summary"
+                                           FontSize="21"
+                                           FontWeight="Bold"
+                                           Foreground="#171A21"/>
+
+                                <TextBlock Margin="0,20,0,0"
+                                           Text="{Binding Summary}"
+                                           FontSize="15"
+                                           LineHeight="26"
+                                           TextWrapping="Wrap"
+                                           Foreground="#30343C"/>
+
+                                <TextBlock Margin="0,28,0,0"
+                                           Text="Key Points"
+                                           FontSize="20"
+                                           FontWeight="Bold"
+                                           Foreground="#171A21"/>
+
+                                <ItemsControl Margin="0,14,0,0"
+                                              ItemsSource="{Binding KeyPoints}">
+
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+
+                                            <Grid Margin="0,0,0,14">
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="22"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Grid.Column="0"
+                                                           Text="•"
+                                                           FontSize="18"
+                                                           VerticalAlignment="Top"
+                                                           Foreground="#20242C"/>
+
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding}"
+                                                           FontSize="15"
+                                                           LineHeight="24"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="#30343C"/>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+
+                                </ItemsControl>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </ScrollViewer>
+
+                </TabItem>
+
+                <!-- Quiz -->
+                <TabItem Header="Quiz"
+                         Style="{StaticResource ModernTabItemStyle}">
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Padding="0,18,0,0">
+
+                        <Border Padding="24"
+                                Background="White"
+                                BorderBrush="#E4E7EC"
+                                BorderThickness="1"
+                                CornerRadius="10">
+
+                            <StackPanel>
+
+                                <TextBlock Text="{Binding QuizProgressText}"
+                                           FontSize="13"
+                                           Foreground="#747B88"/>
+
+                                <TextBlock Margin="0,12,0,20"
+                                           Text="{Binding CurrentQuestion.QuestionText}"
+                                           FontSize="19"
+                                           FontWeight="SemiBold"
+                                           TextWrapping="Wrap"
+                                           Foreground="#171A21"/>
+
+                                <ItemsControl ItemsSource="{Binding CurrentQuestion.Options}">
+
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+
+                                            <RadioButton Content="{Binding Text}"
+                                                         GroupName="QuizOptions"
+                                                         IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                         Style="{StaticResource QuizOptionStyle}"/>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+
+                                </ItemsControl>
+
+                                <!-- Result message -->
+                                <Border Margin="0,16,0,0"
+                                        Padding="12"
+                                        CornerRadius="8">
+
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+
+                                            <Setter Property="Visibility"
+                                                    Value="Collapsed"/>
+
+                                            <Setter Property="Background"
+                                                    Value="#EEF8F0"/>
+
+                                            <Style.Triggers>
+
+                                                <DataTrigger Binding="{Binding CurrentQuestion.IsSubmitted}"
+                                                             Value="True">
+
+                                                    <Setter Property="Visibility"
+                                                            Value="Visible"/>
+
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding CurrentQuestion.IsCorrect}"
+                                                             Value="False">
+
+                                                    <Setter Property="Background"
+                                                            Value="#FFF1F1"/>
+
+                                                </DataTrigger>
+
+                                            </Style.Triggers>
+
+                                        </Style>
+                                    </Border.Style>
+
+                                    <TextBlock FontWeight="SemiBold">
+                                        <TextBlock.Text>
+                                            <MultiBinding Converter="{StaticResource ResultTextConverter}">
+                                                <Binding Path="CurrentQuestion.IsSubmitted"/>
+                                                <Binding Path="CurrentQuestion.IsCorrect"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+
+                                </Border>
+
+                                <!-- Explanation -->
+                                <Border Margin="0,12,0,0"
+                                        Padding="14"
+                                        Background="#F8F5FF"
+                                        BorderBrush="#DDD3FF"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Visibility="{Binding CurrentQuestion.IsSubmitted,
+                                                             Converter={StaticResource BoolToVisibilityConverter}}">
+
+                                    <StackPanel>
+
+                                        <TextBlock Text="Explanation"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#5E3FD6"/>
+
+                                        <TextBlock Margin="0,6,0,0"
+                                                   Text="{Binding CurrentQuestion.Explanation}"
+                                                   FontSize="13"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="#444952"/>
+
+                                    </StackPanel>
+
+                                </Border>
+
+                                <!-- Check Answer button -->
+                                <Button Width="130"
+                                        Height="40"
+                                        Margin="0,16,0,0"
+                                        HorizontalAlignment="Left"
+                                        Content="Check Answer"
+                                        Command="{Binding CheckAnswerCommand}"
+                                        Visibility="{Binding CurrentQuestion.IsSubmitted,
+                                                             Converter={StaticResource BoolToVisibilityConverter},
+                                                             ConverterParameter=Inverted}"/>
+
+                                <!-- Quiz buttons -->
+                                <Grid Margin="0,24,0,0">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button Grid.Column="0"
+                                            Width="100"
+                                            Height="38"
+                                            Margin="0,0,16,0"
+                                            Content="Previous"
+                                            Command="{Binding PreviousQuestionCommand}"/>
+
+                                    <Button Grid.Column="2"
+                                            Width="100"
+                                            Height="38"
+                                            Margin="16,0,0,0"
+                                            Foreground="White"
+                                            Background="#6C4CF1"
+                                            BorderThickness="0"
+                                            Content="Next"
+                                            Command="{Binding NextQuestionCommand}"/>
+
+                                </Grid>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </ScrollViewer>
+
+                </TabItem>
+
+            </TabControl>
+
+        </Grid>
+
+        <!-- Loading overlay -->
+        <Border Background="#CCFFFFFF"
+                Visibility="{Binding IsLoading,
+                                     Converter={StaticResource BoolToVisibilityConverter},
+                                     FallbackValue=Collapsed}">
+
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+
+                <ProgressBar Width="190"
+                             Height="5"
+                             IsIndeterminate="True"/>
+
+                <TextBlock Margin="0,12,0,0"
+                           Text="Generating study material..."
+                           FontSize="14"
+                           Foreground="#606674"/>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+</UserControl>
