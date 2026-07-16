@@ -1,23 +1,11 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Extensions.DependencyInjection;
 using StudyMate.Wpf.ViewModels;
 using StudyMate.Wpf.Views;
-using StudyMate.Wpf.Services;
 
 namespace StudyMate.Wpf
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private readonly FolderListView _folderListView;
@@ -31,8 +19,18 @@ namespace StudyMate.Wpf
             _folderListView = App.Services.GetRequiredService<FolderListView>();
             _fileListView = App.Services.GetRequiredService<FileListView>();
 
-            FolderListControl.Content = _folderListView;
-            FileListControl.Content = _fileListView;
+            // Add views to grid
+            MainGrid.Children.Add(_folderListView);
+            Grid.SetColumn(_folderListView, 0);
+
+            var fileBorder = new Border
+            {
+                Child = _fileListView,
+                BorderBrush = (System.Windows.Media.Brush)new System.Windows.Media.BrushConverter().ConvertFromString("#E5E7EB"),
+                BorderThickness = new Thickness(1, 0, 0, 0)
+            };
+            MainGrid.Children.Add(fileBorder);
+            Grid.SetColumn(fileBorder, 1);
 
             // Initialize asynchronously
             InitializeViewsAsync();
@@ -40,14 +38,13 @@ namespace StudyMate.Wpf
 
         private async void InitializeViewsAsync()
         {
-            await Task.Delay(100); // Small delay to ensure UI is ready
+            await Task.Delay(100);
             
-            if (_folderListView.DataContext is FolderListViewModel folderViewModel)
+            if (DataContext is MainViewModel mainViewModel)
             {
-                await folderViewModel.LoadAsync();
+                await mainViewModel.FolderListViewModel.LoadAsync();
+                await mainViewModel.FileListViewModel.LoadAsync();
             }
-
-            _fileListView.InitializeAsync();
         }
     }
 }

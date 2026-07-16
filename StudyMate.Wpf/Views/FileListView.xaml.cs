@@ -1,6 +1,6 @@
-using System;
 using System.Windows;
 using System.Windows.Controls;
+using StudyMate.Wpf.Models;
 using StudyMate.Wpf.ViewModels;
 
 namespace StudyMate.Wpf.Views
@@ -19,6 +19,14 @@ namespace StudyMate.Wpf.Views
         public async void InitializeAsync()
         {
             await _viewModel.LoadAsync();
+        }
+
+        private void FileMenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is StudyFile file)
+            {
+                _viewModel.SelectedFile = file;
+            }
         }
     }
 }

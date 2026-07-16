@@ -17,6 +17,7 @@ namespace StudyMate.Wpf;
 public partial class App : Application
 {
     public static IServiceProvider Services { get; private set; } = null;
+    public static IServiceScope Scope { get; private set; } = null;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -25,15 +26,33 @@ public partial class App : Application
         ConfigureServices(services);
 
         Services = services.BuildServiceProvider();
+        
+        // Create scope for the entire application
+        Scope = Services.CreateScope();
 
-        using var scope = Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        // Ensure database is created
+        var dbContext = Scope.ServiceProvider.GetRequiredService<AppDbContext>();
         dbContext.Database.EnsureCreated();
 
-        var mainWindow = new MainWindow();
+        var mainWindow = new MainWindow
+        {
+            DataContext = Scope.ServiceProvider.GetRequiredService<MainViewModel>()
+        };
         mainWindow.Show();
 
         base.OnStartup(e);
+    }
+
+    protected override async void OnExit(ExitEventArgs e)
+    {
+        // Dispose scope when app exits
+        if (Scope != null)
+        {
+            await Task.Delay(100); // Wait for final operations
+            Scope.Dispose();
+        }
+
+        base.OnExit(e);
     }
 
     private void ConfigureServices(IServiceCollection services)
@@ -58,9 +77,10 @@ public partial class App : Application
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IStudyFileService, StudyFileService>();
 
-        // ViewModels
-        services.AddTransient<FolderListViewModel>();
-        services.AddTransient<FileListViewModel>();
+        // ViewModels - need scoped to share instances between views
+        services.AddScoped<FileListViewModel>();
+        services.AddScoped<FolderListViewModel>();
+        services.AddScoped<MainViewModel>();
 
         // Views
         services.AddTransient<FolderListView>();

@@ -1,45 +1,493 @@
 <UserControl x:Class="StudyMate.Wpf.Views.FolderListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="#F8F9FC">
 
-    <Grid Margin="16">
+    <UserControl.Resources>
+
+        <!-- Primary purple color -->
+        <SolidColorBrush x:Key="PrimaryBrush"
+                         Color="#6C4CF1"/>
+
+        <!-- Primary button -->
+        <Style x:Key="PrimaryButtonStyle"
+               TargetType="Button">
+
+            <Setter Property="Height"
+                    Value="48"/>
+
+            <Setter Property="Padding"
+                    Value="18,0"/>
+
+            <Setter Property="Foreground"
+                    Value="White"/>
+
+            <Setter Property="Background"
+                    Value="{StaticResource PrimaryBrush}"/>
+
+            <Setter Property="BorderThickness"
+                    Value="0"/>
+
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Secondary button -->
+        <Style x:Key="SecondaryButtonStyle"
+               TargetType="Button">
+
+            <Setter Property="Height"
+                    Value="36"/>
+
+            <Setter Property="Padding"
+                    Value="16,0"/>
+
+            <Setter Property="Foreground"
+                    Value="#343842"/>
+
+            <Setter Property="Background"
+                    Value="White"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#E1E4EA"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="FontWeight"
+                    Value="Medium"/>
+
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern TextBox -->
+        <Style x:Key="SearchTextBoxStyle"
+               TargetType="TextBox">
+
+            <Setter Property="Height"
+                    Value="42"/>
+
+            <Setter Property="Padding"
+                    Value="14,0"/>
+
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
+
+            <Setter Property="Background"
+                    Value="White"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#E1E4EA"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="FontSize"
+                    Value="14"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ListBox item container -->
+        <Style TargetType="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Stretch"/>
+
+            <Setter Property="Margin"
+                    Value="0,0,0,10"/>
+
+            <Setter Property="Padding"
+                    Value="0"/>
+
+            <Setter Property="Background"
+                    Value="Transparent"/>
+
+            <Setter Property="BorderThickness"
+                    Value="0"/>
+
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="ItemBorder"
+                                Background="White"
+                                BorderBrush="#E7E9EF"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="14">
+
+                            <ContentPresenter/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+
+                                <Setter TargetName="ItemBorder"
+                                        Property="Background"
+                                        Value="#F5F1FF"/>
+
+                                <Setter TargetName="ItemBorder"
+                                        Property="BorderBrush"
+                                        Value="#BCAEFF"/>
+                            </Trigger>
+
+                            <Trigger Property="IsSelected"
+                                     Value="True">
+
+                                <Setter TargetName="ItemBorder"
+                                        Property="Background"
+                                        Value="#EEE9FF"/>
+
+                                <Setter TargetName="ItemBorder"
+                                        Property="BorderBrush"
+                                        Value="#6C4CF1"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- App header -->
         <StackPanel Grid.Row="0"
-                    Orientation="Horizontal">
+                    Margin="0,0,0,24">
 
-            <TextBox Width="220"
-                     Height="32"
-                     Text="{Binding NewFolderName, UpdateSourceTrigger=PropertyChanged}" />
+            <StackPanel Orientation="Horizontal">
 
-            <Button Width="120"
-                    Height="32"
-                    Margin="8,0,0,0"
-                    Content="Create Folder"
-                    Command="{Binding CreateFolderCommand}" />
+                <Border Width="42"
+                        Height="42"
+                        Background="#EEE9FF"
+                        CornerRadius="10">
+
+                    <TextBlock Text="📖"
+                               FontSize="23"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Margin="12,0,0,0"
+                           Text="StudyMate"
+                           FontSize="25"
+                           FontWeight="Bold"
+                           Foreground="#171A21"
+                           VerticalAlignment="Center"/>
+
+            </StackPanel>
+
         </StackPanel>
 
-        <TextBlock Grid.Row="1"
-                   Margin="0,8,0,8"
-                   Foreground="Red"
-                   Text="{Binding ErrorMessage}" />
+        <!-- New folder button -->
+        <Button Grid.Row="1"
+                Height="48"
+                Margin="0,0,0,18"
+                Style="{StaticResource PrimaryButtonStyle}"
+                Content="+  New Folder"
+                Command="{Binding ShowCreateFolderCommand}"/>
 
-        <ListBox Grid.Row="2"
-                 ItemsSource="{Binding Folders}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Margin="4">
-                        <TextBlock Text="{Binding Name}"
-                                   FontWeight="Bold" />
+        <!-- Create folder form -->
+        <Border Grid.Row="2"
+                Margin="0,0,0,20"
+                Padding="14"
+                Background="#F2EEFF"
+                BorderBrush="#CABDFF"
+                BorderThickness="1"
+                CornerRadius="10"
+                Visibility="{Binding IsCreateFolderVisible,
+                                     Converter={StaticResource BoolToVisibilityConverter}}">
 
-                        <TextBlock Text="{Binding CreatedAt}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            <StackPanel>
+
+                <TextBlock Text="Folder name"
+                           Margin="0,0,0,7"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Foreground="#343842"/>
+
+                <TextBox Height="42"
+                         Style="{StaticResource SearchTextBoxStyle}"
+                         Text="{Binding NewFolderName,
+                                        UpdateSourceTrigger=PropertyChanged}"/>
+
+                <TextBlock Margin="0,5,0,0"
+                           Text="Enter folder name..."
+                           Foreground="#9A9EAA"
+                           IsHitTestVisible="False">
+
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed"/>
+
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding NewFolderName}"
+                                             Value="">
+                                    <Setter Property="Visibility"
+                                            Value="Visible"/>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding NewFolderName}"
+                                             Value="{x:Null}">
+                                    <Setter Property="Visibility"
+                                            Value="Visible"/>
+                                </DataTrigger>
+
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+
+                </TextBlock>
+
+                <StackPanel Margin="0,14,0,0"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+
+                    <Button Width="80"
+                            Height="36"
+                            Margin="0,0,8,0"
+                            Content="Cancel"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Command="{Binding CancelCreateFolderCommand}"/>
+
+                    <Button Width="90"
+                            Height="36"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Content="Create"
+                            Command="{Binding CreateFolderCommand}"/>
+
+                </StackPanel>
+
+            </StackPanel>
+
+        </Border>
+
+        <!-- Folders label -->
+        <TextBlock Grid.Row="3"
+                   Margin="0,0,0,12"
+                   Text="FOLDERS"
+                   FontSize="13"
+                   FontWeight="SemiBold"
+                   Foreground="#777D8B"/>
+
+        <!-- Error message -->
+        <Border Grid.Row="4"
+                Margin="0,0,0,12"
+                Padding="10"
+                Background="#FFF0F0"
+                CornerRadius="6">
+
+            <Border.Style>
+                <Style TargetType="Border">
+
+                    <Setter Property="Visibility"
+                            Value="Visible"/>
+
+                    <Style.Triggers>
+
+                        <DataTrigger Binding="{Binding ErrorMessage}"
+                                     Value="">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding ErrorMessage}"
+                                     Value="{x:Null}">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed"/>
+                        </DataTrigger>
+
+                    </Style.Triggers>
+
+                </Style>
+            </Border.Style>
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                       Foreground="#C62828"
+                       TextWrapping="Wrap"/>
+
+        </Border>
+
+        <!-- Folder list -->
+        <Grid Grid.Row="5">
+
+            <ListBox ItemsSource="{Binding Folders}"
+                     SelectedItem="{Binding SelectedFolder}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+
+                        <Grid>
+
+                            <Grid.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick"
+                                              Command="{Binding DataContext.OpenFolderCommand,
+                                                                RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                              CommandParameter="{Binding}"/>
+                            </Grid.InputBindings>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="48"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="24"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Folder icon -->
+                            <Border Grid.Column="0"
+                                    Width="40"
+                                    Height="40"
+                                    Background="#F1ECFF"
+                                    CornerRadius="8">
+
+                                <TextBlock Text="📁"
+                                           FontSize="21"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                            </Border>
+
+                            <!-- Folder information -->
+                            <StackPanel Grid.Column="1"
+                                        Margin="12,0,8,0"
+                                        VerticalAlignment="Center">
+
+                                <TextBlock Text="{Binding Name}"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           Foreground="#25272D"
+                                           TextTrimming="CharacterEllipsis"/>
+
+                                <TextBlock Margin="0,4,0,0"
+                                           Text="{Binding FileCount,
+                                                          StringFormat={}{0} files}"
+                                           FontSize="12"
+                                           Foreground="#808590"/>
+
+                            </StackPanel>
+
+                            <!-- Arrow -->
+                            <TextBlock Grid.Column="2"
+                                       Text="›"
+                                       FontSize="27"
+                                       Foreground="#90949D"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"/>
+
+                        </Grid>
+
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+            </ListBox>
+
+            <!-- Empty state -->
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+
+                        <Setter Property="Visibility"
+                                Value="Collapsed"/>
+
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Folders.Count}"
+                                         Value="0">
+                                <Setter Property="Visibility"
+                                        Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+
+                    </Style>
+                </StackPanel.Style>
+
+                <TextBlock Text="📁"
+                           FontSize="45"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock Margin="0,14,0,0"
+                           Text="No folders yet"
+                           FontSize="17"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock Margin="0,7,0,0"
+                           Text="Create your first study folder."
+                           Foreground="#808590"
+                           HorizontalAlignment="Center"/>
+
+            </StackPanel>
+
+        </Grid>
+
     </Grid>
+
 </UserControl>

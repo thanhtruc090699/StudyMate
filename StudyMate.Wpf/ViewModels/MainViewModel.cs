@@ -6,5 +6,15 @@ namespace StudyMate.Wpf.ViewModels
     {
         [ObservableProperty] private string applicationTitle = "StudyMate";
 
+        public FolderListViewModel FolderListViewModel { get; }
+        public FileListViewModel FileListViewModel { get; }
+
+        public MainViewModel(
+            FolderListViewModel folderListViewModel,
+            FileListViewModel fileListViewModel)
+        {
+            FolderListViewModel = folderListViewModel;
+            FileListViewModel = fileListViewModel;
+        }
     }
 }

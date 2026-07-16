@@ -48,12 +48,10 @@ namespace StudyMate.Wpf.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task LoadFilesAsync()
+        public async Task LoadFolderAsync(StudyFolder folder)
         {
-            if (SelectedFolder == null)
+            if (folder == null)
             {
-                ErrorMessage = "Please select a folder first";
                 return;
             }
 
@@ -63,8 +61,15 @@ namespace StudyMate.Wpf.ViewModels
                 ErrorMessage = null;
                 SuccessMessage = null;
 
-                var result = await _fileService.GetFilesByFolderIdAsync(SelectedFolder.Id);
-                Files = new ObservableCollection<StudyFile>(result);
+                SelectedFolder = folder;
+
+                var result = await _fileService.GetFilesByFolderIdAsync(folder.Id);
+                
+                Files.Clear();
+                foreach (var file in result)
+                {
+                    Files.Add(file);
+                }
             }
             catch (Exception ex)
             {
@@ -74,6 +79,18 @@ namespace StudyMate.Wpf.ViewModels
             {
                 IsLoading = false;
             }
+        }
+
+        [RelayCommand]
+        private async Task LoadFilesAsync()
+        {
+            if (SelectedFolder == null)
+            {
+                ErrorMessage = "Please select a folder first";
+                return;
+            }
+
+            await LoadFolderAsync(SelectedFolder);
         }
 
         [RelayCommand]
@@ -183,6 +200,40 @@ namespace StudyMate.Wpf.ViewModels
                     IsLoading = false;
                 }
             }
+        }
+
+        [RelayCommand]
+        private void OpenFile(StudyFile? file)
+        {
+            if (file != null)
+            {
+                try
+                {
+                    if (File.Exists(file.FilePath))
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = file.FilePath,
+                            UseShellExecute = true
+                        });
+                    }
+                    else
+                    {
+                        ErrorMessage = $"File not found: {file.FilePath}";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = $"Error opening file: {ex.Message}";
+                }
+            }
+        }
+
+        [RelayCommand]
+        private void Back()
+        {
+            SelectedFolder = null;
+            Files.Clear();
         }
 
         [RelayCommand]

@@ -4,18 +4,157 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="720"
+             d:DesignWidth="440"
+             Background="White">
 
     <UserControl.Resources>
-        <Style x:Key="CommandButton" TargetType="Button">
-            <Setter Property="Width" Value="100"/>
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="Margin" Value="4,0"/>
-            <Setter Property="Padding" Value="8,4"/>
+
+        <!-- Upload button -->
+        <Style x:Key="UploadButtonStyle"
+               TargetType="Button">
+
+            <Setter Property="Height"
+                    Value="48"/>
+
+            <Setter Property="Foreground"
+                    Value="#6C43F3"/>
+
+            <Setter Property="Background"
+                    Value="White"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#BCA9FF"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1.5"/>
+
+            <Setter Property="FontSize"
+                    Value="15"/>
+
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+
+                                <Setter TargetName="ButtonBorder"
+                                        Property="Background"
+                                        Value="#F7F4FF"/>
+
+                                <Setter TargetName="ButtonBorder"
+                                        Property="BorderBrush"
+                                        Value="#7A55F5"/>
+
+                            </Trigger>
+
+                            <Trigger Property="IsPressed"
+                                     Value="True">
+
+                                <Setter TargetName="ButtonBorder"
+                                        Property="Background"
+                                        Value="#EEE9FF"/>
+
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled"
+                                     Value="False">
+
+                                <Setter TargetName="ButtonBorder"
+                                        Property="Opacity"
+                                        Value="0.5"/>
+
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
         </Style>
+
+        <!-- Icon button -->
+        <Style x:Key="IconButtonStyle"
+               TargetType="Button">
+
+            <Setter Property="Width"
+                    Value="34"/>
+
+            <Setter Property="Height"
+                    Value="34"/>
+
+            <Setter Property="Background"
+                    Value="Transparent"/>
+
+            <Setter Property="BorderThickness"
+                    Value="0"/>
+
+            <Setter Property="Foreground"
+                    Value="#687080"/>
+
+            <Setter Property="FontSize"
+                    Value="18"/>
+
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+
+                        <Border x:Name="IconBorder"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="6">
+
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+
+                                <Setter TargetName="IconBorder"
+                                        Property="Background"
+                                        Value="#EEEAFB"/>
+
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
     </UserControl.Resources>
 
-    <Grid Margin="16">
+    <Grid Background="White">
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -23,141 +162,491 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Folder Selection -->
-        <GroupBox Grid.Row="0" 
-                  Header="Select Folder" 
-                  Margin="0,0,0,8">
-            <StackPanel Orientation="Horizontal" Margin="8">
-                <ComboBox ItemsSource="{Binding Folders}"
-                          SelectedItem="{Binding SelectedFolder}"
-                          Width="250"
-                          Height="32">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}"/>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+        <!-- When no folder is selected -->
+        <StackPanel Grid.RowSpan="4"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
 
-                <Button Style="{StaticResource CommandButton}"
-                        Content="Load Files"
-                        Command="{Binding LoadFilesCommand}"
-                        Margin="16,0,0,0"/>
-            </StackPanel>
-        </GroupBox>
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
 
-        <!-- File Commands -->
-        <GroupBox Grid.Row="1" 
-                  Header="File Operations" 
-                  Margin="0,0,0,8">
-            <StackPanel Orientation="Horizontal" Margin="8">
-                <Button Style="{StaticResource CommandButton}"
-                        Content="Upload File"
-                        Command="{Binding UploadFileCommand}"/>
+                    <Setter Property="Visibility"
+                            Value="Collapsed"/>
 
-                <Button Style="{StaticResource CommandButton}"
-                        Content="Update File"
-                        Command="{Binding UpdateFileCommand}"/>
+                    <Style.Triggers>
 
-                <Button Style="{StaticResource CommandButton}"
-                        Content="Delete File"
-                        Command="{Binding DeleteFileCommand}"/>
-            </StackPanel>
-        </GroupBox>
+                        <DataTrigger Binding="{Binding SelectedFolder}"
+                                     Value="{x:Null}">
+                            <Setter Property="Visibility"
+                                    Value="Visible"/>
+                        </DataTrigger>
 
-        <!-- Messages -->
-        <StackPanel Grid.Row="2" Margin="0,0,0,8">
-            <TextBlock IsHitTestVisible="False"
-                       Text="{Binding ErrorMessage}"
-                       Foreground="Red"
-                       Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}"/>
+                    </Style.Triggers>
 
-            <TextBlock IsHitTestVisible="False"
-                       Text="{Binding SuccessMessage}"
-                       Foreground="Green"
-                       Visibility="{Binding SuccessMessage, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}"/>
+                </Style>
+            </StackPanel.Style>
+
+            <Border Width="80"
+                    Height="80"
+                    Background="#F3EEFF"
+                    CornerRadius="18">
+
+                <TextBlock Text="📁"
+                           FontSize="36"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
+            </Border>
+
+            <TextBlock Margin="0,20,0,0"
+                       Text="Select a folder"
+                       FontSize="22"
+                       FontWeight="SemiBold"
+                       Foreground="#202124"
+                       HorizontalAlignment="Center"/>
+
+            <TextBlock Margin="0,8,0,0"
+                       Text="Choose a folder on the left to view its PDF files."
+                       FontSize="14"
+                       Foreground="#7D8492"
+                       HorizontalAlignment="Center"/>
+
         </StackPanel>
 
-        <!-- Files List -->
-        <GroupBox Grid.Row="3" 
-                  Header="Files">
-            <Grid>
-                <ListBox ItemsSource="{Binding Files}"
-                         SelectedItem="{Binding SelectedFile}"
-                         BorderThickness="0">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="4">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
+        <!-- Header -->
+        <StackPanel Grid.Row="0"
+                    Margin="34,34,34,0">
 
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="{Binding OriginalFileName}"
-                                                   FontWeight="Bold"
-                                                   FontSize="14"/>
-                                        <TextBlock Text="{Binding FilePath}"
-                                                   FontSize="11"
-                                                   Foreground="Gray"/>
-                                    </StackPanel>
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
 
-                                    <StackPanel Grid.Column="1" 
-                                                Orientation="Horizontal"
-                                                HorizontalAlignment="Right">
-                                        <TextBlock Text="{Binding FileSizeBytes, StringFormat={}{0:F2} KB}"
-                                                   Margin="0,0,16,0"
-                                                   Foreground="Blue"/>
-                                        <TextBlock Text="{Binding UploadedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
-                                                   Foreground="Gray"/>
-                                    </StackPanel>
-                                </Grid>
+                    <Setter Property="Visibility"
+                            Value="Visible"/>
 
-                                <WrapPanel Margin="0,4,0,0">
-                                    <Border Background="#E8F4FC"
-                                            CornerRadius="3"
-                                            Padding="4,2"
-                                            Margin="0,0,4,0">
-                                        <TextBlock Text="{Binding ContentType}"
-                                                   FontSize="10"
-                                                   Foreground="#0066CC"/>
+                    <Style.Triggers>
+
+                        <DataTrigger Binding="{Binding SelectedFolder}"
+                                     Value="{x:Null}">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed"/>
+                        </DataTrigger>
+
+                    </Style.Triggers>
+
+                </Style>
+            </StackPanel.Style>
+
+            <TextBlock Text="{Binding SelectedFolder.Name}"
+                       FontSize="26"
+                       FontWeight="Bold"
+                       Foreground="#191C24"
+                       TextTrimming="CharacterEllipsis"/>
+
+            <TextBlock Margin="0,5,0,0"
+                       FontSize="14"
+                       Foreground="#737988">
+
+                <Run Text="{Binding Files.Count, Mode=OneWay}"/>
+                <Run Text=" files"/>
+
+            </TextBlock>
+
+        </StackPanel>
+
+        <!-- Upload button -->
+        <Button Grid.Row="1"
+                Width="390"
+                Height="48"
+                Margin="34,20,34,20"
+                HorizontalAlignment="Left"
+                Command="{Binding UploadFileCommand}">
+
+            <Button.Style>
+                <Style TargetType="Button"
+                       BasedOn="{StaticResource UploadButtonStyle}">
+                    <Setter Property="Visibility"
+                            Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedFolder}"
+                                     Value="{x:Null}">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+
+                <TextBlock Text="⇧"
+                           Margin="0,0,10,0"
+                           FontSize="21"
+                           VerticalAlignment="Center"/>
+
+                <TextBlock Text="Upload File"
+                           FontSize="15"
+                           VerticalAlignment="Center"/>
+
+            </StackPanel>
+
+        </Button>
+
+        <!-- Messages -->
+        <StackPanel Grid.Row="2"
+                    Width="390"
+                    Margin="34,0,34,8"
+                    HorizontalAlignment="Left">
+
+            <Border Padding="11"
+                    Margin="0,0,0,8"
+                    Background="#FFF1F1"
+                    CornerRadius="7"
+                    Visibility="{Binding ErrorMessage,
+                                         Converter={StaticResource NullToVisibilityConverter},
+                                         FallbackValue=Collapsed}">
+
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="#D93025"
+                           TextWrapping="Wrap"/>
+
+            </Border>
+
+            <Border Padding="11"
+                    Margin="0,0,0,8"
+                    Background="#EDF8F0"
+                    CornerRadius="7"
+                    Visibility="{Binding SuccessMessage,
+                                         Converter={StaticResource NullToVisibilityConverter},
+                                         FallbackValue=Collapsed}">
+
+                <TextBlock Text="{Binding SuccessMessage}"
+                           Foreground="#218739"
+                           TextWrapping="Wrap"/>
+
+            </Border>
+
+        </StackPanel>
+
+        <!-- File list area -->
+        <Grid Grid.Row="3"
+              Width="410"
+              Margin="24,4,24,24"
+              HorizontalAlignment="Left">
+
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedFolder}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <ListBox ItemsSource="{Binding Files}"
+                     SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+                <ListBox.ItemContainerStyle>
+
+                    <Style TargetType="ListBoxItem">
+
+                        <Setter Property="HorizontalContentAlignment"
+                                Value="Stretch"/>
+
+                        <Setter Property="Padding"
+                                Value="0"/>
+
+                        <Setter Property="Margin"
+                                Value="0,0,0,12"/>
+
+                        <Setter Property="Background"
+                                Value="Transparent"/>
+
+                        <Setter Property="BorderThickness"
+                                Value="0"/>
+
+                        <Setter Property="Cursor"
+                                Value="Hand"/>
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+
+                                <ControlTemplate TargetType="ListBoxItem">
+
+                                    <Border x:Name="FileCard"
+                                            Padding="14"
+                                            Background="White"
+                                            BorderBrush="Transparent"
+                                            BorderThickness="1"
+                                            CornerRadius="10">
+
+                                        <ContentPresenter/>
+
                                     </Border>
-                                    <Border Background="#FCE8F0"
-                                            CornerRadius="3"
-                                            Padding="4,2">
-                                        <TextBlock Text="{Binding FileExtension}"
-                                                   FontSize="10"
-                                                   Foreground="#CC0066"/>
-                                    </Border>
-                                </WrapPanel>
+
+                                    <ControlTemplate.Triggers>
+
+                                        <Trigger Property="IsMouseOver"
+                                                 Value="True">
+
+                                            <Setter TargetName="FileCard"
+                                                    Property="Background"
+                                                    Value="#FAF8FF"/>
+
+                                            <Setter TargetName="FileCard"
+                                                    Property="BorderBrush"
+                                                    Value="#D7CBFF"/>
+
+                                        </Trigger>
+
+                                        <Trigger Property="IsSelected"
+                                                 Value="True">
+
+                                            <Setter TargetName="FileCard"
+                                                    Property="Background"
+                                                    Value="#F3EEFF"/>
+
+                                            <Setter TargetName="FileCard"
+                                                    Property="BorderBrush"
+                                                    Value="#BCA9FF"/>
+
+                                        </Trigger>
+
+                                    </ControlTemplate.Triggers>
+
+                                </ControlTemplate>
+
+                            </Setter.Value>
+                        </Setter>
+
+                    </Style>
+
+                </ListBox.ItemContainerStyle>
+
+                <ListBox.ItemTemplate>
+
+                    <DataTemplate>
+
+                        <Grid>
+
+                            <Grid.InputBindings>
+
+                                <MouseBinding MouseAction="LeftDoubleClick"
+                                              Command="{Binding DataContext.OpenFileCommand,
+                                                                RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                              CommandParameter="{Binding}"/>
+
+                            </Grid.InputBindings>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="52"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="38"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- PDF icon -->
+                            <Border Grid.Column="0"
+                                    Width="42"
+                                    Height="50"
+                                    Background="#FFF4F4"
+                                    BorderBrush="#F4D7D7"
+                                    BorderThickness="1"
+                                    CornerRadius="7">
+
+                                <StackPanel HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+
+                                    <TextBlock Text="⌁"
+                                               FontSize="18"
+                                               Foreground="#E53935"
+                                               HorizontalAlignment="Center"/>
+
+                                    <TextBlock Text="PDF"
+                                               FontSize="9"
+                                               FontWeight="Bold"
+                                               Foreground="#E53935"
+                                               HorizontalAlignment="Center"/>
+
+                                </StackPanel>
+
+                            </Border>
+
+                            <!-- File information -->
+                            <StackPanel Grid.Column="1"
+                                        Margin="12,0,8,0"
+                                        VerticalAlignment="Center">
+
+                                <TextBlock Text="{Binding OriginalFileName}"
+                                           FontSize="15"
+                                           FontWeight="SemiBold"
+                                           Foreground="#262A33"
+                                           TextTrimming="CharacterEllipsis"/>
+
+                                <StackPanel Margin="0,6,0,0"
+                                            Orientation="Horizontal">
+
+                                    <TextBlock FontSize="12"
+                                               Foreground="#7D8492">
+
+                                        <Run Text="{Binding FileSizeBytes, StringFormat={}{0:F0}}"/>
+                                        <Run Text=" bytes"/>
+
+                                    </TextBlock>
+
+                                    <TextBlock Margin="7,0"
+                                               Text="•"
+                                               Foreground="#A3A7AF"/>
+
+                                    <TextBlock Text="{Binding UploadedAt,
+                                                              StringFormat={}{0:dd MMM yyyy}}"
+                                               FontSize="12"
+                                               Foreground="#7D8492"/>
+
+                                </StackPanel>
+
                             </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
 
-                <!-- Empty State -->
-                <TextBlock Text="No files in this folder. Upload a file to get started."
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Foreground="Gray"
-                           FontStyle="Italic"
-                           Visibility="{Binding Files.Count, Converter={StaticResource CountToVisibilityConverter}, FallbackValue=Visible}"/>
-            </Grid>
-        </GroupBox>
+                            <!-- Three-dot menu -->
+                            <Button Grid.Column="2"
+                                    Width="34"
+                                    Height="34"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource IconButtonStyle}"
+                                    Content="⋮"
+                                    Tag="{Binding}">
 
-        <!-- Loading Overlay -->
-        <Border Background="#80FFFFFF"
-                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                                <Button.ContextMenu>
+
+                                    <ContextMenu>
+
+                                        <MenuItem Header="Open"
+                                                  Command="{Binding DataContext.OpenFileCommand,
+                                                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding PlacementTarget.Tag,
+                                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                                        <MenuItem Header="Replace file"
+                                                  Command="{Binding DataContext.UpdateFileCommand,
+                                                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding PlacementTarget.Tag,
+                                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                                        <Separator/>
+
+                                        <MenuItem Header="Delete"
+                                                  Foreground="#D93025"
+                                                  Command="{Binding DataContext.DeleteFileCommand,
+                                                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding PlacementTarget.Tag,
+                                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                                    </ContextMenu>
+
+                                </Button.ContextMenu>
+
+                            </Button>
+
+                        </Grid>
+
+                    </DataTemplate>
+
+                </ListBox.ItemTemplate>
+
+            </ListBox>
+
+            <!-- Folder selected but no file -->
             <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center">
-                <ProgressBar IsIndeterminate="True"
-                             Width="200"
-                             Height="20"/>
-                <TextBlock Text="Loading..."
-                           HorizontalAlignment="Center"
-                           Margin="0,8,0,0"/>
+
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+
+                        <Setter Property="Visibility"
+                                Value="Collapsed"/>
+
+                        <Style.Triggers>
+
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+
+                                    <Condition Binding="{Binding SelectedFolder}"
+                                               Value="{x:Null}"/>
+
+                                    <Condition Binding="{Binding Files.Count}"
+                                               Value="0"/>
+
+                                </MultiDataTrigger.Conditions>
+
+                                <Setter Property="Visibility"
+                                        Value="Visible"/>
+
+                            </MultiDataTrigger>
+
+                        </Style.Triggers>
+
+                    </Style>
+                </StackPanel.Style>
+
+                <Border Width="72"
+                        Height="72"
+                        Background="#F4F0FF"
+                        CornerRadius="36">
+
+                    <TextBlock Text="PDF"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="#6C4CF1"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                </Border>
+
+                <TextBlock Margin="0,18,0,0"
+                           Text="No files yet"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#292C35"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock Margin="0,7,0,0"
+                           Text="Upload a PDF file to create a summary and quiz."
+                           FontSize="13"
+                           Foreground="#7D8492"
+                           HorizontalAlignment="Center"/>
+
             </StackPanel>
+
+        </Grid>
+
+        <!-- Loading overlay -->
+        <Border Grid.RowSpan="4"
+                Background="#BFFFFFFF"
+                Visibility="{Binding IsLoading,
+                                     Converter={StaticResource BoolToVisibilityConverter},
+                                     FallbackValue=Collapsed}">
+
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+
+                <ProgressBar Width="180"
+                             Height="5"
+                             IsIndeterminate="True"/>
+
+                <TextBlock Margin="0,12,0,0"
+                           Text="Loading..."
+                           Foreground="#606674"
+                           HorizontalAlignment="Center"/>
+
+            </StackPanel>
+
         </Border>
+
     </Grid>
+
 </UserControl>
