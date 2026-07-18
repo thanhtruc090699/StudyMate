@@ -12,7 +12,8 @@
         MinHeight="600"
         WindowState="Maximized">
 
-    <Grid x:Name="MainGrid">
+    <Grid x:Name="MainGrid"
+          ClipToBounds="True">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280"
@@ -25,13 +26,26 @@
                               MinWidth="380"/>
         </Grid.ColumnDefinitions>
 
-        <views:FolderListView Grid.Column="0"
-                              DataContext="{Binding FolderListViewModel}"/>
+        <Border Grid.Column="0"
+                ClipToBounds="True">
 
-        <views:FileListView Grid.Column="1"
-                            DataContext="{Binding FileListViewModel}"/>
+            <views:FolderListView DataContext="{Binding FolderListViewModel}"/>
 
-        <views:FileDetailView Grid.Column="2"
-                              DataContext="{Binding FileDetailViewModel}"/>
+        </Border>
+
+        <Border Grid.Column="1"
+                ClipToBounds="True">
+
+            <views:FileListView DataContext="{Binding FileListViewModel}"/>
+
+        </Border>
+
+        <Border Grid.Column="2"
+                ClipToBounds="True">
+
+            <views:FileDetailView DataContext="{Binding FileDetailViewModel}"/>
+
+        </Border>
+
     </Grid>
 </Window>

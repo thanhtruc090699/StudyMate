@@ -255,10 +255,9 @@
 
         <!-- Upload button -->
         <Button Grid.Row="1"
-                Width="390"
                 Height="48"
                 Margin="34,20,34,20"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Stretch"
                 Command="{Binding UploadFileCommand}">
 
             <Button.Style>
@@ -294,9 +293,8 @@
 
         <!-- Messages -->
         <StackPanel Grid.Row="2"
-                    Width="390"
                     Margin="34,0,34,8"
-                    HorizontalAlignment="Left">
+                    HorizontalAlignment="Stretch">
 
             <Border Padding="11"
                     Margin="0,0,0,8"
@@ -330,9 +328,8 @@
 
         <!-- File list area -->
         <Grid Grid.Row="3"
-              Width="410"
               Margin="24,4,24,24"
-              HorizontalAlignment="Left">
+              HorizontalAlignment="Stretch">
 
             <Grid.Style>
                 <Style TargetType="Grid">
