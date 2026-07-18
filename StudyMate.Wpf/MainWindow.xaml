@@ -5,16 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:StudyMate.Wpf.Views"
         mc:Ignorable="d"
-        Title="StudyMate - AI Study Assistant" 
-        Height="600" 
-        Width="1000"
+        Title="StudyMate - AI Study Assistant"
+        Height="600"
+        Width="1200"
+        MinWidth="1000"
+        MinHeight="600"
         WindowState="Maximized">
-    
+
     <Grid x:Name="MainGrid">
+
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="360"/>
-            <ColumnDefinition Width="440"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="280"
+                              MinWidth="240"/>
+
+            <ColumnDefinition Width="340"
+                              MinWidth="280"/>
+
+            <ColumnDefinition Width="*"
+                              MinWidth="380"/>
         </Grid.ColumnDefinitions>
 
         <views:FolderListView Grid.Column="0"

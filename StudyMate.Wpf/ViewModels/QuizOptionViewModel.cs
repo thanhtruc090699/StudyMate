@@ -45,6 +45,14 @@ public class QuizOptionViewModel : ViewModelBase
         }
     }
 
+    public void SetSelectedWithoutTrigger(bool isSelected)
+    {
+        if (_isSelected == isSelected) return;
+        
+        _isSelected = isSelected;
+        OnPropertyChanged(nameof(IsSelected));
+    }
+
     public void Refresh()
     {
         OnPropertyChanged(nameof(IsSelected));

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 
@@ -52,7 +53,6 @@ public class QuizQuestionViewModel : ViewModelBase
             _selectedOption = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(HasSelectedOption));
-            CommandManager.InvalidateRequerySuggested();
         }
     }
 
@@ -71,7 +71,6 @@ public class QuizQuestionViewModel : ViewModelBase
             OnPropertyChanged(nameof(IsCorrect));
             OnPropertyChanged(nameof(ResultText));
             OnPropertyChanged(nameof(CanSelectOption));
-            CommandManager.InvalidateRequerySuggested();
         }
     }
 
@@ -102,7 +101,7 @@ public class QuizQuestionViewModel : ViewModelBase
 
         foreach (var item in Options)
         {
-            item.IsSelected = item == option;
+            item.SetSelectedWithoutTrigger(item == option);
         }
 
         SelectedOption = option;

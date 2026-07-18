@@ -85,8 +85,7 @@ public class FileDetailViewModel : ViewModelBase
             
             DebugLogger.Log($"SelectedTabIndex changed to {value}");
             
-            // Re-evaluate commands when switching tabs
-            CommandManager.InvalidateRequerySuggested();
+            RefreshQuizCommands();
         }
     }
 
@@ -121,7 +120,7 @@ public class FileDetailViewModel : ViewModelBase
             OnPropertyChanged(nameof(CurrentQuestion));
             OnPropertyChanged(nameof(QuizProgressText));
 
-            CommandManager.InvalidateRequerySuggested();
+            RefreshQuizCommands();
         }
     }
 
@@ -139,11 +138,11 @@ public class FileDetailViewModel : ViewModelBase
 
     public ICommand CloseCommand { get; }
 
-    public ICommand PreviousQuestionCommand { get; }
+    public IRelayCommand PreviousQuestionCommand { get; }
 
-    public ICommand NextQuestionCommand { get; }
+    public IRelayCommand NextQuestionCommand { get; }
 
-    public ICommand CheckAnswerCommand { get; }
+    public IRelayCommand CheckAnswerCommand { get; }
 
     public void LoadMockData(StudyFile file)
     {
@@ -178,6 +177,15 @@ public class FileDetailViewModel : ViewModelBase
             QuestionText = "Which of the following is a type of machine learning?",
             Explanation = "Supervised learning is one of the main machine learning approaches.",
         };
+
+        question1.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(QuizQuestionViewModel.SelectedOption) ||
+                e.PropertyName == nameof(QuizQuestionViewModel.IsSubmitted))
+            {
+                RefreshQuizCommands();
+            }
+        };
         
         question1.Options.Add(new QuizOptionViewModel(question1) { Text = "A. Structured Programming" });
         question1.Options.Add(new QuizOptionViewModel(question1) { Text = "B. Supervised Learning", IsCorrect = true });
@@ -190,6 +198,15 @@ public class FileDetailViewModel : ViewModelBase
         {
             QuestionText = "What is the primary goal of unsupervised learning?",
             Explanation = "Unsupervised learning aims to discover hidden patterns in unlabeled data.",
+        };
+
+        question2.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(QuizQuestionViewModel.SelectedOption) ||
+                e.PropertyName == nameof(QuizQuestionViewModel.IsSubmitted))
+            {
+                RefreshQuizCommands();
+            }
         };
         
         question2.Options.Add(new QuizOptionViewModel(question2) { Text = "A. To classify labeled data" });
@@ -204,7 +221,7 @@ public class FileDetailViewModel : ViewModelBase
 
         OnPropertyChanged(nameof(CurrentQuestion));
         OnPropertyChanged(nameof(QuizProgressText));
-        CommandManager.InvalidateRequerySuggested();
+        RefreshQuizCommands();
 
         System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] LoadMockData: Questions={Questions.Count}, CurrentQuestion={CurrentQuestion != null}\n");
     }
@@ -221,13 +238,21 @@ public class FileDetailViewModel : ViewModelBase
         IsAnswerSubmitted = false;
     }
 
+    private void RefreshQuizCommands()
+    {
+        CheckAnswerCommand.NotifyCanExecuteChanged();
+        PreviousQuestionCommand.NotifyCanExecuteChanged();
+        NextQuestionCommand.NotifyCanExecuteChanged();
+    }
+
     private bool CanCheckAnswer()
     {
-        var canExecute = CurrentQuestion?.SelectedOption is not null
+        var canExecute = SelectedTabIndex == 1 
+               && CurrentQuestion?.SelectedOption is not null
                && CurrentQuestion.IsSubmitted == false;
         
         System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", 
-            $"[{System.DateTime.Now:HH:mm:ss}] CanCheckAnswer: {canExecute}, HasSelectedOption={CurrentQuestion?.SelectedOption != null}, IsSubmitted={CurrentQuestion?.IsSubmitted}\n");
+            $"[{System.DateTime.Now:HH:mm:ss}] CanCheckAnswer: {canExecute}, TabIndex={SelectedTabIndex}, HasSelectedOption={CurrentQuestion?.SelectedOption != null}, IsSubmitted={CurrentQuestion?.IsSubmitted}\n");
         return canExecute;
     }
 
@@ -250,14 +275,14 @@ public class FileDetailViewModel : ViewModelBase
         }
 
         OnPropertyChanged(nameof(CurrentQuestion));
-        CommandManager.InvalidateRequerySuggested();
+        RefreshQuizCommands();
         System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] CheckAnswer completed\n");
     }
 
     private bool CanGoPrevious()
     {
-        var canExecute = CurrentQuestionIndex > 0;
-        DebugLogger.Log($"CanGoPrevious: {canExecute}, Index={CurrentQuestionIndex}");
+        var canExecute = SelectedTabIndex == 1 && CurrentQuestionIndex > 0;
+        DebugLogger.Log($"CanGoPrevious: {canExecute}, TabIndex={SelectedTabIndex}, Index={CurrentQuestionIndex}");
         return canExecute;
     }
 
@@ -271,18 +296,31 @@ public class FileDetailViewModel : ViewModelBase
         }
 
         CurrentQuestionIndex--;
+        
+        var previousQuestion = CurrentQuestion;
+        if (previousQuestion != null)
+        {
+            previousQuestion.IsSubmitted = false;
+            foreach (var option in previousQuestion.Options)
+            {
+                option.SetSelectedWithoutTrigger(false);
+            }
+            previousQuestion.SelectedOption = null;
+        }
+        
         IsAnswerSubmitted = false;
         OnPropertyChanged(nameof(IsAnswerSubmitted));
         OnPropertyChanged(nameof(CurrentQuestion));
-        CommandManager.InvalidateRequerySuggested();
+        RefreshQuizCommands();
         System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] PreviousQuestion completed, NewIndex={CurrentQuestionIndex}\n");
     }
 
     private bool CanGoNext()
     {
-        var canExecute = CurrentQuestion?.IsSubmitted == true
+        var canExecute = SelectedTabIndex == 1 
+               && CurrentQuestion?.IsSubmitted == true
                && CurrentQuestionIndex < Questions.Count - 1;
-        DebugLogger.Log($"CanGoNext: {canExecute}, IsSubmitted={CurrentQuestion?.IsSubmitted}, Index={CurrentQuestionIndex}, Count={Questions.Count}");
+        DebugLogger.Log($"CanGoNext: {canExecute}, TabIndex={SelectedTabIndex}, IsSubmitted={CurrentQuestion?.IsSubmitted}, Index={CurrentQuestionIndex}, Count={Questions.Count}");
         return canExecute;
     }
 
@@ -297,10 +335,22 @@ public class FileDetailViewModel : ViewModelBase
         }
 
         CurrentQuestionIndex++;
+        
+        var newQuestion = CurrentQuestion;
+        if (newQuestion != null)
+        {
+            newQuestion.IsSubmitted = false;
+            foreach (var option in newQuestion.Options)
+            {
+                option.SetSelectedWithoutTrigger(false);
+            }
+            newQuestion.SelectedOption = null;
+        }
+        
         IsAnswerSubmitted = false;
         OnPropertyChanged(nameof(IsAnswerSubmitted));
         OnPropertyChanged(nameof(CurrentQuestion));
-        CommandManager.InvalidateRequerySuggested();
+        RefreshQuizCommands();
         System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] NextQuestion completed, NewIndex={CurrentQuestionIndex}\n");
     }
 }
