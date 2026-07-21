@@ -22,6 +22,15 @@ namespace StudyMate.Wpf.ViewModels
         [ObservableProperty] private StudyFolder? selectedFolder;
         [ObservableProperty] private StudyFile? selectedFile;
         [ObservableProperty] private string? errorMessage;
+
+        partial void OnSelectedFileChanged(StudyFile? value)
+        {
+            if (value != null)
+            {
+                DebugLogger.Log($"OnSelectedFileChanged: Passing file '{value.OriginalFileName}' to FileDetailViewModel");
+                _fileDetailViewModel.SelectedFile = value;
+            }
+        }
         [ObservableProperty] private string? successMessage;
         [ObservableProperty] private bool isLoading;
 
@@ -109,8 +118,9 @@ namespace StudyMate.Wpf.ViewModels
 
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "All files (*.*)|*.*|PDF files (*.pdf)|*.pdf|Word documents (*.docx)|*.docx|Image files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg",
-                Title = "Select a file to upload"
+                Filter = "PDF files (*.pdf)|*.pdf",
+                DefaultExt = ".pdf",
+                Title = "Select a PDF file to upload"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -221,9 +231,6 @@ namespace StudyMate.Wpf.ViewModels
             }
 
             SelectedFile = file;
-            DebugLogger.Log($"FileListViewModel: Calling LoadMockData on FileDetailViewModel...");
-            _fileDetailViewModel.LoadMockData(file);
-            DebugLogger.Log($"FileListViewModel: LoadMockData completed");
         }
 
         [RelayCommand]
@@ -244,8 +251,9 @@ namespace StudyMate.Wpf.ViewModels
 
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "All files (*.*)|*.*|PDF files (*.pdf)|*.pdf|Word documents (*.docx)|*.docx|Image files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg",
-                Title = "Select a new file to replace current file"
+                Filter = "PDF files (*.pdf)|*.pdf",
+                DefaultExt = ".pdf",
+                Title = "Select a PDF file to upload"
             };
 
             if (openFileDialog.ShowDialog() == true)

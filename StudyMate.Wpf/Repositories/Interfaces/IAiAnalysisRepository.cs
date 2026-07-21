@@ -6,7 +6,7 @@ namespace StudyMate.Wpf.Repositories.Interfaces
     public interface IAiAnalysisRepository
     {
         Task<AiAnalysis> GetByIdAsync(int id);
-        Task<AiAnalysis> GetLatestByStudyFileIdAsync(int studyFileId);
+        Task<AiAnalysis?> GetLatestByStudyFileIdAsync(int studyFileId);
 
         Task<List<AiAnalysis>> GetByStudyFileIdAsync(int studyFileId);
 

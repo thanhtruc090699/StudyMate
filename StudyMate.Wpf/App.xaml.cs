@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 using StudyMate.Wpf.Data;
 using StudyMate.Wpf.Models;
 using StudyMate.Wpf.ViewModels;
@@ -11,6 +12,10 @@ using StudyMate.Wpf.Views;
 using StudyMate.Wpf.Converters;
 using System.Windows;
 using System.IO;
+using StudyMate.Wpf.Models.Ai;
+using StudyMate.Wpf.Integrations.Ai;
+using StudyMate.Wpf.Integrations.Ai.Interfaces;
+using StudyMate.Wpf.Integrations.Ai.Interfaces;
 
 namespace StudyMate.Wpf;
 
@@ -71,17 +76,18 @@ public partial class App : Application
         // Repositories
         services.AddScoped<IStudyFolderRepository, StudyFolderRepository>();
         services.AddScoped<IStudyFileRepository, StudyFileRepository>();
+        services.AddScoped<IAiAnalysisRepository, AiAnalysisRepository>();
 
         // Services
         services.AddScoped<IStudyFolderService, StudyFolderService>();
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IStudyFileService, StudyFileService>();
 
-        // ViewModels - need scoped to share instances between views
-        services.AddScoped<FileDetailViewModel>();
-        services.AddScoped<FileListViewModel>();
-        services.AddScoped<FolderListViewModel>();
-        services.AddScoped<MainViewModel>();
+        // ViewModels - Singleton để chia sẻ instance xuyên suốt app
+        services.AddSingleton<MainViewModel>();
+        services.AddSingleton<FileListViewModel>();
+        services.AddSingleton<FileDetailViewModel>();
+        services.AddSingleton<FolderListViewModel>();
 
         // Views
         services.AddTransient<FolderListView>();
@@ -92,6 +98,20 @@ public partial class App : Application
         services.AddSingleton<NullToVisibilityConverter>();
         services.AddSingleton<CountToVisibilityConverter>();
         services.AddSingleton<BoolToVisibilityConverter>();
+
+        DotNetEnv.Env.Load();
+
+        var AiSettings = new AiSettings()
+        {
+            BaseUrl = Environment.GetEnvironmentVariable("AiBaseUrl"),
+            AnalysisEndpoint = Environment.GetEnvironmentVariable("AiEndpoint"),
+            ApiKey = Environment.GetEnvironmentVariable("ApiKey"),
+            ModelName = Environment.GetEnvironmentVariable("AiModel")
+        };
+        services.AddSingleton<AiSettings>(AiSettings);
+        services.AddSingleton<IPdfTextExtractor, PdfTextExtractor>();
+        services.AddHttpClient<IAiClient, AiClient>();
+        services.AddScoped<IAiAnalysisService, AiAnalysisService>();
     }
 
 }

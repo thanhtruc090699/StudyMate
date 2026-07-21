@@ -20,11 +20,15 @@ namespace StudyMate.Wpf.Repositories
             return await _dbContext.AiAnalyses.FindAsync(id);
         }
 
-        public async Task<AiAnalysis> GetLatestByStudyFileIdAsync(int studyFileId)
+        public async Task<AiAnalysis?> GetLatestByStudyFileIdAsync(int studyFileId)
         {
-            return await _dbContext.AiAnalyses.Where(x=> x.StudyFileId == studyFileId)
+            var result = await _dbContext.AiAnalyses.Where(x=> x.StudyFileId == studyFileId)
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync();
+            
+            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] [REPO] GetLatestByStudyFileIdAsync({studyFileId}): {(result == null ? "NULL" : $"Found Id={result.Id}, Status={result.Status}")}\n");
+            
+            return result;
         }
 
         public async Task<List<AiAnalysis>> GetByStudyFileIdAsync(int studyFileId)

@@ -1,22 +1,43 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing.Text;
+using System.Text.Json;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using StudyMate.Wpf.Helpers;
+using StudyMate.Wpf.Integrations.Ai;
 using StudyMate.Wpf.Models;
+using StudyMate.Wpf.Models.Ai;
+using StudyMate.Wpf.Services;
+using StudyMate.Wpf.Services.Interfaces;
 
 namespace StudyMate.Wpf.ViewModels;
 
 public class FileDetailViewModel : ViewModelBase
 {
+
+    private readonly IAiAnalysisService _aiAnalysisService;
     private StudyFile? _selectedFile;
     private string _summary = string.Empty;
     private int _selectedTabIndex;
     private bool _isLoading;
     private int _currentQuestionIndex;
+    private string? _errorMessage;
 
-    public FileDetailViewModel()
+    public string? ErrorMessage
     {
+        get => _errorMessage;
+        set
+        {
+            _errorMessage = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public FileDetailViewModel(IAiAnalysisService aiAnalysisService)
+    {
+        _aiAnalysisService = aiAnalysisService;
+
         KeyPoints = new ObservableCollection<string>();
         Questions = new ObservableCollection<QuizQuestionViewModel>();
 
@@ -46,6 +67,11 @@ public class FileDetailViewModel : ViewModelBase
 
             _selectedFile = value;
             OnPropertyChanged();
+
+            if (_selectedFile != null)
+            {
+                _ = LoadAnalysisAsync(_selectedFile);
+            }
 
             SelectedTabIndex = 0;
         }
@@ -352,5 +378,152 @@ public class FileDetailViewModel : ViewModelBase
         OnPropertyChanged(nameof(CurrentQuestion));
         RefreshQuizCommands();
         System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] NextQuestion completed, NewIndex={CurrentQuestionIndex}\n");
+    }
+
+    private async Task LoadAnalysisAsync(StudyFile file)
+    {
+        if (file == null) return;
+
+        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] LoadAnalysisAsync called for file: {file.OriginalFileName} (ID={file.Id})\n");
+
+        IsLoading = true;
+        OnPropertyChanged(nameof(IsLoading));
+
+        try
+        {
+            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] Checking database for existing analysis...\n");
+            var analysis = await _aiAnalysisService.GetLatestAnalysisByStudyFileIdAsync(file.Id);
+            
+            if (analysis == null)
+            {
+                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] No analysis found in DB, calling AI...\n");
+                analysis = await _aiAnalysisService.GenerateAnalysisAsync(file.Id);
+                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] AI generation completed\n");
+            }
+            else if (analysis.Status != "Completed")
+            {
+                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] Found analysis with Status={analysis.Status}, regenerating...\n");
+                analysis = await _aiAnalysisService.GenerateAnalysisAsync(file.Id);
+                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] AI regeneration completed\n");
+            }
+            else
+            {
+                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] Found completed analysis in DB (Id={analysis.Id})\n");
+            }
+
+            ApplyAnalysis(analysis);
+        }
+        catch (Exception ex)
+        {
+            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] LoadAnalysisAsync ERROR: {ex.Message}\n");
+            ErrorMessage = $"Unable to generate study material: {ex.Message}";
+            DebugLogger.Log(ex.ToString());
+        }
+        finally
+        {
+            IsLoading = false;
+            OnPropertyChanged(nameof(IsLoading));
+        }
+    }
+
+    private void ApplyAnalysis(AiAnalysis analysis)
+    {
+        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] ApplyAnalysis called\n");
+        
+        Summary = analysis.Summary;
+
+        LoadStructuredContent(analysis.StructuredContentJson);
+        LoadQuiz(analysis.QuizJson);
+
+        CurrentQuestionIndex = 0;
+        IsAnswerSubmitted = false;
+
+        OnPropertyChanged(nameof(CurrentQuestion));
+        OnPropertyChanged(nameof(QuizProgressText));
+        RefreshQuizCommands();
+    }
+
+    private void LoadStructuredContent(string? structuredContentJson)
+    {
+        KeyPoints.Clear();
+
+        if (string.IsNullOrWhiteSpace(structuredContentJson))
+        {
+            DebugLogger.Log("LoadStructuredContent: JSON is null or empty");
+            return;
+        }
+
+        try
+        {
+            var structuredContent = JsonSerializer.Deserialize<StructuredContent>(structuredContentJson, AiResponseParser.JsonOptions);
+
+            if (structuredContent?.Sections != null)
+            {
+                foreach (var section in structuredContent.Sections)
+                {
+                    if (!string.IsNullOrWhiteSpace(section.Title))
+                    {
+                        KeyPoints.Add(section.Title);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugLogger.Log($"LoadStructuredContent failed: {ex.Message}");
+        }
+    }
+
+    private void LoadQuiz(string? quizJson)
+    {
+        Questions.Clear();
+
+        if (string.IsNullOrWhiteSpace(quizJson))
+        {
+            DebugLogger.Log("LoadQuiz: JSON is null or empty");
+            return;
+        }
+
+        try
+        {
+            var quizQuestions = JsonSerializer.Deserialize<List<QuizQuestion>>(quizJson, AiResponseParser.JsonOptions);
+            if (quizQuestions != null)
+            {
+                foreach (var question in quizQuestions)
+                {
+                    var questionVm = new QuizQuestionViewModel()
+                    {
+                        QuestionText = question.Question,
+                        Explanation = question.Explanation
+                    };
+
+                    questionVm.PropertyChanged += (_, e) =>
+                    {
+                        if (e.PropertyName == nameof(QuizQuestionViewModel.SelectedOption) ||
+                            e.PropertyName == nameof(QuizQuestionViewModel.IsSubmitted))
+                        {
+                            RefreshQuizCommands();
+                        }
+                    };
+                    
+                    int index = 0;
+                    foreach (var option in question.Options)
+                    {
+                        questionVm.Options.Add(new QuizOptionViewModel(questionVm)
+                        {
+                            Text = option,
+                            IsCorrect = (index == question.CorrectOptionIndex)
+                        });
+                        index++;
+                    }
+
+                    Questions.Add(questionVm);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugLogger.Log($"LoadQuiz failed: {ex.Message}");
+        }
     }
 }
