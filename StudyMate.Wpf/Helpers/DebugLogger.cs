@@ -20,7 +20,7 @@ namespace StudyMate.Wpf.Helpers
                 {
                     var timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
                     var logLine = $"[{timestamp}] {message}";
-                    
+
                     Debug.WriteLine(logLine);
                     File.AppendAllText(LogPath, logLine + Environment.NewLine);
                 }
