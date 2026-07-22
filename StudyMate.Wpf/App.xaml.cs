@@ -82,7 +82,7 @@ public partial class App : Application
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IStudyFileService, StudyFileService>();
 
-        // ViewModels - Singleton để chia sẻ instance xuyên suốt app
+        // ViewModels - Singleton for shared instances across app
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<FileListViewModel>();
         services.AddSingleton<FileDetailViewModel>();
