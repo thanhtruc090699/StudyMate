@@ -10,6 +10,5 @@ namespace StudyMate.Wpf.Services.Interfaces
         Task<StudyFile> GetFileByIdAsync(int id);
         Task<List<StudyFile>> GetFilesByFolderIdAsync(int folderId);
         Task DeleteFileAsync(int id);
-        Task UpdateFileAsync(int id, Stream newFileStream, string newFileName, string contentType);
     }
 }

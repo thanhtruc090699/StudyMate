@@ -64,22 +64,6 @@ namespace StudyMate.Wpf.Services
             }
         }
 
-        public async Task<byte[]> GetFileAsync(string storedFileName)
-        {
-            if (string.IsNullOrWhiteSpace(storedFileName))
-            {
-                throw new ArgumentException("Stored file name cannot be null or whitespace.", nameof(storedFileName));
-            }
-            
-            var filePath = Path.Combine(_uploadPath, storedFileName);
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException($"File '{storedFileName}' not found.");
-            }
-            
-            return await File.ReadAllBytesAsync(filePath);
-        }
-
         public async Task DeleteFileAsync(string storedFileName)
         {
             if (string.IsNullOrWhiteSpace(storedFileName))
@@ -92,17 +76,6 @@ namespace StudyMate.Wpf.Services
             {
                 File.Delete(filePath);
             }
-        }
-
-        public async Task<bool> FileExistsAsync(string storedFileName)
-        {
-            if (string.IsNullOrWhiteSpace(storedFileName))
-            {
-                throw new ArgumentException("Stored file name cannot be null or whitespace.", nameof(storedFileName));
-            }
-            
-            var filePath = Path.Combine(_uploadPath, storedFileName);
-            return File.Exists(filePath);
         }
     }
 }

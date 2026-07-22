@@ -510,25 +510,12 @@
                                     VerticalAlignment="Center"
                                     Style="{StaticResource IconButtonStyle}"
                                     Content="⋮"
-                                    Tag="{Binding}">
+                                    Tag="{Binding}"
+                                    PreviewMouseLeftButtonDown="MoreButton_PreviewMouseLeftButtonDown">
 
                                 <Button.ContextMenu>
 
                                     <ContextMenu>
-
-                                        <MenuItem Header="Open"
-                                                  Command="{Binding DataContext.OpenFileCommand,
-                                                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding PlacementTarget.Tag,
-                                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-
-                                        <MenuItem Header="Replace file"
-                                                  Command="{Binding DataContext.UpdateFileCommand,
-                                                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding PlacementTarget.Tag,
-                                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-
-                                        <Separator/>
 
                                         <MenuItem Header="Delete"
                                                   Foreground="#D93025"

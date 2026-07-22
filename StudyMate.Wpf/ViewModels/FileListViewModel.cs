@@ -163,16 +163,16 @@ namespace StudyMate.Wpf.ViewModels
         }
 
         [RelayCommand]
-        private async Task DeleteFileAsync()
+        private async Task DeleteFileAsync(StudyFile? file)
         {
-            if (SelectedFile == null)
+            if (file == null)
             {
                 ErrorMessage = "Please select a file to delete";
                 return;
             }
 
             var result = MessageBox.Show(
-                $"Are you sure you want to delete '{SelectedFile.OriginalFileName}'?",
+                $"Are you sure you want to delete '{file.OriginalFileName}'?",
                 "Confirm Delete",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning
@@ -186,9 +186,12 @@ namespace StudyMate.Wpf.ViewModels
                     ErrorMessage = null;
                     SuccessMessage = null;
 
-                    await _fileService.DeleteFileAsync(SelectedFile.Id);
-                    Files.Remove(SelectedFile);
-                    SelectedFile = null;
+                    await _fileService.DeleteFileAsync(file.Id);
+                    Files.Remove(file);
+                    if (SelectedFile?.Id == file.Id)
+                    {
+                        selectedFile = null;
+                    }
 
                     SuccessMessage = "File deleted successfully!";
                 }
@@ -219,59 +222,6 @@ namespace StudyMate.Wpf.ViewModels
         {
             SelectedFolder = null;
             Files.Clear();
-        }
-
-        [RelayCommand]
-        private async Task UpdateFileAsync()
-        {
-            if (SelectedFile == null)
-            {
-                ErrorMessage = "Please select a file to update";
-                return;
-            }
-
-            var openFileDialog = new OpenFileDialog
-            {
-                Filter = "PDF files (*.pdf)|*.pdf",
-                DefaultExt = ".pdf",
-                Title = "Select a PDF file to upload"
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                try
-                {
-                    IsLoading = true;
-                    ErrorMessage = null;
-                    SuccessMessage = null;
-
-                    using var fileStream = File.OpenRead(openFileDialog.FileName);
-                    var fileName = Path.GetFileName(openFileDialog.FileName);
-                    var contentType = GetContentType(fileName);
-
-                    await _fileService.UpdateFileAsync(
-                        SelectedFile.Id,
-                        fileStream,
-                        fileName,
-                        contentType
-                    );
-
-                    // Update the file in the list
-                    var updatedFile = await _fileService.GetFileByIdAsync(SelectedFile.Id);
-                    var index = Files.IndexOf(SelectedFile);
-                    Files[index] = updatedFile;
-
-                    SuccessMessage = $"File '{fileName}' updated successfully!";
-                }
-                catch (Exception ex)
-                {
-                    ErrorMessage = $"Error updating file: {ex.Message}";
-                }
-                finally
-                {
-                    IsLoading = false;
-                }
-            }
         }
 
         private string GetContentType(string fileName)

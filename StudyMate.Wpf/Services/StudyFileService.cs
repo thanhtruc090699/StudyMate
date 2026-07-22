@@ -74,41 +74,5 @@ namespace StudyMate.Wpf.Services
             await _fileStorageService.DeleteFileAsync(file.StoredFileName);
             await _fileRepository.DeleteAsync(id);
         }
-        public async Task UpdateFileAsync(int id, Stream newFileStream, string newFileName, string contentType)
-        {
-            if(newFileStream == null || newFileStream.Length == 0)
-            {
-                throw new ArgumentException("File stream cannot be null or empty.", nameof(newFileStream));
-            }
-            if(string.IsNullOrWhiteSpace(newFileName))
-            {
-                throw new ArgumentException("File name cannot be null or whitespace.", nameof(newFileName));
-            }
-
-            if(string.IsNullOrWhiteSpace(contentType))
-            {
-                contentType = "application/octet-stream"; // Default content type
-            }
-
-            var existingFile = await _fileRepository.GetStudyFileAsync(id);
-            if (existingFile == null)
-            {
-                throw new InvalidOperationException($"File with ID {id} does not exist.");
-            }
-
-            await _fileStorageService.DeleteFileAsync(existingFile.StoredFileName);
-
-            var storedFileName = Guid.NewGuid().ToString() + Path.GetExtension(newFileName);
-            var filePath = await _fileStorageService.SaveFileAsync(newFileStream, newFileName, "./uploads");
-            existingFile.OriginalFileName = newFileName;
-            existingFile.StoredFileName = storedFileName;
-            existingFile.FilePath = filePath;
-            existingFile.FileExtension = Path.GetExtension(newFileName);
-            existingFile.FileSizeBytes = newFileStream.Length;
-            existingFile.ContentType = contentType;
-            existingFile.UpdatedAt = DateTime.UtcNow;
-            await _fileRepository.UpdateAsync(existingFile);
-        }
-
     }
 }
