@@ -10,6 +10,7 @@ namespace StudyMate.Wpf.ViewModels
     public partial class FolderListViewModel : ObservableObject
     {
         private readonly IStudyFolderService _folderService;
+        private readonly IStudyFileService _fileService;
         private readonly FileListViewModel _fileListViewModel;
 
         [ObservableProperty] private ObservableCollection<StudyFolder> folders = new();
@@ -29,9 +30,11 @@ namespace StudyMate.Wpf.ViewModels
 
         public FolderListViewModel(
             IStudyFolderService folderService,
+            IStudyFileService fileService,
             FileListViewModel fileListViewModel)
         {
             _folderService = folderService;
+            _fileService = fileService;
             _fileListViewModel = fileListViewModel;
 
             ShowCreateFolderCommand = new RelayCommand(ShowCreateFolderForm);
@@ -50,8 +53,23 @@ namespace StudyMate.Wpf.ViewModels
 
         public async Task LoadAsync()
         {
-            var result = await _folderService.GetAllFoldersAsync();
-            Folders = new ObservableCollection<StudyFolder>(result);
+            try
+            {
+                IsLoading = true;
+                var result = await _folderService.GetAllFoldersAsync();
+                
+                foreach (var folder in result)
+                {
+                    var files = await _fileService.GetFilesByFolderIdAsync(folder.Id);
+                    folder.FileCount = files.Count;
+                }
+                
+                Folders = new ObservableCollection<StudyFolder>(result);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         private void ShowCreateFolderForm()
@@ -83,6 +101,7 @@ namespace StudyMate.Wpf.ViewModels
                 }
 
                 var createdFolder = await _folderService.CreateFolderAsync(NewFolderName.Trim());
+                createdFolder.FileCount = 0;
 
                 Folders.Insert(0, createdFolder);
 
