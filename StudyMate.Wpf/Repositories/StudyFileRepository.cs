@@ -12,7 +12,7 @@ namespace StudyMate.Wpf.Repositories
         {
             _dbContext = dbContext;
         }
-        public async Task<StudyFile> GetStudyFileAsync(int id)
+        public async Task<StudyFile?> GetStudyFileAsync(int id)
         {
             return await _dbContext.StudyFiles.FindAsync(id);
         }

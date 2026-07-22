@@ -15,7 +15,6 @@ using System.IO;
 using StudyMate.Wpf.Models.Ai;
 using StudyMate.Wpf.Integrations.Ai;
 using StudyMate.Wpf.Integrations.Ai.Interfaces;
-using StudyMate.Wpf.Integrations.Ai.Interfaces;
 
 namespace StudyMate.Wpf;
 

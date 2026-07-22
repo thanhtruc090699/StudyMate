@@ -55,7 +55,7 @@ namespace StudyMate.Wpf.Services
             return await _fileRepository.AddAsync(studyFile);
         }
 
-        public async Task<StudyFile> GetFileByIdAsync(int id)
+        public async Task<StudyFile?> GetFileByIdAsync(int id)
         {
             return await _fileRepository.GetStudyFileAsync(id);
         }

@@ -23,16 +23,9 @@ namespace StudyMate.Wpf.Repositories
 
         public async Task<StudyFolder> AddAsync(StudyFolder folder)
         {
-            try
-            {
-                _dbContext.StudyFolders.Add(folder);
-                await _dbContext.SaveChangesAsync();
-                return folder;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            _dbContext.StudyFolders.Add(folder);
+            await _dbContext.SaveChangesAsync();
+            return folder;
         }
     }
 }
