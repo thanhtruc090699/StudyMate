@@ -1,32 +1,32 @@
 # StudyMate
 
-Ứng dụng WPF hỗ trợ học tập với AI, cho phép quản lý tài liệu học tập (PDF) và tự động tạo tóm tắt, cấu trúc kiến thức và câu hỏi trắc nghiệm.
+A WPF application for learning support with AI, allowing management of learning materials (PDFs) and automatic generation of summaries, knowledge structures, and multiple-choice questions.
 
-## Yêu cầu hệ thống
+## System Requirements
 
-- **.NET 10.0 Windows** (hoặc phiên bản mới hơn)
+- **.NET 10.0 Windows** (or later)
 - **Windows 10/11**
-- **Visual Studio 2022** (khuyến nghị) hoặc VS Code với C# extension
-- **SQLite** (để xem database, không bắt buộc để chạy app)
+- **Visual Studio 2022** (recommended) or VS Code with C# extension
+- **SQLite** (for viewing database, not required to run the app)
 
-## Cài đặt khi pull project về
+## Setup After Pulling the Project
 
-### 1. Clone repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/NET-2026/thi-thanh-truc-trinh.git
 cd StudyMate
 ```
 
-### 2. Khôi phục dependencies
+### 2. Restore dependencies
 
 ```bash
 dotnet restore
 ```
 
-### 3. Cấu hình AI settings (tùy chọn)
+### 3. Configure AI settings (optional)
 
-Nếu muốn sử dụng tính năng AI, tạo file `.env` trong thư mục gốc với nội dung:
+If you want to use AI features, create a `.env` file in the root directory with:
 
 ```env
 AiBaseUrl=https://your-ai-api-url.com
@@ -35,20 +35,20 @@ ApiKey=your-api-key
 AiModel=your-model-name
 ```
 
-**Lưu ý:** Nếu không có file `.env`, ứng dụng vẫn chạy nhưng tính năng AI sẽ không hoạt động (sẽ báo lỗi khi startup).
+**Note:** Without the `.env` file, the application will still run but AI features will not work (will show an error on startup).
 
-### 4. Chạy ứng dụng
+### 4. Run the application
 
-#### Cách 1: Visual Studio
-- Mở `StudyMate.slnx` trong Visual Studio
-- Nhấn `F5` để chạy
+#### Option 1: Visual Studio
+- Open `StudyMate.slnx` in Visual Studio
+- Press `F5` to run
 
-#### Cách 2: Command line
+#### Option 2: Command line
 ```bash
 dotnet run --project StudyMate.Wpf/StudyMate.Wpf.csproj
 ```
 
-#### Cách 3: Build và chạy exe
+#### Option 3: Build and run executable
 ```bash
 dotnet build --configuration Release
 .\StudyMate.Wpf\bin\Release\net10.0-windows\StudyMate.Wpf.exe
@@ -56,92 +56,92 @@ dotnet build --configuration Release
 
 ## Database
 
-### Vị trí database
+### Database Location
 
-Database SQLite được lưu tại:
+SQLite database is stored at:
 ```
 C:\Users\<username>\AppData\Local\StudyMate\studymate.db
 ```
 
-### Migration
+### Migrations
 
-**Không cần chạy migration thủ công!** 
+**No manual migration needed!**
 
-Khi ứng dụng khởi động, nó sẽ tự động:
-- Kiểm tra database có tồn tại chưa
-- Tự động tạo các bảng nếu chưa có (Code First approach)
+When the application starts, it automatically:
+- Checks if the database exists
+- Creates tables automatically if they don't exist (Code First approach)
 
-Các bảng trong database:
-- `StudyFolders` - Lưu trữ thư mục học tập
-- `StudyFiles` - Lưu trữ file học tập (PDF)
-- `AiAnalyses` - Lưu trữ kết quả phân tích AI
+Database tables:
+- `StudyFolders` - Stores learning folders
+- `StudyFiles` - Stores learning files (PDFs)
+- `AiAnalyses` - Stores AI analysis results
 
-### Xem dữ liệu database
+### View Database Data
 
-**Cách 1: DB Browser for SQLite** (khuyến nghị)
-1. Tải tại: https://sqlitebrowser.org/dl/
-2. Mở file `C:\Users\<username>\AppData\Local\StudyMate\studymate.db`
+**Option 1: DB Browser for SQLite** (recommended)
+1. Download at: https://sqlitebrowser.org/dl/
+2. Open file `C:\Users\<username>\AppData\Local\StudyMate\studymate.db`
 
-**Cách 2: Cài đặt sqlite3 CLI**
+**Option 2: Install sqlite3 CLI**
 ```powershell
 winget install sqlite.sqlite
 sqlite3 C:\Users\<username>\AppData\Local\StudyMate\studymate.db
 ```
 
-Sau đó dùng lệnh SQL:
+Then use SQL commands:
 ```sql
-.tables                    -- Xem danh sách bảng
-SELECT * FROM StudyFolders; -- Xem dữ liệu
-.exit                      -- Thoát
+.tables                    -- List all tables
+SELECT * FROM StudyFolders; -- View data
+.exit                      -- Exit
 ```
 
-## File uploads
+## File Uploads
 
-### Vị trí lưu file
+### File Storage Location
 
-File PDF tải lên được lưu tại:
+Uploaded PDF files are stored at:
 ```
 C:\Users\<username>\AppData\Local\StudyMate\uploads\
 ```
 
-**Lưu ý quan trọng:**
-- Folder `uploads/` trong project **không cần thiết** khi pull về
-- Ứng dụng tự động tạo folder uploads trong AppData khi chạy
-- Không commit file uploads vào git (đã có trong `.gitignore`)
+**Important:**
+- The `uploads/` folder in the project root is **not needed** after pulling
+- The application automatically creates the uploads folder in AppData when running
+- Upload files are NOT committed to git (already in `.gitignore`)
 
-## Debug logging
+## Debug Logging
 
-Đã loại bỏ toàn bộ debug logging trong production build. 
+All debug logging has been removed from production build.
 
-Nếu cần debug, application có thể ghi log tạm thời vào:
-- `C:\Users\<username>\AppData\Local\Temp\ai_debug.log` (khi có lỗi AI)
-- `C:\Users\<username>\AppData\Local\Temp\quiz.log` (khi làm quiz)
+If debugging is needed, the application may temporarily log to:
+- `C:\Users\<username>\AppData\Local\Temp\ai_debug.log` (when AI errors occur)
+- `C:\Users\<username>\AppData\Local\Temp\quiz.log` (during quiz operations)
 
-## Lỗi thường gặp
+## Common Errors
 
 ### 1. "AI BaseUrl is invalid"
-- **Nguyên nhân:** Thiếu file `.env` hoặc cấu hình AI không đúng
-- **Giải pháp:** Tạo file `.env` với cấu hình đúng hoặc bỏ qua nếu không dùng AI
+- **Cause:** Missing `.env` file or incorrect AI configuration
+- **Solution:** Create `.env` file with correct configuration or skip if not using AI
 
-### 2. "File not found" khi mở PDF
-- **Nguyên nhân:** File PDF đã bị xóa khỏi folder uploads
-- **Giải pháp:** Upload lại file
+### 2. "File not found" when opening PDF
+- **Cause:** PDF file was deleted from uploads folder
+- **Solution:** Re-upload the file
 
-### 3. Database bị lock
-- **Nguyên nhân:** Ứng dụng đóng đột ngột
-- **Giải pháp:** Xóa file `studymate.db-wal` và `studymate.db-shm` (nếu có)
+### 3. Database is locked
+- **Cause:** Application closed unexpectedly
+- **Solution:** Delete `studymate.db-wal` and `studymate.db-shm` files (if they exist)
 
-## Đếm dòng code (cho submission)
+## Count Lines of Code (for submission)
 
-Sử dụng CLOC:
+Use CLOC:
 ```bash
 cloc --include-lang="C#,XAML" --exclude-dir=bin,obj --by-file-by-lang .
 ```
 
 Download CLOC: https://github.com/AlDanial/cloc/releases
 
-## Submit
+## Submission
 
-Nộp bài qua Moodle theo hướng dẫn trong "Vorgaben Studienarbeit - .NET-Programmierung mit C# - SoSe 2026.pdf"
+Submit via Moodle according to instructions in "Vorgaben Studienarbeit - .NET-Programmierung mit C# - SoSe 2026.pdf"
 
-Deadline: **31. Juli 2026, 23:59 Uhr**
+Deadline: **July 31, 2026, 23:59**
