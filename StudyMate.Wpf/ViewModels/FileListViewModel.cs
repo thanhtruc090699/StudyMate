@@ -93,18 +93,6 @@ namespace StudyMate.Wpf.ViewModels
         }
 
         [RelayCommand]
-        private async Task LoadFilesAsync()
-        {
-            if (SelectedFolder == null)
-            {
-                ErrorMessage = "Please select a folder first";
-                return;
-            }
-
-            await LoadFolderAsync(SelectedFolder);
-        }
-
-        [RelayCommand]
         private async Task UploadFileAsync()
         {
             if (SelectedFolder == null)
@@ -215,13 +203,6 @@ namespace StudyMate.Wpf.ViewModels
             }
 
             SelectedFile = file;
-        }
-
-        [RelayCommand]
-        private void Back()
-        {
-            SelectedFolder = null;
-            Files.Clear();
         }
 
         private string GetContentType(string fileName)
