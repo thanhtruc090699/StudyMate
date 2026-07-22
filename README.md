@@ -130,18 +130,3 @@ If debugging is needed, the application may temporarily log to:
 ### 3. Database is locked
 - **Cause:** Application closed unexpectedly
 - **Solution:** Delete `studymate.db-wal` and `studymate.db-shm` files (if they exist)
-
-## Count Lines of Code (for submission)
-
-Use CLOC:
-```bash
-cloc --include-lang="C#,XAML" --exclude-dir=bin,obj --by-file-by-lang .
-```
-
-Download CLOC: https://github.com/AlDanial/cloc/releases
-
-## Submission
-
-Submit via Moodle according to instructions in "Vorgaben Studienarbeit - .NET-Programmierung mit C# - SoSe 2026.pdf"
-
-Deadline: **July 31, 2026, 23:59**
