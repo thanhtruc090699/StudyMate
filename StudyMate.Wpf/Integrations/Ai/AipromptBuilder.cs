@@ -30,7 +30,7 @@
                 LANGUAGE RULES:
                 
                 - Write name, summary, structuredContent, section titles, and section content
-                  in the main language of the source document.
+                  in English.
                 - Regardless of the source document language, write every quiz question,
                   answer option, and explanation entirely in English.
                 - Preserve code identifiers, formulas, class names, method names, proper nouns,
