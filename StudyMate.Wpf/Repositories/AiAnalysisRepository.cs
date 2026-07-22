@@ -26,8 +26,6 @@ namespace StudyMate.Wpf.Repositories
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync();
             
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] [REPO] GetLatestByStudyFileIdAsync({studyFileId}): {(result == null ? "NULL" : $"Found Id={result.Id}, Status={result.Status}")}\n");
-            
             return result;
         }
 

@@ -91,9 +91,6 @@ public class QuizQuestionViewModel : ViewModelBase
 
     private void SelectOption(QuizOptionViewModel? option)
     {
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", 
-            $"[{System.DateTime.Now:HH:mm:ss}] SelectOption called: {option?.Text?.Substring(0, Math.Min(20, option.Text.Length))}\n");
-        
         if (option is null || IsSubmitted)
         {
             return;

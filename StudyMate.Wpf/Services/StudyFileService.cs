@@ -52,8 +52,6 @@ namespace StudyMate.Wpf.Services
                 UpdatedAt = DateTime.UtcNow
             };
 
-            System.Diagnostics.Debug.WriteLine($"Saving file metadata to DB: {studyFile.OriginalFileName}, Size: {studyFile.FileSizeBytes}");
-            
             return await _fileRepository.AddAsync(studyFile);
         }
 

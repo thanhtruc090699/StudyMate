@@ -12,32 +12,25 @@ namespace StudyMate.Wpf.Integrations.Ai
 
         public static AiStudyMaterialResult ParseAiResponse(string responseContent)
         {
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] ParseAiResponse: Input length={responseContent.Length}\n");
-            
             if (string.IsNullOrWhiteSpace(responseContent))
             {
                 throw new InvalidOperationException("the Ai API returned an empty response");
             }
 
             var cleanedJson = RemoveMarkDownCodeFence(responseContent);
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] ParseAiResponse: Cleaned JSON={cleanedJson}\n");
             
             try
             {
                 var result = JsonSerializer.Deserialize<AiStudyMaterialResult>(cleanedJson, JsonOptions);
                 if(result == null)
                 {
-                    System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] ParseAiResponse: Result is null after deserialization\n");
                     throw new InvalidOperationException("Failed to parse Ai response");
                 }
-                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] ParseAiResponse: Summary={result.Summary?.Substring(0, Math.Min(50, result.Summary.Length))}...\n");
-                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] ParseAiResponse: Quiz count={result.QuizQuestions?.Count}\n");
                 ValidateResult(result);
                 return result;
             }
             catch(JsonException ex)
             {
-                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] ParseAiResponse: JsonException={ex.Message}\n");
                 throw new InvalidOperationException("Failed to parse Ai response", ex);
             }
 

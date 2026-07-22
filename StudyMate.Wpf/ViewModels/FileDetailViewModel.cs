@@ -4,7 +4,6 @@ using System.Drawing.Text;
 using System.Text.Json;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using StudyMate.Wpf.Helpers;
 using StudyMate.Wpf.Integrations.Ai;
 using StudyMate.Wpf.Models;
 using StudyMate.Wpf.Models.Ai;
@@ -109,8 +108,6 @@ public class FileDetailViewModel : ViewModelBase
             _selectedTabIndex = value;
             OnPropertyChanged();
             
-            DebugLogger.Log($"SelectedTabIndex changed to {value}");
-            
             RefreshQuizCommands();
         }
     }
@@ -170,88 +167,6 @@ public class FileDetailViewModel : ViewModelBase
 
     public IRelayCommand CheckAnswerCommand { get; }
 
-    public void LoadMockData(StudyFile file)
-    {
-        DebugLogger.Log($"FileDetailViewModel.LoadMockData called: {file.OriginalFileName}");
-        DebugLogger.Log($"FileDetailViewModel instance hash = {GetHashCode()}");
-
-        SelectedFile = file;
-
-        Summary =
-            "Machine Learning is a subset of artificial intelligence " +
-            "that enables systems to learn from data and improve with " +
-            "experience without being explicitly programmed.";
-
-        KeyPoints.Clear();
-
-        KeyPoints.Add(
-            "Machine Learning improves performance through experience.");
-
-        KeyPoints.Add(
-            "There are two main types: Supervised Learning and Unsupervised Learning.");
-
-        KeyPoints.Add(
-            "Common algorithms include Linear Regression, Decision Trees, and Neural Networks.");
-
-        KeyPoints.Add(
-            "Machine Learning is used in image recognition, recommendation systems, and natural language processing.");
-
-        Questions.Clear();
-
-        var question1 = new QuizQuestionViewModel
-        {
-            QuestionText = "Which of the following is a type of machine learning?",
-            Explanation = "Supervised learning is one of the main machine learning approaches.",
-        };
-
-        question1.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(QuizQuestionViewModel.SelectedOption) ||
-                e.PropertyName == nameof(QuizQuestionViewModel.IsSubmitted))
-            {
-                RefreshQuizCommands();
-            }
-        };
-        
-        question1.Options.Add(new QuizOptionViewModel(question1) { Text = "A. Structured Programming" });
-        question1.Options.Add(new QuizOptionViewModel(question1) { Text = "B. Supervised Learning", IsCorrect = true });
-        question1.Options.Add(new QuizOptionViewModel(question1) { Text = "C. Web Development" });
-        question1.Options.Add(new QuizOptionViewModel(question1) { Text = "D. Database Management" });
-        
-        Questions.Add(question1);
-
-        var question2 = new QuizQuestionViewModel
-        {
-            QuestionText = "What is the primary goal of unsupervised learning?",
-            Explanation = "Unsupervised learning aims to discover hidden patterns in unlabeled data.",
-        };
-
-        question2.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(QuizQuestionViewModel.SelectedOption) ||
-                e.PropertyName == nameof(QuizQuestionViewModel.IsSubmitted))
-            {
-                RefreshQuizCommands();
-            }
-        };
-        
-        question2.Options.Add(new QuizOptionViewModel(question2) { Text = "A. To classify labeled data" });
-        question2.Options.Add(new QuizOptionViewModel(question2) { Text = "B. To discover patterns in unlabeled data", IsCorrect = true });
-        question2.Options.Add(new QuizOptionViewModel(question2) { Text = "C. To predict numerical values" });
-        question2.Options.Add(new QuizOptionViewModel(question2) { Text = "D. To optimize database queries" });
-        
-        Questions.Add(question2);
-
-        CurrentQuestionIndex = 0;
-        IsAnswerSubmitted = false;
-
-        OnPropertyChanged(nameof(CurrentQuestion));
-        OnPropertyChanged(nameof(QuizProgressText));
-        RefreshQuizCommands();
-
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] LoadMockData: Questions={Questions.Count}, CurrentQuestion={CurrentQuestion != null}\n");
-    }
-
     private void CloseFile()
     {
         SelectedFile = null;
@@ -273,27 +188,19 @@ public class FileDetailViewModel : ViewModelBase
 
     private bool CanCheckAnswer()
     {
-        var canExecute = SelectedTabIndex == 1 
+        return SelectedTabIndex == 1 
                && CurrentQuestion?.SelectedOption is not null
                && CurrentQuestion.IsSubmitted == false;
-        
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", 
-            $"[{System.DateTime.Now:HH:mm:ss}] CanCheckAnswer: {canExecute}, TabIndex={SelectedTabIndex}, HasSelectedOption={CurrentQuestion?.SelectedOption != null}, IsSubmitted={CurrentQuestion?.IsSubmitted}\n");
-        return canExecute;
     }
 
     private void CheckAnswer()
     {
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] CheckAnswer called\n");
-        
         if (CurrentQuestion?.SelectedOption is null)
         {
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] SelectedOption is null\n");
             return;
         }
 
         CurrentQuestion.IsSubmitted = true;
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] IsSubmitted=true, Correct={CurrentQuestion.SelectedOption.IsCorrect}\n");
 
         foreach (var option in CurrentQuestion.Options)
         {
@@ -302,20 +209,15 @@ public class FileDetailViewModel : ViewModelBase
 
         OnPropertyChanged(nameof(CurrentQuestion));
         RefreshQuizCommands();
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] CheckAnswer completed\n");
     }
 
     private bool CanGoPrevious()
     {
-        var canExecute = SelectedTabIndex == 1 && CurrentQuestionIndex > 0;
-        DebugLogger.Log($"CanGoPrevious: {canExecute}, TabIndex={SelectedTabIndex}, Index={CurrentQuestionIndex}");
-        return canExecute;
+        return SelectedTabIndex == 1 && CurrentQuestionIndex > 0;
     }
 
     private void PreviousQuestion()
     {
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] PreviousQuestion called, Index={CurrentQuestionIndex}\n");
-        
         if (!CanGoPrevious())
         {
             return;
@@ -338,25 +240,19 @@ public class FileDetailViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsAnswerSubmitted));
         OnPropertyChanged(nameof(CurrentQuestion));
         RefreshQuizCommands();
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] PreviousQuestion completed, NewIndex={CurrentQuestionIndex}\n");
     }
 
     private bool CanGoNext()
     {
-        var canExecute = SelectedTabIndex == 1 
+        return SelectedTabIndex == 1 
                && CurrentQuestion?.IsSubmitted == true
                && CurrentQuestionIndex < Questions.Count - 1;
-        DebugLogger.Log($"CanGoNext: {canExecute}, TabIndex={SelectedTabIndex}, IsSubmitted={CurrentQuestion?.IsSubmitted}, Index={CurrentQuestionIndex}, Count={Questions.Count}");
-        return canExecute;
     }
 
     private void NextQuestion()
     {
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] NextQuestion called, Index={CurrentQuestionIndex}\n");
-        
         if (!CanGoNext())
         {
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] NextQuestion cannot execute\n");
             return;
         }
 
@@ -377,47 +273,33 @@ public class FileDetailViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsAnswerSubmitted));
         OnPropertyChanged(nameof(CurrentQuestion));
         RefreshQuizCommands();
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\quiz.log", $"[{DateTime.Now:HH:mm:ss}] NextQuestion completed, NewIndex={CurrentQuestionIndex}\n");
     }
 
     private async Task LoadAnalysisAsync(StudyFile file)
     {
         if (file == null) return;
 
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] LoadAnalysisAsync called for file: {file.OriginalFileName} (ID={file.Id})\n");
-
         IsLoading = true;
         OnPropertyChanged(nameof(IsLoading));
 
         try
         {
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] Checking database for existing analysis...\n");
             var analysis = await _aiAnalysisService.GetLatestAnalysisByStudyFileIdAsync(file.Id);
             
             if (analysis == null)
             {
-                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] No analysis found in DB, calling AI...\n");
                 analysis = await _aiAnalysisService.GenerateAnalysisAsync(file.Id);
-                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] AI generation completed\n");
             }
             else if (analysis.Status != "Completed")
             {
-                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] Found analysis with Status={analysis.Status}, regenerating...\n");
                 analysis = await _aiAnalysisService.GenerateAnalysisAsync(file.Id);
-                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] AI regeneration completed\n");
-            }
-            else
-            {
-                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] Found completed analysis in DB (Id={analysis.Id})\n");
             }
 
             ApplyAnalysis(analysis);
         }
         catch (Exception ex)
         {
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] LoadAnalysisAsync ERROR: {ex.Message}\n");
             ErrorMessage = $"Unable to generate study material: {ex.Message}";
-            DebugLogger.Log(ex.ToString());
         }
         finally
         {
@@ -428,8 +310,6 @@ public class FileDetailViewModel : ViewModelBase
 
     private void ApplyAnalysis(AiAnalysis analysis)
     {
-        System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] ApplyAnalysis called\n");
-        
         Summary = analysis.Summary;
 
         LoadStructuredContent(analysis.StructuredContentJson);
@@ -449,7 +329,6 @@ public class FileDetailViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(structuredContentJson))
         {
-            DebugLogger.Log("LoadStructuredContent: JSON is null or empty");
             return;
         }
 
@@ -468,9 +347,9 @@ public class FileDetailViewModel : ViewModelBase
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            DebugLogger.Log($"LoadStructuredContent failed: {ex.Message}");
+            // Ignore parsing errors
         }
     }
 
@@ -480,7 +359,6 @@ public class FileDetailViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(quizJson))
         {
-            DebugLogger.Log("LoadQuiz: JSON is null or empty");
             return;
         }
 
@@ -521,9 +399,9 @@ public class FileDetailViewModel : ViewModelBase
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            DebugLogger.Log($"LoadQuiz failed: {ex.Message}");
+            // Ignore parsing errors
         }
     }
 }

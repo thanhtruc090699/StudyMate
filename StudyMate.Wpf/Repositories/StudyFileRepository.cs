@@ -26,39 +26,12 @@ namespace StudyMate.Wpf.Repositories
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"=== Adding file to DB ===");
-                System.Diagnostics.Debug.WriteLine($"FolderId={studyFile.FolderId}, OriginalFileName={studyFile.OriginalFileName}");
-                System.Diagnostics.Debug.WriteLine($"StoredFileName={studyFile.StoredFileName}, FilePath={studyFile.FilePath}");
-                System.Diagnostics.Debug.WriteLine($"FileExtension={studyFile.FileExtension}, ContentType={studyFile.ContentType}");
-                System.Diagnostics.Debug.WriteLine($"FileSizeBytes={studyFile.FileSizeBytes}");
-                
                 _dbContext.StudyFiles.Add(studyFile);
-                System.Diagnostics.Debug.WriteLine($"Calling SaveChangesAsync...");
-                
-                var result = await _dbContext.SaveChangesAsync();
-                
-                System.Diagnostics.Debug.WriteLine($"Saved {result} entities. File ID: {studyFile.Id}");
+                await _dbContext.SaveChangesAsync();
                 return studyFile;
             }
-            catch (Microsoft.EntityFrameworkCore.DbUpdateException dbEx)
+            catch (Exception)
             {
-                System.Diagnostics.Debug.WriteLine($"DbUpdateException: {dbEx.Message}");
-                System.Diagnostics.Debug.WriteLine($"Inner exception: {dbEx.InnerException?.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack trace: {dbEx.StackTrace}");
-                if (dbEx.InnerException?.InnerException != null)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Inner inner exception: {dbEx.InnerException.InnerException.Message}");
-                }
-                throw;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error adding file to DB: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                if (ex.InnerException != null)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
-                }
                 throw;
             }
         }

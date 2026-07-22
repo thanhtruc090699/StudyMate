@@ -25,20 +25,12 @@ namespace StudyMate.Wpf.Repositories
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"Adding folder to DB: Name={folder.Name}");
                 _dbContext.StudyFolders.Add(folder);
-                var result = await _dbContext.SaveChangesAsync();
-                System.Diagnostics.Debug.WriteLine($"Saved {result} entities. Folder ID: {folder.Id}");
+                await _dbContext.SaveChangesAsync();
                 return folder;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error adding folder to DB: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                if (ex.InnerException != null)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
-                }
                 throw;
             }
         }

@@ -42,12 +42,7 @@ namespace StudyMate.Wpf.Integrations.Ai
             );
             var fullPath = Path.Combine(appDataPath, filePath);
             
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] [AI] Starting analysis: File={Path.GetFileName(filePath)}\n");
-
-            // Extract text from PDF
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] [AI] Extracting text from PDF...\n");
             var documentText = await _pdfTextExtractor.ExtractTextAsync(fullPath, cancellationToken);
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] [AI] Extracted text length: {documentText.Length} chars\n");
 
             // Build request body for chat completion API
             var requestBody = new
@@ -69,7 +64,6 @@ namespace StudyMate.Wpf.Integrations.Ai
             };
 
             var requestJson = JsonSerializer.Serialize(requestBody);
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] [AI] Sending JSON request to {_settings.AnalysisEndpoint}...\n");
 
             using var requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
             
@@ -77,11 +71,8 @@ namespace StudyMate.Wpf.Integrations.Ai
 
             var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] [AI] HTTP response: {(int)response.StatusCode} {response.StatusCode}, Length={responseJson.Length}\n");
-
             if (!response.IsSuccessStatusCode)
             {
-                System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] [AI] Request failed: {responseJson}\n");
                 throw new HttpRequestException($"Lisa API returned HTTP {(int)response.StatusCode}: {responseJson}");
             }
 
@@ -90,8 +81,6 @@ namespace StudyMate.Wpf.Integrations.Ai
 
         private static AiStudyMaterialResult ParseChatResponse(string responseJson)
         {
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] Parsing chat response...\n");
-            
             using var document = JsonDocument.Parse(responseJson);
             
             var content = document.RootElement
@@ -105,20 +94,14 @@ namespace StudyMate.Wpf.Integrations.Ai
                 throw new InvalidOperationException("Lisa returned empty message content.");
             }
 
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] AI content received, length={content.Length}\n");
-
             var cleanedContent = RemoveMarkdownCodeFence(content);
             
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] Cleaned JSON: {cleanedContent.Substring(0, Math.Min(200, cleanedContent.Length))}...\n");
-
             var result = JsonSerializer.Deserialize<AiStudyMaterialResult>(cleanedContent, JsonOptions);
 
             if (result == null)
             {
                 throw new InvalidOperationException("Lisa result could not be parsed.");
             }
-
-            System.IO.File.AppendAllText("C:\\Users\\T490s\\AppData\\Local\\Temp\\ai_debug.log", $"[{System.DateTime.Now:HH:mm:ss}] Parsed successfully: SummaryLength={result.Summary.Length}, QuizCount={result.QuizQuestions?.Count ?? 0}\n");
 
             return result;
         }

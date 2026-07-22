@@ -1,11 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
-using StudyMate.Wpf.Helpers;
 using StudyMate.Wpf.Models;
 using StudyMate.Wpf.Services.Interfaces;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
@@ -27,7 +25,6 @@ namespace StudyMate.Wpf.ViewModels
         {
             if (value != null)
             {
-                DebugLogger.Log($"OnSelectedFileChanged: Passing file '{value.OriginalFileName}' to FileDetailViewModel");
                 _fileDetailViewModel.SelectedFile = value;
             }
         }
@@ -143,10 +140,6 @@ namespace StudyMate.Wpf.ViewModels
 
                     using var fileStream = File.OpenRead(filePath);
                     var contentType = GetContentType(fileName);
-
-                    System.Diagnostics.Debug.WriteLine($"Uploading file: {fileName}, Size: {fileStream.Length} bytes, ContentType: {contentType}");
-
-                    System.Diagnostics.Debug.WriteLine($"Calling UploadFileAsync... FolderId={SelectedFolder.Id}, FileName={fileName}");
                     
                     var uploadedFile = await _fileService.UploadFileAsync(
                         SelectedFolder.Id,
@@ -155,19 +148,12 @@ namespace StudyMate.Wpf.ViewModels
                         contentType
                     );
 
-                    System.Diagnostics.Debug.WriteLine($"UploadFileAsync returned. File ID: {uploadedFile.Id}");
-
                     Files.Insert(0, uploadedFile);
                     SuccessMessage = $"File '{fileName}' uploaded successfully!";
-                    
-                    System.Diagnostics.Debug.WriteLine($"Successfully inserted into UI");
                 }
                 catch (Exception ex)
                 {
                     ErrorMessage = $"Error uploading file: {ex.Message}";
-                    System.Diagnostics.Debug.WriteLine($"Upload error: {ex.ToString()}");
-                    System.Diagnostics.Debug.WriteLine($"Inner exception: {ex.InnerException?.ToString() ?? "None"}");
-                    System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 }
                 finally
                 {
@@ -220,13 +206,8 @@ namespace StudyMate.Wpf.ViewModels
         [RelayCommand]
         private void OpenFile(StudyFile? file)
         {
-            DebugLogger.Log($"FileListViewModel.OpenFile called: {file?.OriginalFileName ?? "null"}");
-            DebugLogger.Log($"FileListViewModel instance hash = {GetHashCode()}");
-            DebugLogger.Log($"FileDetailViewModel instance hash = {_fileDetailViewModel.GetHashCode()}");
-
             if (file is null)
             {
-                DebugLogger.Log("FileListViewModel.OpenFile: file is null, returning");
                 return;
             }
 
