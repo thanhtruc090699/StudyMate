@@ -14,10 +14,12 @@ namespace StudyMate.Wpf.Integrations.Ai
         private readonly AiSettings _settings;
         private readonly IPdfTextExtractor _pdfTextExtractor;
 
-        private static readonly JsonSerializerOptions JsonOptions = new()
+        public static readonly JsonSerializerOptions JsonOptions = new()
         {
             PropertyNameCaseInsensitive = true
         };
+
+        private static readonly JsonSerializerOptions PrivateJsonOptions = JsonOptions;
 
         public AiClient(HttpClient httpClient, AiSettings settings, IPdfTextExtractor pdfTextExtractor)
         {

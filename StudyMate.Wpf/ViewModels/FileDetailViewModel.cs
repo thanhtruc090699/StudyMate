@@ -334,7 +334,7 @@ public class FileDetailViewModel : ViewModelBase
 
         try
         {
-            var structuredContent = JsonSerializer.Deserialize<StructuredContent>(structuredContentJson, AiResponseParser.JsonOptions);
+            var structuredContent = JsonSerializer.Deserialize<StructuredContent>(structuredContentJson, AiClient.JsonOptions);
 
             if (structuredContent?.Sections != null)
             {
@@ -364,7 +364,7 @@ public class FileDetailViewModel : ViewModelBase
 
         try
         {
-            var quizQuestions = JsonSerializer.Deserialize<List<QuizQuestion>>(quizJson, AiResponseParser.JsonOptions);
+            var quizQuestions = JsonSerializer.Deserialize<List<QuizQuestion>>(quizJson, AiClient.JsonOptions);
             if (quizQuestions != null)
             {
                 foreach (var question in quizQuestions)
