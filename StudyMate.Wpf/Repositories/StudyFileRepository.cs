@@ -35,11 +35,6 @@ namespace StudyMate.Wpf.Repositories
                 throw;
             }
         }
-        public async Task UpdateAsync(StudyFile file)
-        {
-            _dbContext.StudyFiles.Update(file);
-            await _dbContext.SaveChangesAsync();
-        }
         public async Task DeleteAsync(int id)
         {
             var file = await _dbContext.StudyFiles.FindAsync(id);
