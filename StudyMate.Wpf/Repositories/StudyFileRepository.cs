@@ -44,9 +44,5 @@ namespace StudyMate.Wpf.Repositories
                 await _dbContext.SaveChangesAsync();
             }
         }
-        public async Task<bool> ExistsAsync(int id)
-        {
-            return await _dbContext.StudyFiles.AnyAsync(f => f.Id == id);
-        }
     }
 }

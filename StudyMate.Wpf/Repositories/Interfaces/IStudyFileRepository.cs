@@ -9,6 +9,5 @@ namespace StudyMate.Wpf.Repositories.Interfaces
         Task<List<StudyFile>> GetByFolderIdAsync(int FolderId);
         Task<StudyFile> AddAsync(StudyFile studyFile);
         Task DeleteAsync(int id);
-        Task<bool> ExistsAsync(int id);
     }
 }
