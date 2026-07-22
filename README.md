@@ -26,14 +26,17 @@ dotnet restore
 
 ### 3. Configure AI settings (optional)
 
-If you want to use AI features, create a `.env` file in the root directory with:
+If you want to use AI features:
 
-```env
-AiBaseUrl=https://your-ai-api-url.com
-AiEndpoint=/api/chat/completions
-ApiKey=your-api-key
-AiModel=your-model-name
-```
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Open `.env` and paste your API key:
+   ```env
+   ApiKey=your-actual-api-key
+   ```
 
 **Note:** Without the `.env` file, the application will still run but AI features will not work (will show an error on startup).
 
