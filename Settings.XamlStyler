@@ -1,0 +1,20 @@
+{
+  "IndentSize": 4,
+  "TabSize": 4,
+  "UseTabs": false,
+  "AttributesTolerance": 2,
+  "KeepFirstAttributeOnSameLine": false,
+  "MaxAttributeCharactersPerLine": 0,
+  "AttributesPerLine": 1,
+  "NewlineExemptionElements": "x:Code",
+  "SeparateByGroups": false,
+  "AttributeOrderRuleGroupValue": "Class, x:Class, x:Name, Name, x:Key, Key, x:Uid, Uid, x:TypeArguments, AccessString, AsyncPrefix, CodeBehindClassName, x:ClassModifier, x:Subclass, xmlns, xmlns:x, xmlns:d, xmlns:mc, mc:Ignorable, d:DesignWidth, d:DesignHeight, d:DesignWidthOverride, d:DesignHeightOverride, x:DataType, DataType, BasedOn, TargetType, x:Key",
+  "ElementOrderRuleGroupValue": "",
+  "ReorderAttributes": true,
+  "ReorderGridPanelChildren": false,
+  "ReorderCanvasPanelChildren": false,
+  "ReorderStackPanelChildren": false,
+  "RemoveDesignResourceReferences": false,
+  "CommentPadding": 3,
+  "HydrateDocument": false
+}

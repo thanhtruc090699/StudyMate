@@ -1,49 +1,43 @@
-﻿<Window x:Class="StudyMate.Wpf.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:StudyMate.Wpf.Views"
-        mc:Ignorable="d"
-        Title="StudyMate - AI Study Assistant"
-        Height="600"
-        Width="1200"
-        MinWidth="1000"
-        MinHeight="600"
-        WindowState="Maximized">
+﻿<Window
+    x:Class="StudyMate.Wpf.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="clr-namespace:StudyMate.Wpf.Views"
+    Title="StudyMate - AI Study Assistant"
+    Width="1200"
+    Height="600"
+    MinWidth="1000"
+    MinHeight="600"
+    WindowState="Maximized"
+    mc:Ignorable="d">
 
-    <Grid x:Name="MainGrid"
-          ClipToBounds="True">
+    <Grid x:Name="MainGrid" ClipToBounds="True">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280"
-                              MinWidth="240"/>
+            <ColumnDefinition Width="280" MinWidth="240" />
 
-            <ColumnDefinition Width="340"
-                              MinWidth="280"/>
+            <ColumnDefinition Width="340" MinWidth="280" />
 
-            <ColumnDefinition Width="*"
-                              MinWidth="380"/>
+            <ColumnDefinition Width="*" MinWidth="380" />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0"
-                ClipToBounds="True">
+        <Border Grid.Column="0" ClipToBounds="True">
 
-            <views:FolderListView DataContext="{Binding FolderListViewModel}"/>
-
-        </Border>
-
-        <Border Grid.Column="1"
-                ClipToBounds="True">
-
-            <views:FileListView DataContext="{Binding FileListViewModel}"/>
+            <views:FolderListView DataContext="{Binding FolderListViewModel}" />
 
         </Border>
 
-        <Border Grid.Column="2"
-                ClipToBounds="True">
+        <Border Grid.Column="1" ClipToBounds="True">
 
-            <views:FileDetailView DataContext="{Binding FileDetailViewModel}"/>
+            <views:FileListView DataContext="{Binding FileListViewModel}" />
+
+        </Border>
+
+        <Border Grid.Column="2" ClipToBounds="True">
+
+            <views:FileDetailView DataContext="{Binding FileDetailViewModel}" />
 
         </Border>
 
