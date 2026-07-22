@@ -342,7 +342,11 @@ public class FileDetailViewModel : ViewModelBase
                 {
                     if (!string.IsNullOrWhiteSpace(section.Title))
                     {
-                        KeyPoints.Add(section.Title);
+                        var keyPoint = string.IsNullOrWhiteSpace(section.Content)
+                            ? section.Title
+                            : $"{section.Title}\n{section.Content}";
+                        
+                        KeyPoints.Add(keyPoint);
                     }
                 }
             }
