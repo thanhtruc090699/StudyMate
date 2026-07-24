@@ -1,7 +1,35 @@
 ﻿namespace StudyMate.Wpf.Integrations.Ai
 {
+    /// <summary>
+    /// Provides methods for constructing prompts sent to the AI service.
+    /// Contains pre-defined prompt templates optimized for educational content analysis.
+    /// 
+    /// Prompt Construction strategy:
+    /// - Defines a clear system role as an "expert educational content analyzer"
+    /// - Specifies explicit instructions for analyzing the ENTIRE document
+    /// - Enforces strict output format requirements (JSON with specific fields)
+    /// - Sets detailed rules for summary length, structure, and coverage
+    /// - Mandates English language output regardless of source document language
+    /// - Requires validation of completeness before response generation
+    /// - Includes example JSON structure to guide consistent formatting
+    /// </summary>
     public static class AiPromptBuilder
     {
+        /// <summary>
+        /// Builds the comprehensive system prompt for generating study materials.
+        /// This prompt instructs the AI to analyze documents thoroughly and produce
+        /// structured learning content including summaries, sections, and quiz questions.
+        /// </summary>
+        /// <returns>A complete system prompt string formatted as a multi-line template.</returns>
+        /// <remarks>
+        /// The returned prompt enforces:
+        /// - Complete document analysis from beginning to end
+        /// - Summary proportional to document length with paragraph breaks
+        /// - Structured content with title/content section pairs
+        /// - Quiz questions in English with exactly 4 options each
+        /// - Zero-based correctOptionIndex validation
+        /// - Valid JSON output without markdown formatting
+        /// </remarks>
         public static string BuildStudyMaterialPrompt()
         {
             return """

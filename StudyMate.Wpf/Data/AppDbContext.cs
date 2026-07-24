@@ -3,17 +3,49 @@ using StudyMate.Wpf.Models;
 
 namespace StudyMate.Wpf.Data;
 
+/// <summary>
+/// Entity Framework Core database context for the StudyMate application.
+/// Manages database connections, entity mappings, and data operations for
+/// study folders, study files, and AI analyses.
+/// 
+/// Database Context Role:
+/// - Configures connection to SQLite database
+/// - Defines entity sets (DbSet) for tables: StudyFolders, StudyFiles, AiAnalyses
+/// - Configures entity relationships and constraints in OnModelCreating
+/// - Maps navigation properties and cascade delete behaviors
+/// - Enforces NOT NULL constraints via IsRequired() calls
+/// </summary>
 public class AppDbContext : DbContext
 {
+    /// <summary>
+    /// Gets or sets the collection of StudyFolder entities, mapped to the StudyFolders table.
+    /// </summary>
     public DbSet<StudyFolder> StudyFolders { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of StudyFile entities, mapped to the StudyFiles table.
+    /// </summary>
     public DbSet<StudyFile> StudyFiles { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of AiAnalysis entities, mapped to the AiAnalyses table.
+    /// </summary>
     public DbSet<AiAnalysis> AiAnalyses { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppDbContext"/> class with specified options.
+    /// </summary>
+    /// <param name="options">Configuration options for this context (e.g., SQL connection).</param>
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
 
     }
 
+    /// <summary>
+    /// Configures entity relationships, constraints, and schema mappings using the Fluent API.
+    /// Called by Entity Framework Core during model creation.
+    /// </summary>
+    /// <param name="modelBuilder">The builder for constructing the EF Core model.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

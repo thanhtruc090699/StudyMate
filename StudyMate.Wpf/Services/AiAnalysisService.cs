@@ -6,12 +6,23 @@ using StudyMate.Wpf.Integrations.Ai.Interfaces;
 
 namespace StudyMate.Wpf.Services
 {
+    /// <summary>
+    /// Service for managing AI analysis operations on study files.
+    /// Generates summaries, structured content, and quiz questions via the AI client.
+    /// Tracks analysis status (Pending, Completed, Failed) with error messages.
+    /// </summary>
     public class AiAnalysisService : IAiAnalysisService
     {
         private readonly IAiAnalysisRepository _aiAnalysisRepository;
         private readonly IStudyFileService _studyFileService;
         private readonly IAiClient _aiClient;
 
+        /// <summary>
+        /// Initializes a new instance of the AiAnalysisService class.
+        /// </summary>
+        /// <param name="aiAnalysisRepository">The repository for AI analysis data access.</param>
+        /// <param name="aiClient">The AI client for generating study material analysis.</param>
+        /// <param name="studyFileService">Service for retrieving study file information.</param>
         public AiAnalysisService(IAiAnalysisRepository aiAnalysisRepository, IAiClient aiClient, IStudyFileService studyFileService)
         {
             _aiAnalysisRepository = aiAnalysisRepository;
@@ -19,6 +30,15 @@ namespace StudyMate.Wpf.Services
             _studyFileService = studyFileService;
         }
 
+        /// <summary>
+        /// Generates or regenerates AI analysis for a study file.
+        /// Creates an initial analysis record with "Pending" status, calls the AI client, and updates with results.
+        /// On failure, marks the analysis as "Failed" and stores the error message before re-throwing.
+        /// </summary>
+        /// <param name="studyFileId">The ID of the study file to analyze.</param>
+        /// <param name="cancellationToken">Optional cancellation token to abort the operation.</param>
+        /// <returns>The completed or failed AiAnalysis record with summary, structured content, and quiz data.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the study file is not found.</exception>
         public async Task<AiAnalysis> GenerateAnalysisAsync(int studyFileId, CancellationToken cancellationToken = default)
         {
             var studyFile = await _studyFileService.GetFileByIdAsync(studyFileId);
@@ -66,6 +86,11 @@ namespace StudyMate.Wpf.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves the most recent AI analysis for a specific study file.
+        /// </summary>
+        /// <param name="studyFileId">The ID of the study file.</param>
+        /// <returns>The latest AiAnalysis record if found; otherwise, null.</returns>
         public async Task<AiAnalysis?> GetLatestAnalysisByStudyFileIdAsync(int studyFileId)
         {
             var analysis = await _aiAnalysisRepository.GetLatestByStudyFileIdAsync(studyFileId);

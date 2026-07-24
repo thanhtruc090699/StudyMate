@@ -8,12 +8,27 @@ using StudyMate.Wpf.Models.Ai;
 
 namespace StudyMate.Wpf.Integrations.Ai
 {
+    /// <summary>
+    /// Client for integrating with the AI service to generate study materials from PDF documents.
+    /// Handles HTTP communication, request construction, and response parsing.
+    /// 
+    /// Request/Response Flow:
+    /// 1. Extract text from PDF using IPdfTextExtractor
+    /// 2. Build a chat completion request with system prompt and document content
+    /// 3. Send POST request to AI API with Bearer token authentication
+    /// 4. Parse JSON response containing name, summary, structured content, and quiz questions
+    /// 5. Return deserialized AiStudyMaterialResult object
+    /// </summary>
     public class AiClient : IAiClient
     {
         private readonly HttpClient _httpClient;
         private readonly AiSettings _settings;
         private readonly IPdfTextExtractor _pdfTextExtractor;
 
+        /// <summary>
+        /// JSON serialization options used for deserializing AI responses.
+        /// Configured to be case-insensitive for property name matching.
+        /// </summary>
         public static readonly JsonSerializerOptions JsonOptions = new()
         {
             PropertyNameCaseInsensitive = true
@@ -21,6 +36,13 @@ namespace StudyMate.Wpf.Integrations.Ai
 
         private static readonly JsonSerializerOptions PrivateJsonOptions = JsonOptions;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AiClient"/> class.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client for making API requests.</param>
+        /// <param name="settings">AI service configuration settings.</param>
+        /// <param name="pdfTextExtractor">PDF text extractor for reading document content.</param>
+        /// <exception cref="InvalidOperationException">Thrown when AI settings are invalid.</exception>
         public AiClient(HttpClient httpClient, AiSettings settings, IPdfTextExtractor pdfTextExtractor)
         {
             _httpClient = httpClient;
@@ -34,6 +56,16 @@ namespace StudyMate.Wpf.Integrations.Ai
             _httpClient.Timeout = TimeSpan.FromMinutes(5);
         }
 
+        /// <summary>
+        /// Generates comprehensive study material from a PDF file asynchronously.
+        /// Extracts text from the PDF, sends it to the AI service, and parses the response
+        /// into structured learning material including summaries and quiz questions.
+        /// </summary>
+        /// <param name="filePath">The path to the PDF file relative to the uploads folder.</param>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <returns>An <see cref="AiStudyMaterialResult"/> containing the generated study material.</returns>
+        /// <exception cref="HttpRequestException">Thrown when the AI service returns an error response.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the AI response cannot be parsed.</exception>
         public async Task<AiStudyMaterialResult> GenerateStudyMaterialAsync(string filePath, CancellationToken cancellationToken = default)
         {
             // Build full path since FilePath in DB only stores filename
@@ -81,6 +113,14 @@ namespace StudyMate.Wpf.Integrations.Ai
             return ParseChatResponse(responseJson);
         }
 
+        /// <summary>
+        /// Parses the raw JSON response from the AI chat completion API into a strongly-typed result.
+        /// Extracts the message content from the first choice and deserializes it as AiStudyMaterialResult.
+        /// Handles removal of markdown code fences if present.
+        /// </summary>
+        /// <param name="responseJson">The raw JSON response from the AI API.</param>
+        /// <returns>A parsed <see cref="AiStudyMaterialResult"/> object.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when response content is empty or cannot be parsed.</exception>
         private static AiStudyMaterialResult ParseChatResponse(string responseJson)
         {
             using var document = JsonDocument.Parse(responseJson);
@@ -108,6 +148,12 @@ namespace StudyMate.Wpf.Integrations.Ai
             return result;
         }
 
+        /// <summary>
+        /// Removes markdown code fence markers (```) from the content string.
+        /// Handles both generic code fences and language-specific fences like ```json.
+        /// </summary>
+        /// <param name="content">The content string potentially containing markdown fences.</param>
+        /// <returns>The cleaned content without markdown code fence markers.</returns>
         private static string RemoveMarkdownCodeFence(string content)
         {
             var cleaned = content.Trim();
@@ -129,6 +175,10 @@ namespace StudyMate.Wpf.Integrations.Ai
             return cleaned.Trim();
         }
 
+        /// <summary>
+        /// Validates that all required AI settings are properly configured.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown when any required setting is missing or invalid.</exception>
         private void ValidateSettings()
         {
             if (!Uri.TryCreate(_settings.BaseUrl, UriKind.Absolute, out _))
