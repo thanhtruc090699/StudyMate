@@ -9,15 +9,8 @@ using StudyMate.Wpf.Models.Ai;
 namespace StudyMate.Wpf.Integrations.Ai
 {
     /// <summary>
-    /// Client for integrating with the AI service to generate study materials from PDF documents.
-    /// Handles HTTP communication, request construction, and response parsing.
-    /// 
-    /// Request/Response Flow:
-    /// 1. Extract text from PDF using IPdfTextExtractor
-    /// 2. Build a chat completion request with system prompt and document content
-    /// 3. Send POST request to AI API with Bearer token authentication
-    /// 4. Parse JSON response containing name, summary, structured content, and quiz questions
-    /// 5. Return deserialized AiStudyMaterialResult object
+    /// Communicates with the configured AI service to generate structured
+    /// study material from PDF documents.
     /// </summary>
     public class AiClient : IAiClient
     {
@@ -56,16 +49,7 @@ namespace StudyMate.Wpf.Integrations.Ai
             _httpClient.Timeout = TimeSpan.FromMinutes(5);
         }
 
-        /// <summary>
-        /// Generates comprehensive study material from a PDF file asynchronously.
-        /// Extracts text from the PDF, sends it to the AI service, and parses the response
-        /// into structured learning material including summaries and quiz questions.
-        /// </summary>
-        /// <param name="filePath">The path to the PDF file relative to the uploads folder.</param>
-        /// <param name="cancellationToken">Token to cancel the operation.</param>
-        /// <returns>An <see cref="AiStudyMaterialResult"/> containing the generated study material.</returns>
-        /// <exception cref="HttpRequestException">Thrown when the AI service returns an error response.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the AI response cannot be parsed.</exception>
+        /// <inheritdoc />
         public async Task<AiStudyMaterialResult> GenerateStudyMaterialAsync(string filePath, CancellationToken cancellationToken = default)
         {
             // Build full path since FilePath in DB only stores filename
