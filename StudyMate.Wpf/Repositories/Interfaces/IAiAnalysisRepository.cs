@@ -1,7 +1,5 @@
 ﻿using StudyMate.Wpf.Models;
 
-using StudyMate.Wpf.Models;
-
 namespace StudyMate.Wpf.Repositories.Interfaces
 {
     /// <summary>
