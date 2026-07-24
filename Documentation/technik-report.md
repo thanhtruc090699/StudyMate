@@ -22,7 +22,58 @@
 
 ---
 
-## 2. Projektstruktur
+## 2. Architektur
+
+```
+┌─────────────────────────────────────────┐
+│           Präsentationsschicht          │
+│    MainWindow, Views (XAML + Code)      │
+│         FolderListView, FileListView,   │
+│         FileDetailView, Converters      │
+└─────────────────────────────────────────┘
+                    ↕ (Data Binding)
+┌─────────────────────────────────────────┐
+│          ViewModel-Schicht              │
+│   MainViewModel, FolderListViewModel,   │
+│   FileListViewModel, FileDetailViewModel│
+│   QuizQuestionViewModel,                │
+│   QuizOptionViewModel                   │
+└─────────────────────────────────────────┘
+                    ↕ (Dependency Injection)
+┌─────────────────────────────────────────┐
+│            Service-Schicht              │
+│   IStudyFolderService, StudyFolderService│
+│   IStudyFileService, StudyFileService   │
+│   IFileStorageService, FileStorageService│
+│   IAiAnalysisService, AiAnalysisService │
+└─────────────────────────────────────────┘
+                    ↕
+┌─────────────────────────────────────────┐
+│         Repository-Schicht              │
+│   IStudyFolderRepository,               │
+│   StudyFolderRepository                 │
+│   IStudyFileRepository, StudyFileRepository│
+│   IAiAnalysisRepository,                │
+│   AiAnalysisRepository                  │
+└─────────────────────────────────────────┘
+                    ↕ (Entity Framework Core)
+┌─────────────────────────────────────────┐
+│          Datenzugriffsschicht           │
+│        AppDbContext, Migrationen        │
+│        SQLite-Datenbank                 │
+└─────────────────────────────────────────┘
+                    ↕
+┌─────────────────────────────────────────┐
+│         Externe Integrationen           │
+│   IAiClient, AiClient (HTTP Client)     │
+│   IPdfTextExtractor, PdfTextExtractor   │
+│   Lisa Chat API                         │
+└─────────────────────────────────────────┘
+```
+
+---
+
+## 3. Projektstruktur
 
 | Ordner / Bereich | Aufgabe |
 |------------------|---------|
@@ -41,7 +92,7 @@
 
 ---
 
-## 3. Verarbeitung mit Lisa API
+## 4. Verarbeitung mit Lisa API
 
 | Schritt | Beschreibung |
 |---------|--------------|
@@ -57,7 +108,7 @@
 
 ---
 
-## 4. Datenbankstruktur
+## 5. Datenbankstruktur
 
 Die Anwendung verwendet eine lokale SQLite-Datenbank mit Entity Framework Core.
 
