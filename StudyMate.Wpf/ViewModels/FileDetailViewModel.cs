@@ -13,8 +13,7 @@ using StudyMate.Wpf.Services.Interfaces;
 namespace StudyMate.Wpf.ViewModels;
 
 /// <summary>
-/// ViewModel responsible for displaying detailed analysis of a selected study file.
-/// Manages summary display, key points extracted from AI analysis, and interactive quiz functionality.
+/// ViewModel for displaying file analysis - summary, key points, and interactive quiz.
 /// Automatically generates or retrieves AI analysis when a file is selected.
 /// </summary>
 public class FileDetailViewModel : ViewModelBase
@@ -28,9 +27,6 @@ public class FileDetailViewModel : ViewModelBase
     private int _currentQuestionIndex;
     private string? _errorMessage;
 
-    /// <summary>
-    /// Gets or sets the error message to display when analysis generation fails.
-    /// </summary>
     public string? ErrorMessage
     {
         get => _errorMessage;
@@ -41,10 +37,6 @@ public class FileDetailViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Initializes a new instance of the FileDetailViewModel class.
-    /// </summary>
-    /// <param name="aiAnalysisService">Service for retrieving and generating AI analysis.</param>
     public FileDetailViewModel(IAiAnalysisService aiAnalysisService)
     {
         _aiAnalysisService = aiAnalysisService;
@@ -66,10 +58,6 @@ public class FileDetailViewModel : ViewModelBase
             CanCheckAnswer);
     }
 
-    /// <summary>
-    /// Gets or sets the currently selected study file. Setting this property triggers
-    /// asynchronous loading of AI analysis for the file. Resets the selected tab to 0.
-    /// </summary>
     public StudyFile? SelectedFile
     {
         get => _selectedFile;
@@ -92,9 +80,6 @@ public class FileDetailViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Gets or sets the AI-generated summary of the selected file.
-    /// </summary>
     public string Summary
     {
         get => _summary;
@@ -110,21 +95,10 @@ public class FileDetailViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Gets the collection of key points extracted from the AI analysis structured content.
-    /// Each item represents a section title with optional content.
-    /// </summary>
     public ObservableCollection<string> KeyPoints { get; }
 
-    /// <summary>
-    /// Gets the collection of quiz questions generated from the AI analysis.
-    /// </summary>
     public ObservableCollection<QuizQuestionViewModel> Questions { get; }
 
-    /// <summary>
-    /// Gets or sets the index of the currently selected tab (0 = Summary/Key Points, 1 = Quiz).
-    /// Changing the tab refreshes quiz command states.
-    /// </summary>
     public int SelectedTabIndex
     {
         get => _selectedTabIndex;
@@ -142,9 +116,6 @@ public class FileDetailViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether analysis is being loaded.
-    /// </summary>
     public bool IsLoading
     {
         get => _isLoading;
@@ -160,10 +131,6 @@ public class FileDetailViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Gets or sets the index of the currently displayed quiz question.
-    /// Updates CurrentQuestion and QuizProgressText properties when changed.
-    /// </summary>
     public int CurrentQuestionIndex
     {
         get => _currentQuestionIndex;
@@ -184,57 +151,26 @@ public class FileDetailViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Gets the currently displayed quiz question based on CurrentQuestionIndex.
-    /// Returns null if there are no questions.
-    /// </summary>
     public QuizQuestionViewModel? CurrentQuestion =>
         Questions.Count == 0
             ? null
             : Questions[CurrentQuestionIndex];
 
-    /// <summary>
-    /// Gets a text description of the current quiz progress (e.g., "Question 2 of 5").
-    /// Returns "No quiz available" if there are no questions.
-    /// </summary>
     public string QuizProgressText =>
         Questions.Count == 0
             ? "No quiz available"
             : $"Question {CurrentQuestionIndex + 1} of {Questions.Count}";
 
-    /// <summary>
-    /// Gets or sets a value indicating whether the user has submitted an answer for the current question.
-    /// Used to control navigation between questions.
-    /// </summary>
     public bool IsAnswerSubmitted { get; set; }
 
-    /// <summary>
-    /// Gets the command to close the current file and clear all displayed content.
-    /// </summary>
     public ICommand CloseCommand { get; }
 
-    /// <summary>
-    /// Gets the command to navigate to the previous quiz question.
-    /// Can execute only when on the Quiz tab and not at the first question.
-    /// </summary>
     public IRelayCommand PreviousQuestionCommand { get; }
 
-    /// <summary>
-    /// Gets the command to navigate to the next quiz question.
-    /// Can execute only when the current question is answered and not at the last question.
-    /// </summary>
     public IRelayCommand NextQuestionCommand { get; }
 
-    /// <summary>
-    /// Gets the command to check the selected answer for the current question.
-    /// Can execute only when on the Quiz tab, an option is selected, and the answer hasn't been submitted yet.
-    /// </summary>
     public IRelayCommand CheckAnswerCommand { get; }
 
-    /// <summary>
-    /// Closes the current file by clearing all displayed content including summary, key points, and questions.
-    /// Resets question index and answer submission state.
-    /// </summary>
     private void CloseFile()
     {
         SelectedFile = null;
@@ -247,10 +183,6 @@ public class FileDetailViewModel : ViewModelBase
         IsAnswerSubmitted = false;
     }
 
-    /// <summary>
-    /// Notifies all quiz-related commands to re-evaluate their CanExecute conditions.
-    /// Called when navigation or submission state changes.
-    /// </summary>
     private void RefreshQuizCommands()
     {
         CheckAnswerCommand.NotifyCanExecuteChanged();
@@ -258,11 +190,6 @@ public class FileDetailViewModel : ViewModelBase
         NextQuestionCommand.NotifyCanExecuteChanged();
     }
 
-    /// <summary>
-    /// Determines whether the check answer command can execute.
-    /// Requires being on the Quiz tab, having selected an option, and not having submitted yet.
-    /// </summary>
-    /// <returns>True if the command can execute; otherwise, false.</returns>
     private bool CanCheckAnswer()
     {
         return SelectedTabIndex == 1 
@@ -270,10 +197,6 @@ public class FileDetailViewModel : ViewModelBase
                && CurrentQuestion.IsSubmitted == false;
     }
 
-    /// <summary>
-    /// Submits the selected answer for the current question and updates option display states.
-    /// Marks the question as submitted and refreshes command states.
-    /// </summary>
     private void CheckAnswer()
     {
         if (CurrentQuestion?.SelectedOption is null)
@@ -292,20 +215,11 @@ public class FileDetailViewModel : ViewModelBase
         RefreshQuizCommands();
     }
 
-    /// <summary>
-    /// Determines whether navigation to the previous question is allowed.
-    /// Requires being on the Quiz tab and not being at the first question.
-    /// </summary>
-    /// <returns>True if navigation to the previous question is allowed; otherwise, false.</returns>
     private bool CanGoPrevious()
     {
         return SelectedTabIndex == 1 && CurrentQuestionIndex > 0;
     }
 
-    /// <summary>
-    /// Navigates to the previous question and resets its submission state.
-    /// Clears any previously selected options on the target question.
-    /// </summary>
     private void PreviousQuestion()
     {
         if (!CanGoPrevious())
@@ -332,11 +246,6 @@ public class FileDetailViewModel : ViewModelBase
         RefreshQuizCommands();
     }
 
-    /// <summary>
-    /// Determines whether navigation to the next question is allowed.
-    /// Requires being on the Quiz tab, having answered the current question, and not being at the last question.
-    /// </summary>
-    /// <returns>True if navigation to the next question is allowed; otherwise, false.</returns>
     private bool CanGoNext()
     {
         return SelectedTabIndex == 1 
@@ -344,10 +253,6 @@ public class FileDetailViewModel : ViewModelBase
                && CurrentQuestionIndex < Questions.Count - 1;
     }
 
-    /// <summary>
-    /// Navigates to the next question and resets its submission state.
-    /// Clears any previously selected options on the target question.
-    /// </summary>
     private void NextQuestion()
     {
         if (!CanGoNext())
@@ -375,12 +280,8 @@ public class FileDetailViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Loads or generates AI analysis for the specified study file.
-    /// Retrieves existing analysis if available and completed; otherwise triggers generation.
-    /// Updates IsLoading during the operation and captures exceptions to ErrorMessage.
+    /// Loads existing AI analysis or generates a new one if not available or not completed.
     /// </summary>
-    /// <param name="file">The study file to analyze.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
     private async Task LoadAnalysisAsync(StudyFile file)
     {
         if (file == null) return;
@@ -414,12 +315,6 @@ public class FileDetailViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Applies the AI analysis results to the ViewModel properties.
-    /// Populates Summary, KeyPoints, and Questions collections from the analysis data.
-    /// Resets quiz state to the first question.
-    /// </summary>
-    /// <param name="analysis">The AI analysis result to apply.</param>
     private void ApplyAnalysis(AiAnalysis analysis)
     {
         Summary = analysis.Summary;
@@ -435,12 +330,6 @@ public class FileDetailViewModel : ViewModelBase
         RefreshQuizCommands();
     }
 
-    /// <summary>
-    /// Parses the structured content JSON and populates the KeyPoints collection.
-    /// Each section's title and content (if present) are combined into a single key point.
-    /// Silently ignores parsing errors.
-    /// </summary>
-    /// <param name="structuredContentJson">JSON string containing structured content sections.</param>
     private void LoadStructuredContent(string? structuredContentJson)
     {
         KeyPoints.Clear();
@@ -475,12 +364,6 @@ public class FileDetailViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Parses the quiz JSON and populates the Questions collection with QuizQuestionViewModel instances.
-    /// Subscribes to property changes on each question to refresh command states when needed.
-    /// Silently ignores parsing errors.
-    /// </summary>
-    /// <param name="quizJson">JSON string containing quiz questions.</param>
     private void LoadQuiz(string? quizJson)
     {
         Questions.Clear();

@@ -1,31 +1,47 @@
 ﻿using StudyMate.Wpf.Models;
 
+using StudyMate.Wpf.Models;
+
 namespace StudyMate.Wpf.Repositories.Interfaces
 {
     /// <summary>
-    /// Defines methods for accessing and manipulating AI analysis data.
+    /// Defines data access operations for AI analysis records.
     /// </summary>
     public interface IAiAnalysisRepository
     {
         /// <summary>
-        /// Retrieves the most recent AI analysis for a specific study file.
+        /// Retrieves the most recently created AI analysis associated with
+        /// the specified study file.
         /// </summary>
-        /// <param name="studyFileId">The unique identifier of the study file.</param>
-        /// <returns>A task containing the latest AI analysis if found; otherwise, null.</returns>
+        /// <param name="studyFileId">
+        /// The identifier of the study file.
+        /// </param>
+        /// <returns>
+        /// The most recent AI analysis, or <see langword="null"/> when no
+        /// analysis exists for the study file.
+        /// </returns>
         Task<AiAnalysis?> GetLatestByStudyFileIdAsync(int studyFileId);
 
         /// <summary>
-        /// Adds a new AI analysis asynchronously.
+        /// Adds a new AI analysis record to the data store.
         /// </summary>
-        /// <param name="analysis">The AI analysis to add.</param>
-        /// <returns>A task containing the added AI analysis with generated properties populated.</returns>
+        /// <param name="analysis">
+        /// The AI analysis to add.
+        /// </param>
+        /// <returns>
+        /// The persisted AI analysis record.
+        /// </returns>
         Task<AiAnalysis> AddAsync(AiAnalysis analysis);
 
         /// <summary>
-        /// Updates an existing AI analysis asynchronously.
+        /// Persists changes made to an existing AI analysis record.
         /// </summary>
-        /// <param name="analysis">The AI analysis with updated values.</param>
-        /// <returns>A task representing the asynchronous update operation.</returns>
+        /// <param name="analysis">
+        /// The AI analysis containing the updated values.
+        /// </param>
+        /// <returns>
+        /// A task representing the asynchronous update operation.
+        /// </returns>
         Task UpdateAsync(AiAnalysis analysis);
     }
 }

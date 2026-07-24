@@ -5,37 +5,23 @@ using StudyMate.Wpf.Repositories.Interfaces;
 
 namespace StudyMate.Wpf.Repositories
 {
-    /// <summary>
-    /// Repository for managing study file data operations.
-    /// </summary>
+    /// <inheritdoc />
     public class StudyFileRepository : IStudyFileRepository
     {
         private readonly AppDbContext _dbContext;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StudyFileRepository"/> class.
-        /// </summary>
-        /// <param name="dbContext">The database context for data access.</param>
         public StudyFileRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        /// <summary>
-        /// Retrieves a study file by its unique identifier.
-        /// </summary>
-        /// <param name="id">The unique identifier of the study file.</param>
-        /// <returns>The study file if found; otherwise, null.</returns>
+        /// <inheritdoc />
         public async Task<StudyFile?> GetStudyFileAsync(int id)
         {
             return await _dbContext.StudyFiles.FindAsync(id);
         }
 
-        /// <summary>
-        /// Retrieves all study files associated with a specific folder.
-        /// </summary>
-        /// <param name="folderId">The folder identifier to filter by.</param>
-        /// <returns>A list of study files belonging to the specified folder.</returns>
+        /// <inheritdoc />
         public async Task<List<StudyFile>> GetByFolderIdAsync(int folderId)
         {
             return await _dbContext.StudyFiles
@@ -43,12 +29,7 @@ namespace StudyMate.Wpf.Repositories
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Adds a new study file to the database.
-        /// </summary>
-        /// <param name="studyFile">The study file to add.</param>
-        /// <returns>The added study file with generated properties populated.</returns>
-        /// <exception cref="Exception">Thrown when database operation fails.</exception>
+        /// <inheritdoc />
         public async Task<StudyFile> AddAsync(StudyFile studyFile)
         {
             try
@@ -63,11 +44,7 @@ namespace StudyMate.Wpf.Repositories
             }
         }
 
-        /// <summary>
-        /// Deletes a study file by its unique identifier.
-        /// </summary>
-        /// <param name="id">The unique identifier of the study file to delete.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <inheritdoc />
         public async Task DeleteAsync(int id)
         {
             var file = await _dbContext.StudyFiles.FindAsync(id);
