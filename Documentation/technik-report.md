@@ -59,17 +59,53 @@
 
 ## 4. Datenbankstruktur
 
-| Tabelle | Inhalt |
-|---------|--------|
-| StudyFolders | Speichert Lernordner und deren Namen. |
-| StudyFiles | Speichert Metadaten zu hochgeladenen PDF-Dateien (Dateiname, Größe, Upload-Datum). |
-| AiAnalyses | Speichert Zusammenfassungen, Quizfragen und den Status der KI-Analyse. |
+Die Anwendung verwendet eine lokale SQLite-Datenbank mit Entity Framework Core.
 
-**Beziehungen:**
+### Tabelle: StudyFolder
 
-- Ein `StudyFolder` kann mehrere `StudyFiles` enthalten.
-- Eine `StudyFile` kann mehrere `AiAnalyses` besitzen.
-- Die eigentlichen PDF-Dateien werden lokal im Anwendungsordner gespeichert (`%LOCALAPPDATA%\StudyMate\uploads\`).
+| Feld | Bedeutung |
+|------|-----------|
+| Id | Eindeutige Identifikation des Ordners |
+| Name | Name des Lernordners |
+| CreatedAt | Zeitpunkt der Erstellung |
+| UpdatedAt | Zeitpunkt der letzten Änderung |
+
+### Tabelle: StudyFile
+
+| Feld | Bedeutung |
+|------|-----------|
+| Id | Eindeutige Identifikation der Datei |
+| FolderId | Verknüpfung mit dem zugehörigen Lernordner |
+| OriginalFileName | Ursprünglicher Name der PDF-Datei |
+| StoredFileName | Eindeutiger interner Dateiname |
+| FilePath | Speicherinformation der Datei |
+| FileSizeBytes | Größe der Datei |
+| UploadedAt | Zeitpunkt des Uploads |
+
+### Tabelle: AiAnalysis
+
+| Feld | Bedeutung |
+|------|-----------|
+| Id | Eindeutige Identifikation der Analyse |
+| StudyFileId | Verknüpfung mit der analysierten PDF-Datei |
+| Name | Titel des analysierten Lernmaterials |
+| Summary | Von Lisa erzeugte Zusammenfassung |
+| StructuredContentJson | Strukturierte Lerninhalte im JSON-Format |
+| QuizJson | Quizfragen und Antworten im JSON-Format |
+| Status | Status der Verarbeitung |
+| ErrorMessage | Fehlermeldung bei einer fehlgeschlagenen Analyse |
+| ModelName | Verwendetes KI-Modell |
+
+### Beziehungen
+
+```
+StudyFolder 1 ─── n StudyFile
+StudyFile   1 ─── n AiAnalysis
+```
+
+- Ein Lernordner kann mehrere PDF-Dateien enthalten.
+- Eine PDF-Datei kann mehrere Analyseergebnisse besitzen.
+- Die PDF-Dateien werden lokal gespeichert (`%LOCALAPPDATA%\StudyMate\uploads\`); ihre Metadaten werden in SQLite verwaltet.
 
 **Speicherort der Datenbank:** `%LOCALAPPDATA%\StudyMate\studymate.db`  
 **Quelle:** `Data/AppDbContext.cs`, `README.md`
