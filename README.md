@@ -112,14 +112,6 @@ C:\Users\<username>\AppData\Local\StudyMate\uploads\
 - The application automatically creates the uploads folder in AppData when running
 - Upload files are NOT committed to git (already in `.gitignore`)
 
-## Debug Logging
-
-All debug logging has been removed from production build.
-
-If debugging is needed, the application may temporarily log to:
-- `C:\Users\<username>\AppData\Local\Temp\ai_debug.log` (when AI errors occur)
-- `C:\Users\<username>\AppData\Local\Temp\quiz.log` (during quiz operations)
-
 ## Common Errors
 
 ### 1. "AI BaseUrl is invalid"
