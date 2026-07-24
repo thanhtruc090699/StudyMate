@@ -1,242 +1,328 @@
 # Technik-Report: StudyMate
 
-**Datum:** 24. Juli 2026  
-**Projekt:** StudyMate - AI-powered Study Assistant  
-**Autor:** Truc Trinh  
+**Projekt:** StudyMate – AI-powered Study Assistant  
+**Datum der Analyse:** 24. Juli 2026  
+**Repository:** https://github.com/NET-2026/thi-thanh-truc-trinh.git  
 
 ---
 
-## 1. Externe Bibliotheken und Frameworks (NuGet Packages)
+## 1. Projektübersicht
 
-### Übersicht aller NuGet-Pakete
+StudyMate ist eine WPF-Desktopanwendung zur Unterstützung beim Lernen mit KI-gestützter Analyse von PDF-Lernmaterialien. Die Anwendung ermöglicht:
 
-| Paket | Version | Projekt | Lizenz |
-|-------|---------|---------|--------|
-| CommunityToolkit.Mvvm | 8.4.2 | StudyMate.Wpf | MIT License |
-| DotNetEnv | 3.1.1 | StudyMate.Wpf | MIT License |
-| Microsoft.EntityFrameworkCore | 10.0.8 | StudyMate.Wpf | MIT License |
-| Microsoft.EntityFrameworkCore.Design | 10.0.8 | StudyMate.Wpf | MIT License |
-| Microsoft.EntityFrameworkCore.Sqlite | 10.0.8 | StudyMate.Wpf | MIT License |
-| Microsoft.EntityFrameworkCore.Tools | 10.0.8 | StudyMate.Wpf | MIT License |
-| Microsoft.Extensions.DependencyInjection | 10.0.8 | StudyMate.Wpf | MIT License |
-| Microsoft.Extensions.Http | 10.0.8 | StudyMate.Wpf | MIT License |
-| PdfPig | 0.1.8 | StudyMate.Wpf | Apache License 2.0 |
+- Verwaltung von Lernordnern und PDF-Dateien
+- Automatische Extraktion von Text aus PDF-Dokumenten
+- KI-gestützte Generierung von Zusammenfassungen, Wissensstrukturen und Multiple-Choice-Fragen
+- Anzeige und Bearbeitung der analysierten Inhalte in einer modernen Benutzeroberfläche
+
+**Verwendete Programmiersprachen:** C#, XAML  
+**Architekturmuster:** MVVM (Model-View-ViewModel), Repository Pattern, Service Layer, Dependency Injection
+
+---
+
+## 2. Technische Plattform
+
+### Laufzeitumgebung
+
+| Merkmal | Wert | Quelle |
+|---------|------|--------|
+| Target Framework | .NET 10.0 Windows | `StudyMate.Wpf.csproj`, Zeile 5 |
+| Typ des Projekts | Windows-Desktopanwendung (WinExe) | `StudyMate.Wpf.csproj`, Zeile 4 |
+| UI-Framework | WPF (Windows Presentation Foundation) | `StudyMate.Wpf.csproj`, Zeile 8 |
+| Nullable Reference Types | Aktiviert | `StudyMate.Wpf.csproj`, Zeile 6 |
+| Implicit Usings | Aktiviert | `StudyMate.Wpf.csproj`, Zeile 7 |
+
+### Systemvoraussetzungen laut Dokumentation
+
+- **Betriebssystem:** Windows 10/11
+- **.NET SDK:** Version 10.0 oder später
+- **IDE:** Visual Studio 2022 (empfohlen) oder VS Code mit C# Extension
+- **SQLite:** Für Datenbankbetrachtung (nicht zwingend für Ausführung erforderlich)
+
+**Hinweis:** Die README.md nennt "Visual Studio 2022" als Empfehlung. Eine spezifische Anforderung an Visual Studio 2026 kann aus dem Repository nicht verifiziert werden.
+
+---
+
+## 3. Architektur
+
+### Schichtenarchitektur
+
+Die Anwendung folgt einer mehrschichtigen Architektur mit klarer Trennung der Verantwortlichkeiten:
+
+```
+┌─────────────────────────────────────────┐
+│           Präsentationsschicht          │
+│    MainWindow, Views (XAML + Code)      │
+│         FolderListView, FileListView,   │
+│         FileDetailView, Converters      │
+└─────────────────────────────────────────┘
+                    ↕ (Data Binding)
+┌─────────────────────────────────────────┐
+│          ViewModel-Schicht              │
+│   MainViewModel, FolderListViewModel,   │
+│   FileListViewModel, FileDetailViewModel│
+│   QuizQuestionViewModel,                │
+│   QuizOptionViewModel                   │
+└─────────────────────────────────────────┘
+                    ↕ (Dependency Injection)
+┌─────────────────────────────────────────┐
+│            Service-Schicht              │
+│   IStudyFolderService, StudyFolderService│
+│   IStudyFileService, StudyFileService   │
+│   IFileStorageService, FileStorageService│
+│   IAiAnalysisService, AiAnalysisService │
+└─────────────────────────────────────────┘
+                    ↕
+┌─────────────────────────────────────────┐
+│         Repository-Schicht              │
+│   IStudyFolderRepository,               │
+│   StudyFolderRepository                 │
+│   IStudyFileRepository, StudyFileRepository│
+│   IAiAnalysisRepository,                │
+│   AiAnalysisRepository                  │
+└─────────────────────────────────────────┘
+                    ↕ (Entity Framework Core)
+┌─────────────────────────────────────────┐
+│          Datenzugriffsschicht           │
+│        AppDbContext, Migrationen        │
+│        SQLite-Datenbank                 │
+└─────────────────────────────────────────┘
+                    ↕
+┌─────────────────────────────────────────┐
+│         Externe Integrationen           │
+│   IAiClient, AiClient (HTTP Client)     │
+│   IPdfTextExtractor, PdfTextExtractor   │
+│   Lisa Chat API                         │
+└─────────────────────────────────────────┘
+```
+
+### Komponenten im Detail
+
+#### Modelle (Domain Entities)
+
+- **StudyFolder.cs** – Repräsentiert einen Lernordner mit Eigenschaften: Id, Name, CreatedAt, UpdatedAt
+- **StudyFile.cs** – Repräsentiert eine PDF-Datei mit Metadaten: Id, FolderId, OriginalFileName, StoredFileName, FilePath, FileExtension, ContentType, FileSizeBytes, UploadedAt, CreatedAt, UpdatedAt
+- **AiAnalysis.cs** – Speichert KI-Analyseergebnisse: Id, StudyFileId, Name, Summary, StructuredContentJson, QuizJson, Status, ErrorMessage, ModelName, CreatedAt, UpdatedAt
+
+#### AI-spezifische Modelle
+
+- **AiStudyMaterialResult.cs** – DTO für KI-Antwortstruktur (Name, Summary, StructuredContent, QuizQuestions)
+- **StructuredContent.cs** – Strukturierte Lerninhalte mit Topics und Subtopics
+- **QuizQuestion.cs** – Multiple-Choice-Fragen mit Optionen und Erklärungen
+- **AiSettings.cs** – Konfiguration für KI-API (BaseUrl, AnalysisEndpoint, ApiKey, ModelName)
+
+#### ViewModels (MVVM mit CommunityToolkit.Mvvm)
+
+- **ViewModelBase.cs** – Basis-Klasse mit INotifyPropertyChanged
+- **MainViewModel.cs** – Root-ViewModel, koordiniert untergeordnete ViewModels
+- **FolderListViewModel.cs** – Ordnerverwaltung mit CRUD-Operationen
+- **FileListViewModel.cs** – Dateiverwaltung mit Upload, Delete, Update
+- **FileDetailViewModel.cs** – Detailansicht mit Tabs für Summary und Quiz
+- **QuizQuestionViewModel.cs**, **QuizOptionViewModel.cs** – Quiz-spezifische Logik
+
+#### Services (Geschäftslogik)
+
+- **StudyFolderService.cs** – Orchestriert Ordneroperationen
+- **StudyFileService.cs** – Orchestriert Dateioperationen
+- **FileStorageService.cs** – Verwaltet physische Dateispeicherung
+- **AiAnalysisService.cs** – Koordiniert KI-Analyseprozess
+
+#### Repositories (Datenzugriff)
+
+- **StudyFolderRepository.cs** – Datenzugriff für StudyFolder-Entitäten
+- **StudyFileRepository.cs** – Datenzugriff für StudyFile-Entitäten
+- **AiAnalysisRepository.cs** – Datenzugriff für AiAnalysis-Entitäten
+
+#### Views (XAML-basierte Oberflächen)
+
+- **MainWindow.xaml** – Hauptfenster mit dreispaltigem Layout
+- **FolderListView.xaml** – Benutzeroberfläche für Ordnerliste
+- **FileListView.xaml** – Benutzeroberfläche für Dateiliste
+- **FileDetailView.xaml** – Detailansicht mit Summary und Quiz-Tabs
+
+#### Converters (WPF Value Converter)
+
+- **Converters.cs** – Implementiert:
+  - NullToVisibilityConverter
+  - CountToVisibilityConverter
+  - BoolToVisibilityConverter
+  - ResultTextConverter
+  - InvertedBoolConverter
+
+---
+
+## 4. Externe Bibliotheken und NuGet-Pakete
+
+Alle externen Bibliotheken werden über die `.csproj`-Datei verwaltet. Nachfolgend die vollständige Liste aller referenzierten Pakete mit versionierter Angabe:
+
+### Übersichtstabelle
+
+| Paketname | Version | Projekt | Zweck | Lizenz |
+|-----------|---------|---------|-------|--------|
+| CommunityToolkit.Mvvm | 8.4.2 | StudyMate.Wpf | MVVM-Framework | Lizenz muss separat überprüft werden |
+| DotNetEnv | 3.1.1 | StudyMate.Wpf | Laden von .env-Dateien | Lizenz muss separat überprüft werden |
+| Microsoft.EntityFrameworkCore | 10.0.8 | StudyMate.Wpf | ORM-Framework | Lizenz muss separat überprüft werden |
+| Microsoft.EntityFrameworkCore.Design | 10.0.8 | StudyMate.Wpf | Design-Time-Tools für EF | Lizenz muss separat überprüft werden |
+| Microsoft.EntityFrameworkCore.Sqlite | 10.0.8 | StudyMate.Wpf | SQLite Database Provider | Lizenz muss separat überprüft werden |
+| Microsoft.EntityFrameworkCore.Tools | 10.0.8 | StudyMate.Wpf | CLI/PowerShell-Tools für EF | Lizenz muss separat überprüft werden |
+| Microsoft.Extensions.DependencyInjection | 10.0.8 | StudyMate.Wpf | Dependency Injection Container | Lizenz muss separat überprüft werden |
+| Microsoft.Extensions.Http | 10.0.8 | StudyMate.Wpf | Typed HttpClient Factory | Lizenz muss separat überprüft werden |
+| PdfPig | 0.1.8 | StudyMate.Wpf | PDF-Textextraktion | Lizenz muss separat überprüft werden |
+
+**Quellen:** `StudyMate.Wpf/StudyMate.Wpf.csproj`, Zeilen 17–31
 
 ### Detaillierte Beschreibung der Pakete
 
-#### 1.1 CommunityToolkit.Mvvm (Version 8.4.2)
-- **Projekt:** StudyMate.Wpf
-- **Zweck:** MVVM-Framework für .NET, bereitgestellt von Microsoft Community Toolkit
+#### 4.1 CommunityToolkit.Mvvm (Version 8.4.2)
+
+- **Zweck:** MVVM-Framework für .NET-Anwendungen, bereitgestellt vom Microsoft Community Toolkit
 - **Verwendung im Projekt:**
-  - `ObservableObject` als Basisklasse für ViewModels
-  - `[ObservableProperty]` Attribut für automatische Property-Benachrichtigungen
-  - `[RelayCommand]` Attribut für Command-Implementierungen
-  - Partial Methods für Property-Changed-Handler
-- **Beispiel-Dateien/Klassen:**
+  - Basisklasse `ObservableObject` für alle ViewModels
+  - Attribut `[ObservableProperty]` zur automatischen Generierung von Property-Benachrichtigungen
+  - Attribut `[RelayCommand]` zur Generierung von ICommand-Implementierungen
+  - Nutzung von Partial Methods für `OnPropertyChanged`-Handler
+- **Repräsentative Verwendungsorte:**
   - `MainViewModel.cs` (Zeile 5): `public partial class MainViewModel : ObservableObject`
-  - `FileListViewModel.cs` (Zeile 18-22): `[ObservableProperty] private ObservableCollection<StudyFile> files = new();`
+  - `FileListViewModel.cs` (Zeile 18–22): `[ObservableProperty] private ObservableCollection<StudyFile> files = new();`
   - `FolderListViewModel.cs` (Zeile 89): `[RelayCommand] private async Task CreateFolderAsync()`
-  - `QuizQuestionViewModel.cs` (Zeile 4): Verwendung von `CommunityToolkit.Mvvm.Input`
-- **Lizenz:** MIT License
+  - `QuizQuestionViewModel.cs` (Namespace `CommunityToolkit.Mvvm.Input`)
 
-#### 1.2 DotNetEnv (Version 3.1.1)
-- **Projekt:** StudyMate.Wpf
-- **Zweck:** Bibliothek zum Laden von .env-Dateien in .NET-Anwendungen
+#### 4.2 DotNetEnv (Version 3.1.1)
+
+- **Zweck:** Bibliothek zum Laden von Umgebungsvariablen aus `.env`-Dateien in .NET-Anwendungen
 - **Verwendung im Projekt:**
-  - Laden der API-Konfiguration aus `.env`-Datei beim Anwendungsstart
-  - Umgebungsvariablen für AI-API-Zugriff (BaseUrl, Endpoint, ApiKey, Model)
-- **Beispiel-Dateien/Klassen:**
+  - Laden der KI-API-Konfiguration beim Anwendungsstart
+  - Bereitstellung von Umgebungsvariablen für `AiBaseUrl`, `AiEndpoint`, `ApiKey`, `AiModel`
+- **Repräsentative Verwendungsorte:**
   - `App.xaml.cs` (Zeile 101): `DotNetEnv.Env.Load();`
-  - `App.xaml.cs` (Zeile 103-108): Auslesen der Environment-Variablen für AiSettings
-- **Lizenz:** MIT License
+  - `App.xaml.cs` (Zeile 103–108): Auslesen der Environment-Variablen für `AiSettings`
 
-#### 1.3 Microsoft.EntityFrameworkCore (Version 10.0.8)
-- **Projekt:** StudyMate.Wpf
+#### 4.3 Microsoft.EntityFrameworkCore (Version 10.0.8)
+
 - **Zweck:** Object-Relational Mapping (ORM) Framework für .NET
 - **Verwendung im Projekt:**
-  - Code-First Ansatz für Datenbankmodellierung
-  - LINQ-Abfragen für Datenzugriff
-  - Migrationen für Datenbank-Schema-Management
-  - DbContext für Unit-of-Work Pattern
-- **Beispiel-Dateien/Klassen:**
-  - `AppDbContext.cs` (Zeile 1-67): Zentrale DbContext-Klasse mit allen Entitäten
-  - `StudyFileRepository.cs` (Zeile 19-23): `await _dbContext.StudyFiles.Where(f => f.FolderId == folderId).ToListAsync()`
-  - `StudyFolderRepository.cs` (Zeile 19-21): `await _dbContext.StudyFolders.OrderByDescending(x => x.CreatedAt).ToListAsync()`
-  - `AiAnalysisRepository.cs` (Zeile 19-23): Komplexe Abfrage mit Where und OrderByDescending
-- **Lizenz:** MIT License
+  - Code-First-Ansatz für Datenbankmodellierung
+  - LINQ-basierte Abfragen für Datenzugriffe
+  - Definition von Entitätsklassen und Beziehungen
+  - Unit-of-Work Pattern via DbContext
+- **Repräsentative Verwendungsorte:**
+  - `AppDbContext.cs` (Zeile 1–67): Zentrale DbContext-Klasse mit `DbSet<T>`-Properties und Fluent API in `OnModelCreating()`
+  - `StudyFileRepository.cs` (Zeile 19–23): `await _dbContext.StudyFiles.Where(f => f.FolderId == folderId).ToListAsync()`
+  - `StudyFolderRepository.cs` (Zeile 19–21): `await _dbContext.StudyFolders.OrderByDescending(x => x.CreatedAt).ToListAsync()`
+  - `AiAnalysisRepository.cs` (Zeile 19–23): Komplexe Abfrage mit Where und OrderByDescending
 
-#### 1.4 Microsoft.EntityFrameworkCore.Design (Version 10.0.8)
-- **Projekt:** StudyMate.Wpf
+#### 4.4 Microsoft.EntityFrameworkCore.Design (Version 10.0.8)
+
 - **Zweck:** Design-Time-Unterstützung für Entity Framework Core Tools
 - **Verwendung im Projekt:**
-  - Ermöglicht EF Core CLI-Tools für Migrationen
-  - Wird nur zur Entwicklungszeit verwendet (PrivateAssets=all)
-- **Beispiel-Dateien/Klassen:**
-  - `20260713142448_InitialCreate.cs`: Automatisch generierte Migration
-  - `AppDbContextModelSnapshot.cs`: Momentaufnahme des Datenbankmodells
-- **Lizenz:** MIT License
+  - Ermöglicht EF Core CLI- und PowerShell-Tools für Migrationen
+  - Wird ausschließlich zur Entwicklungszeit verwendet (`<PrivateAssets>all</PrivateAssets>`)
+- **Repräsentative Dateien:**
+  - Migrationsverzeichnis enthält automatisch generierte Dateien durch diese Tools
 
-#### 1.5 Microsoft.EntityFrameworkCore.Sqlite (Version 10.0.8)
-- **Projekt:** StudyMate.Wpf
+#### 4.5 Microsoft.EntityFrameworkCore.Sqlite (Version 10.0.8)
+
 - **Zweck:** SQLite Database Provider für Entity Framework Core
 - **Verwendung im Projekt:**
-  - Lokale SQLite-Datenbank für persistente Datenspeicherung
-  - Dateibasierte Datenbank ohne Server-Infrastruktur
-- **Beispiel-Dateien/Klassen:**
-  - `App.xaml.cs` (Zeile 72-74): `options.UseSqlite($"Data Source={dbPath}")`
-  - Speicherort: `C:\Users\<username>\AppData\Local\StudyMate\studymate.db`
-- **Lizenz:** MIT License
+  - Lokale, dateibasierte SQLite-Datenbank ohne Server-Infrastruktur
+  - Persistente Speicherung von Ordnern, Dateien und Analyseergebnissen
+- **Konfiguration:**
+  - `App.xaml.cs` (Zeile 72–74): `options.UseSqlite($"Data Source={dbPath}")`
+  - Speicherort: `C:\Users\<Benutzername>\AppData\Local\StudyMate\studymate.db`
 
-#### 1.6 Microsoft.EntityFrameworkCore.Tools (Version 10.0.8)
-- **Projekt:** StudyMate.Wpf
-- **Zweck:** PowerShell- und CLI-Tools für Entity Framework Core
-- **Verwendung im Projekt:**
-  - Migration erstellen und verwalten
-  - Datenbank-Schema aktualisieren
-  - Wird nur zur Entwicklungszeit verwendet (PrivateAssets=all)
-- **Beispiel-Dateien/Klassen:**
-  - Verwendung über dotnet CLI: `dotnet ef migrations add InitialCreate`
-- **Lizenz:** MIT License
+#### 4.6 Microsoft.EntityFrameworkCore.Tools (Version 10.0.8)
 
-#### 1.7 Microsoft.Extensions.DependencyInjection (Version 10.0.8)
-- **Projekt:** StudyMate.Wpf
-- **Zweck:** Dependency Injection Container für .NET
+- **Zweck:** PowerShell- und .NET CLI-Tools für Entity Framework Core
 - **Verwendung im Projekt:**
-  - Inversion of Control (IoC) Container für alle Services, Repositories, ViewModels
-  - Lebenszeitverwaltung (Singleton, Scoped, Transient)
-  - Constructor Injection Pattern
-- **Beispiel-Dateien/Klassen:**
-  - `App.xaml.cs` (Zeile 68-115): ConfigureServices-Methode mit vollständiger DI-Konfiguration
-  - Repository-Registrierung (Zeile 77-79): `services.AddScoped<IStudyFolderRepository, StudyFolderRepository>()`
-  - Service-Registrierung (Zeile 82-84): `services.AddScoped<IStudyFileService, StudyFileService>()`
-  - ViewModel-Registrierung (Zeile 87-90): `services.AddSingleton<MainViewModel>()`
-- **Lizenz:** MIT License
+  - Erstellen von Migrationen: `dotnet ef migrations add <Name>`
+  - Anwenden von Migrationen: `dotnet ef database update`
+  - Verwaltung des Datenbank-Schemas
+- **Hinweis:** Wird nur zur Entwicklungszeit verwendet (`<PrivateAssets>all</PrivateAssets>`)
 
-#### 1.8 Microsoft.Extensions.Http (Version 10.0.8)
-- **Projekt:** StudyMate.Wpf
-- **Zweck:** HttpClient-Factory für typisierte Http-Clients
+#### 4.7 Microsoft.Extensions.DependencyInjection (Version 10.0.8)
+
+- **Zweck:** Dependency Injection (IoC) Container für .NET-Anwendungen
 - **Verwendung im Projekt:**
-  - Typisierter HttpClient für AI-API-Kommunikation
+  - Registrierung aller Services, Repositories, ViewModels und Views
+  - Verwaltung von Lebenszyklen (Singleton, Scoped, Transient)
+  - Constructor Injection Pattern in allen Komponenten
+- **Repräsentative Verwendungsorte:**
+  - `App.xaml.cs` (Zeile 68–115): `ConfigureServices(IServiceCollection services)`-Methode
+  - Repository-Registrierung (Zeile 77–79): `services.AddScoped<IStudyFolderRepository, StudyFolderRepository>()`
+  - Service-Registrierung (Zeile 82–84): `services.AddScoped<IStudyFileService, StudyFileService>()`
+  - ViewModel-Registrierung (Zeile 87–90): `services.AddSingleton<MainViewModel>()`
+
+#### 4.8 Microsoft.Extensions.Http (Version 10.0.8)
+
+- **Zweck:** HttpClient-Factory für typisierte HTTP-Clients
+- **Verwendung im Projekt:**
+  - Typisierter HttpClient für Kommunikation mit der Lisa Chat API
   - Automatische Lebenszeitverwaltung des HttpClient
-  - Integration mit DI-Container
-- **Beispiel-Dateien/Klassen:**
+  - Integration mit Dependency Injection Container
+- **Repräsentative Verwendungsorte:**
   - `App.xaml.cs` (Zeile 114): `services.AddHttpClient<IAiClient, AiClient>()`
-  - `AiClient.cs` (Zeile 11-154): Implementierung des typisierten Clients mit HttpClient-Injected
-- **Lizenz:** MIT License
+  - `AiClient.cs` (Zeile 11–154): Implementierung des injizierten `HttpClient`
 
-#### 1.9 PdfPig (Version 0.1.8)
-- **Projekt:** StudyMate.Wpf
-- **Zweck:** PDF-Bibliothek zum Extrahieren von Text aus PDF-Dokumenten
+#### 4.9 PdfPig (Version 0.1.8)
+
+- **Zweck:** Open-Source-Bibliothek zur Extraktion von Text und Metadaten aus PDF-Dokumenten
+- **Namespace im Projekt:** `UglyToad.PdfPig`
 - **Verwendung im Projekt:**
-  - Textextraktion aus hochgeladenen PDF-Lernmaterialien
-  - Vorverarbeitung vor AI-Analyse
-  - Namespace: `UglyToad.PdfPig`
-- **Beispiel-Dateien/Klassen:**
+  - Textextraktion aus hochgeladenen PDF-Lernmaterialien vor der KI-Analyse
+  - Implementierung des `IPdfTextExtractor`-Interface
+- **Repräsentative Verwendungsorte:**
   - `PdfTextExtractor.cs` (Zeile 3): `using UglyToad.PdfPig;`
-  - `PdfTextExtractor.cs` (Zeile 17-20): `using (var document = PdfDocument.Open(filePath)) { foreach (var page in document.GetPages()) { textBuilder.AppendLine(page.Text); } }`
-  - `AiClient.cs` (Zeile 44-46): Aufruf von `_pdfTextExtractor.ExtractTextAsync(fullPath, cancellationToken)`
-- **Lizenz:** Apache License 2.0
+  - `PdfTextExtractor.cs` (Zeile 17–20): `using (var document = PdfDocument.Open(filePath)) { foreach (var page in document.GetPages()) { textBuilder.AppendLine(page.Text); } }`
+  - `AiClient.cs` (Zeile 44–46): Aufruf von `_pdfTextExtractor.ExtractTextAsync(fullPath, cancellationToken)`
 
 ---
 
-## 2. Frameworks und Plattformen
-
-### .NET Version
-- **Framework:** .NET 10.0
-- **Target Framework Moniker:** `net10.0-windows`
-- **Quelle:** `StudyMate.Wpf.csproj` (Zeile 5)
-
-### WPF (Windows Presentation Foundation)
-- **Plattform:** Windows-spezifische Desktop-UI-Framework
-- **Aktivierung:** `<UseWPF>true</UseWPF>` in StudyMate.Wpf.csproj (Zeile 8)
-- **Verwendung:**
-  - XAML-basierte Benutzeroberflächen
-  - Data Binding zwischen Views und ViewModels
-  - Commands für Benutzerinteraktionen
-  - Custom Value Converters für UI-Logik
-- **Beispiel-Dateien:**
-  - `MainWindow.xaml`: Hauptfenster mit dreispaltigem Layout
-  - `FileListView.xaml`, `FolderListView.xaml`, `FileDetailView.xaml`: UserControls
-  - `Converters.cs`: Implementiert `IValueConverter` und `IMultiValueConverter`
-
-### Entity Framework Core (Code First Ansatz)
-- **Version:** 10.0.8
-- **Ansatz:** Code First Migrations
-- **Datenbankprovider:** SQLite
-- **Merkmale:**
-  - Modelldefinition durch C#-Klassen (POCOs)
-  - Fluent API in `OnModelCreating()` für Constraints und Beziehungen
-  - Automatische Migrationserstellung und -ausführung
-  - DbContext stellt Unit-of-Work Pattern bereit
-- **Beispiel-Dateien:**
-  - `AppDbContext.cs`: Zentrale DbContext-Klasse mit DbSet-Properties und Fluent API
-  - `StudyFile.cs`, `StudyFolder.cs`, `AiAnalysis.cs`: Entitätsklassen
-  - `20260713142448_InitialCreate.cs`: Automatisch generierte Migration
-
-### MVVM-Architektur (Model-View-ViewModel)
-- **Framework:** CommunityToolkit.Mvvm 8.4.2
-- **Pattern-Implementierung:**
-  - **Models:** Reine Datenklassen ohne UI-Abhängigkeiten
-    - `StudyFile.cs`, `StudyFolder.cs`, `AiAnalysis.cs`
-    - AI-Modelle: `AiStudyMaterialResult.cs`, `StructuredContent.cs`, `QuizQuestion.cs`
-  - **ViewModels:** Präsentationslogik mit ObservableObject-Basis
-    - `MainViewModel.cs`: Root-ViewModel koordiniert Child-ViewModels
-    - `FolderListViewModel.cs`: Ordnerverwaltung
-    - `FileListViewModel.cs`: Dateiverwaltung
-    - `FileDetailViewModel.cs`: Detailansicht mit Summary und Quiz
-    - `QuizQuestionViewModel.cs`, `QuizOptionViewModel.cs`: Quiz-spezifische ViewModels
-  - **Views:** XAML-basierte Benutzeroberflächen
-    - `MainWindow.xaml`: Hauptcontainer
-    - `FolderListView.xaml`, `FileListView.xaml`, `FileDetailView.xaml`
-- **Kommunikation:**
-  - Property Changed Notifications über `[ObservableProperty]`
-  - Commands über `[RelayCommand]`
-  - Event-driven Communication über Events und Callbacks
-
-### Datenbankprovider
-- **System:** SQLite 3.x
-- **Provider:** Microsoft.EntityFrameworkCore.Sqlite 10.0.8
-- **Speicherort:** `C:\Users\<username>\AppData\Local\StudyMate\studymate.db`
-- **Tabellen:**
-  - `StudyFolders`: Ordner-Struktur (Id, Name, CreatedAt, UpdatedAt)
-  - `StudyFile`: Dateien mit Metadaten (Id, FolderId, OriginalFileName, StoredFileName, FilePath, FileExtension, ContentType, FileSizeBytes, UploadedAt, CreatedAt, UpdatedAt)
-  - `AiAnalysis`: KI-Analyseergebnisse (Id, StudyFileId, Name, Summary, StructuredContentJson, QuizJson, Status, ErrorMessage, ModelName, CreatedAt, UpdatedAt)
-- **Beziehungen:**
-  - StudyFolder 1:n StudyFile (Cascade Delete)
-  - StudyFile 1:n AiAnalysis (Cascade Delete)
-- **Migrationen:** Automatische Erstellung beim ersten Start via `dbContext.Database.EnsureCreated()`
-
----
-
-## 3. Externe Dienste und APIs
+## 5. Externe Dienste und APIs
 
 ### Lisa Chat API
 
 #### Zweck
-- KI-gestützte Analyse von PDF-Lernmaterialien
+
+Die Lisa Chat API wird verwendet für:
+
+- KI-gestützte Analyse von extrahiertem PDF-Text
 - Automatische Generierung von:
   - Zusammenfassungen (Summary)
-  - Strukturierten Lerninhalten (StructuredContent)
-  - Multiple-Choice-Fragen (QuizQuestions)
+  - Strukturierten Lerninhalten (StructuredContent mit Topics und Subtopics)
+  - Multiple-Choice-Fragen (QuizQuestions mit Optionen und Erklärungen)
 
-#### Konfigurationsdatei
-- **Template:** `.env.example` im Projektroot
-- **Laufzeitkonfiguration:** `.env` im Projektroot (nicht versioniert)
-- **Umgebungsvariablen:**
-  - `AiBaseUrl`: Basis-URL des API-Endpunkts
-  - `AiEndpoint`: Spezifischer Endpoint für Chat Completions
-  - `ApiKey`: Authentifizierungsschlüssel
-  - `AiModel`: Modellname für die Analyse
+#### Konfiguration
+
+**Konfigurationsdateien:**
+
+- Template: `.env.example` (im Repository vorhanden, versioniert)
+- Runtime-Konfiguration: `.env` (nicht versioniert, lokal erstellt)
+
+**Erforderliche Umgebungsvariablen (aus `.env.example`):**
+
+| Variable | Beschreibung | Beispielwert |
+|----------|--------------|--------------|
+| `AiBaseUrl` | Basis-URL der API | `https://chat-1.ki-awz.iisys.de/` |
+| `AiEndpoint` | Spezifischer Endpoint für Chat Completions | `api/chat/completions` |
+| `ApiKey` | Authentifizierungsschlüssel (Bearer Token) | *(wird nicht angezeigt)* |
+| `AiModel` | Modellname für die Analyse | `lisa-pro-03-2026` |
+
+**Quellen:** `.env.example`, `App.xaml.cs` (Zeile 103–108), `Models/Ai/AiSettings.cs`
 
 #### Endpoint-Struktur
-- **Base URL:** `https://chat-1.ki-awz.iisys.de/`
-- **Endpoint:** `api/chat/completions`
+
 - **Vollständige URL:** `https://chat-1.ki-awz.iisys.de/api/chat/completions`
 - **HTTP-Methode:** POST
-- **Request Format:** JSON (OpenAI-kompatibles Chat Completion Schema)
-- **Response Format:** JSON mit Choice-Arrray und Message-Content
+- **Content-Type:** `application/json`
+- **Authorization Header:** `Bearer <ApiKey>`
+- **Timeout:** 5 Minuten (`TimeSpan.FromMinutes(5)`)
 
-#### Request-Struktur (aus AiClient.cs)
+**Quelle:** `Integrations/Ai/AiClient.cs` (Zeile 32–36, 69–73)
+
+#### Request-Format
+
+Die Anwendung sendet ein JSON-Objekt im OpenAI-kompatiblen Chat Completion Schema:
+
 ```json
 {
   "model": "lisa-pro-03-2026",
@@ -253,384 +339,527 @@
 }
 ```
 
-#### Response-Struktur
+**Quellen:** `AiClient.cs` (Zeile 49–68), `AipromptBuilder.cs`
+
+#### Response-Format
+
+Die API antwortet mit einem JSON-Objekt folgender Struktur:
+
 ```json
 {
   "choices": [
     {
       "message": {
-        "content": "{ \"name\": \"...\", \"summary\": \"...\", \"structuredContent\": {...}, \"quizQuestions\": [...] }"
+        "content": "{\"name\": \"...\", \"summary\": \"...\", \"structuredContent\": {...}, \"quizQuestions\": [...]}"
       }
     }
   ]
 }
 ```
 
-#### Implementierungsdetails
-- **Client-Klasse:** `AiClient.cs` implementiert `IAiClient`
-- **Textextraktion:** PdfPig extrahiert PDF-Text vor API-Aufruf
-- **Prompt-Engineering:** `AiPromptBuilder.cs` definiert detaillierten System-Prompt
-- **Fehlerbehandlung:** HTTP-Fehler werden als `HttpRequestException` geworfen
-- **Timeout:** 5 Minuten pro Anfrage (`TimeSpan.FromMinutes(5)`)
-- **Authentifizierung:** Bearer-Token via Authorization Header
+Der Inhalt der Antwort wird geparst und in ein `AiStudyMaterialResult`-Objekt deserialisiert.
 
-#### Antwort-Validierung
-- Entfernt Markdown Code-Fences (```` ```json ````)
-- Parsen des JSON-Inhalts zu `AiStudyMaterialResult`
-- Überprüfung auf leere Responses
+**Quelle:** `AiClient.cs` (Zeile 84–109)
 
-#### Dateien im Zusammenhang:
-- `Integrations/Ai/AiClient.cs`: HTTP-Client-Implementierung
-- `Integrations/Ai/AiPromptBuilder.cs`: Prompt-Templates
-- `Integrations/Ai/PdfTextExtractor.cs`: PDF-Textextraktion
-- `Models/Ai/AiSettings.cs`: Konfigurationsmodell
-- `.env.example`: Konfigurationstemplate
+#### Validierung und Fehlerbehandlung
 
----
+- Überprüfung der API-Konfiguration bei Initialisierung (`ValidateSettings()`)
+- Entfernen von Markdown Code-Fences (```` ```json ````) aus der Antwort
+- Prüfung auf leere Responses
+- Werfen von `HttpRequestException` bei HTTP-Fehlern mit Statuscode und Response-Inhalt
+- Protokollierung von HTTP-Status, Response-Länge und Parse-Ergebnissen
 
-## 4. Entwicklungswerkzeuge
+**Quellen:** `AiClient.cs` (Zeile 111–134, 136–155), `KI-Nutzungsprotokoll` vom 21.07.2026
 
-### Identifizierte Entwicklungswerkzeuge
+#### Dateien im Zusammenhang mit der API-Integration
 
-| Werkzeug | Zweck | Version (falls bekannt) | Quelle |
-|----------|-------|-------------------------|--------|
-| Visual Studio 2022 | IDE für .NET-Entwicklung | 2022 (empfohlen) | README.md Zeile 9 |
-| Git | Versionskontrolle | Unklar - muss vom Entwickler bestätigt werden | .git-Verzeichnis vorhanden |
-| GitHub | Remote-Repository | Unklar - muss vom Entwickler bestätigt werden | README.md Zeile 17 |
-| .NET SDK | Compiler und Runtime | .NET 10.0 | StudyMate.Wpf.csproj Zeile 5 |
-| NuGet Package Manager | Paketverwaltung | Integriert in Visual Studio / .NET CLI | Projektdatei |
-| Entity Framework Core Tools | Datenbank-Migrationen | 10.0.8 | StudyMate.Wpf.csproj Zeile 25, 28 |
-| PowerShell | Skripting und Automatisierung | 5.1+ (Windows Standard) | README.md Zeile 89 |
-| DB Browser for SQLite | Datenbank-Viewer | Unklar - muss vom Entwickler bestätigt werden | README.md Zeile 84 |
-| SQLite CLI | Kommandozeilen-Datenbanktool | Unklar - muss vom Entwickler bestätigt werden | README.md Zeile 89 |
-| winget | Windows Package Manager | Integriert in Windows 10/11 | README.md Zeile 90 |
-
-### Details zu den Werkzeugen
-
-#### Visual Studio 2022
-- **Empfohlene Version:** Visual Studio 2022 oder später
-- **Alternative:** VS Code mit C# Extension
-- **Verwendung:** 
-  - Projekt öffnen via `StudyMate.slnx`
-  - Build und Debug mit F5
-  - NuGet-Paketverwaltung über GUI
-
-#### Git / GitHub
-- **Repository-URL:** https://github.com/NET-2026/thi-thanh-truc-trinh.git
-- **Verwendung:**
-  - Versionskontrolle aller Quelldateien
-  - Kollaboration über Pull Requests
-  - Historie dokumentiert KI-Nutzung (siehe ki-nutzungsprotokoll-vorlage.md)
-
-#### .NET CLI
-- **Befehle laut README:**
-  - `dotnet restore`: Abhängigkeiten wiederherstellen
-  - `dotnet build --configuration Release`: Build erstellen
-  - `dotnet run --project StudyMate.Wpf/StudyMate.Wpf.csproj`: Anwendung ausführen
-  - `dotnet ef migrations add <Name>`: EF-Migration erstellen (implizit)
-
-#### DB Browser for SQLite
-- **Download:** https://sqlitebrowser.org/dl/
-- **Datenbankpfad:** `C:\Users\<username>\AppData\Local\StudyMate\studymate.db`
-- **Zweck:** Inspektion und manuelle Bearbeitung der Datenbanktabellen
-
-#### PowerShell-Skripte
-- **Beispiel aus README:**
-  ```powershell
-  winget install sqlite.sqlite
-  ```
-- **Verwendung:** Installation von CLI-Tools, Automatisierung
+- `Integrations/Ai/AiClient.cs` – HTTP-Client-Implementierung
+- `Integrations/Ai/AipromptBuilder.cs` – Prompt-Templates für System- und User-Messages
+- `Integrations/Ai/PdfTextExtractor.cs` – PDF-Textextraktion vor API-Aufruf
+- `Integrations/Ai/Interfaces/IAiClient.cs` – Interface-Definition
+- `Integrations/Ai/Interfaces/IPdfTextExtractor.cs` – Interface-Definition
+- `Models/Ai/AiSettings.cs` – Konfigurationsmodell
+- `Services/AiAnalysisService.cs` – Service-Schicht für KI-Analyse
 
 ---
 
-## 5. Fremdcode und KI-generierter Code
+## 6. Datenverarbeitung und Persistenz
 
-### Methodik der Analyse
-Diese Analyse basiert auf:
-- Durchsicht aller .cs-Dateien auf Kommentar-Indikatoren
-- Cross-Reference mit `ki-nutzungsprotokoll-vorlage.md`
-- Bewertung der Code-Struktur und -Komplexität
-- Identifikation von typischen KI-generierten Mustern
+### Datenbank
 
-### Klassifizierung der Dateien
+**Datenbanksystem:** SQLite 3.x  
+**Provider:** Microsoft.EntityFrameworkCore.Sqlite 10.0.8  
+**Speicherort:** `C:\Users\<Benutzername>\AppData\Local\StudyMate\studymate.db`
 
-#### Kategorie 1: Wahrscheinlich vollständig von KI generiert (Lisa Pro)
+**Quelle:** `App.xaml.cs` (Zeile 72–74), README.md (Abschnitt "Database Location")
 
-**ViewModels:**
-- `MainViewModel.cs` (23 Zeilen)
-  - Indikator: Standard-MVVM-Boilerplate mit CommunityToolkit
-  - KI-Nutzung: Protokoll vom 14.07.2026 erwähnt "Created FileListViewModel with MVVM pattern"
-  
-- `FileListViewModel.cs` (224 Zeilen)
-  - Indikator: Komplette Implementierung mit `[ObservableProperty]`, `[RelayCommand]`
-  - KI-Nutzung: Protokoll vom 14.07.2026: "Created FileListViewModel with MVVM pattern"
-  - Umfang: Vollständige Upload/Delete/Open-Logic
-  
-- `FolderListViewModel.cs` (121 Zeilen)
-  - Indikator: Ähnliches Muster wie FileListViewModel
-  - KI-Nutzung: Protokoll vom 14.07.2026 erwähnt UI-Implementierung
-  
-- `FileDetailViewModel.cs` (411 Zeilen)
-  - Indikator: Sehr komplexe Logik mit Quiz-Handling
-  - KI-Nutzung: Protokoll vom 16.07.2026: "Created FileDetailViewModel with Summary and Quiz tabs"
-  - Umfang: Vollständige Quiz-Logik mit CheckAnswer, Previous/Next Navigation
+### Datenbanktabellen
 
-**Services:**
-- `StudyFileService.cs` (78 Zeilen)
-  - Indikator: Standard-Service-Pattern mit Repository-Integration
-  - KI-Nutzung: Protokoll vom 14.07.2026: "Explained Repository vs Service layer architecture"
-  
-- `StudyFolderService.cs` (38 Zeilen)
-  - Indikator: Einfaches Service-Pattern
-  
-- `AiAnalysisService.cs` (76 Zeilen)
-  - Indikator: Komplexe AI-Integration mit Error-Handling
-  - KI-Nutzung: Protokoll vom 21.07.2026 beschreibt komplette AI-Integration
-  
-- `FileStorageService.cs` (81 Zeilen)
-  - Indikator: Dateisystem-Operationen mit Unique-FileName-Generierung
-  - KI-Nutzung: Protokoll vom 14.07.2026: "Explained FileStorageService vs StudyFileService separation"
+Die Datenbank umfasst drei Tabellen, definiert in `AppDbContext.cs`:
 
-**Repositories:**
-- `StudyFileRepository.cs` (48 Zeilen)
-- `StudyFolderRepository.cs` (31 Zeilen)
-- `AiAnalysisRepository.cs` (40 Zeilen)
-  - Indikator: Standard-EF-Core-Repository-Implementierungen
-  - KI-Nutzung: Protokoll vom 14.07.2026 erwähnt Repository-Architektur
+#### Tabelle: StudyFolders
 
-**AI-Integration:**
-- `AiClient.cs` (155 Zeilen)
-  - Indikator: HTTP-Client-Implementierung mit JSON-Serialisierung
-  - KI-Nutzung: Protokoll vom 21.07.2026: "Refactored AiClient to send JSON payload"
-  - Besonders hervorgehoben: Mehrfache Iterationen durch API-Debugging
-  
-- `PdfTextExtractor.cs` (27 Zeilen)
-  - Indikator: Wrapper um PdfPig-Bibliothek
-  - KI-Nutzung: Protokoll vom 21.07.2026: "Recommended IPdfTextExtractor pattern with PdfPig library"
-  
-- `AiPromptBuilder.cs` (202 Zeilen)
-  - Indikator: Extrem detaillierter System-Prompt für KI-Analyse
-  - KI-Nutzung: Wahrscheinlich teilweise von KI optimiert/selbstreferenziell
+| Spalte | Typ | Constraints |
+|--------|-----|-------------|
+| Id | INTEGER | PRIMARY KEY, AUTOINCREMENT |
+| Name | TEXT | NOT NULL |
+| CreatedAt | DATETIME | DEFAULT CURRENT_TIMESTAMP |
+| UpdatedAt | DATETIME | DEFAULT CURRENT_TIMESTAMP |
 
-**Models (AI-spezifisch):**
-- `AiStudyMaterialResult.cs` (16 Zeilen)
-- `StructuredContent.cs` (13 Zeilen)
-- `QuizQuestion.cs` (11 Zeilen)
-- `AiSettings.cs` (13 Zeilen)
-  - Indikator: DTO-Klassen exakt passend zum AI-API-Response-Format
+**Quelle:** `AppDbContext.cs` (Zeile 17–24)
 
-#### Kategorie 2: Von KI unterstützt, aber stark adaptiert
+#### Tabelle: StudyFiles
 
-**Views:**
-- `FileListView.xaml.cs` (59 Zeilen)
-  - Indikator: Code-behind mit spezifischer Event-Handling-Logik
-  - KI-Nutzung: Protokoll erwähnt UI-Implementierung, aber starke manuelle Anpassung
-  
-- `FolderListView.xaml.cs` (12 Zeilen)
-- `FileDetailView.xaml.cs` (20 Zeilen)
-  - Minimaler Code-behind, hauptsächlich XAML-basiert
+| Spalte | Typ | Constraints |
+|--------|-----|-------------|
+| Id | INTEGER | PRIMARY KEY, AUTOINCREMENT |
+| FolderId | INTEGER | FOREIGN KEY → StudyFolders(Id), ON DELETE CASCADE |
+| OriginalFileName | TEXT | NOT NULL |
+| StoredFileName | TEXT | NOT NULL (eindeutiger Dateiname) |
+| FilePath | TEXT | NOT NULL (nur Dateiname, kein voller Pfad) |
+| FileExtension | TEXT | NOT NULL |
+| ContentType | TEXT | NOT NULL |
+| FileSizeBytes | INTEGER | NOT NULL |
+| UploadedAt | DATETIME | DEFAULT CURRENT_TIMESTAMP |
+| CreatedAt | DATETIME | DEFAULT CURRENT_TIMESTAMP |
+| UpdatedAt | DATETIME | DEFAULT CURRENT_TIMESTAMP |
 
-**Dependency Injection:**
-- `App.xaml.cs` (116 Zeilen)
-  - Indikator: Komplexe DI-Konfiguration
-  - KI-Nutzung: Protokoll vom 21.07.2026: "Fixed DI configuration: Changed ViewModels from AddScoped to AddSingleton"
-  - Mehrfache Iterationen durch Bugfixes
+**Quelle:** `AppDbContext.cs` (Zeile 26–44)
 
-#### Kategorie 3: Selbst entwickelter Code (geringe KI-Nutzung)
+#### Tabelle: AiAnalyses
 
-**Models (Domain):**
-- `StudyFile.cs` (63 Zeilen)
-  - Indikator: INotifyPropertyChanged manuell implementiert (nicht mit CommunityToolkit)
-  - Eigene Logik: FileSizeDisplay-Property mit Formatierung
-  
-- `StudyFolder.cs` (15 Zeilen)
-  - Einfache POCO-Klasse
-  
-- `AiAnalysis.cs` (27 Zeilen)
-  - DTO-Klasse für Datenbank
+| Spalte | Typ | Constraints |
+|--------|-----|-------------|
+| Id | INTEGER | PRIMARY KEY, AUTOINCREMENT |
+| StudyFileId | INTEGER | FOREIGN KEY → StudyFiles(Id), ON DELETE CASCADE |
+| Name | TEXT | NOT NULL |
+| Summary | TEXT | OPTIONAL |
+| StructuredContentJson | TEXT | OPTIONAL (JSON-Serialisierung) |
+| QuizJson | TEXT | OPTIONAL (JSON-Serialisierung) |
+| Status | TEXT | NOT NULL (z.B. "Pending", "Completed", "Failed") |
+| ErrorMessage | TEXT | OPTIONAL |
+| ModelName | TEXT | NOT NULL |
+| CreatedAt | DATETIME | DEFAULT CURRENT_TIMESTAMP |
+| UpdatedAt | DATETIME | DEFAULT CURRENT_TIMESTAMP |
 
-**ViewModel Base & Quiz:**
-- `ViewModelBase.cs` (14 Zeilen)
-  - Standard-INotifyPropertyChanged-Implementierung
-  
-- `QuizQuestionViewModel.cs` (106 Zeilen)
-  - Indikator: Spezifische Quiz-Logik
-  
-- `QuizOptionViewModel.cs` (65 Zeilen)
-  - Besonderheit: `SetSelectedWithoutTrigger()`-Methode zeigt spezifische Anforderung
+**Quelle:** `AppDbContext.cs` (Zeile 46–64)
 
-**Converters:**
-- `Converters.cs` (84 Zeilen)
-  - Indikator: WPF-spezifische Converter für UI-Logik
-  - KI-Nutzung: Protokoll erwähnt "Added converters", aber XAML-fokussiert
+### Beziehungen
 
-**Interfaces:**
-- Alle Interface-Dateien unter `Services/Interfaces/` und `Repositories/Interfaces/`
-  - Standard-Interface-Definitionen ohne Implementierungsdetails
+- **StudyFolder → StudyFiles:** 1:n (ein Ordner enthält viele Dateien, Cascade Delete)
+- **StudyFile → AiAnalyses:** 1:n (eine Datei kann viele Analysen haben, Cascade Delete)
 
-**Datenbank:**
-- `AppDbContext.cs` (67 Zeilen)
-  - Indikator: Fluent API Konfiguration
-  - KI-Nutzung: Architekturelle Beratung, aber manuelle Implementierung
-  
-- `20260713142448_InitialCreate.cs` (109 Zeilen)
-  - Automatisch generiert durch EF Core Tools (keine KI)
+**Quelle:** `AppDbContext.cs` (Zeile 17–44)
 
-**Cross-Reference mit ki-nutzungsprotokoll-vorlage.md:**
+### Migrationsstrategie
 
-| Datum | Nutzer | Werkzeug | Bereich | Umfang der KI-Nutzung |
-|-------|--------|----------|---------|----------------------|
-| 14.07.2026 | Truc Trinh | Lisa Pro | Backend File Service | Architekturberatung, Bug-Identification |
-| 14.07.2026 | Truc Trinh | Lisa Pro | UI Implementation | ViewModel-Erstellung, XAML-Design, Converter |
-| 16.07.2026 | Truc Trinh | Lisa Pro | Modern UI Redesign | Refactoring, Bugfixes (ObjectDisposedException), Übersetzung |
-| 16.07.2026 | Truc Trinh | Lisa Pro | Quiz Feature | ViewModel-Erstellung, Command-Implementierung, Converter |
-| 21.07.2026 | Truc Trinh | Lisa Pro | Complete AI Integration | PDF-Extraktion, HTTP-Client, DI-Configuration, Path-Handling |
+**Ansatz:** Code First mit automatischer Migrationserstellung
 
-### Zusammenfassung der KI-Nutzung
+**Durchgeführte Migrationen:**
 
-**Geschätzter Anteil:**
-- ~60-70% der ViewModels und Services: KI-generiert mit Adaptationen
-- ~30-40% der Models und Interfaces: Selbst entwickelt
-- ~80-90% der AI-Integration (AiClient, PdfTextExtractor): KI-generiert nach mehreren Iterationen
-- ~50% der XAML/Converter: KI-unterstützt
-- 0% der EF-Core-Migrationen: Automatisch generiert durch Tools
+- `20260713142448_InitialCreate.cs` – Erstellt alle drei Tabellen
+- `20260713142448_InitialCreate.Designer.cs` – Designer-Informationen
+- `AppDbContextModelSnapshot.cs` – Momentaufnahme des aktuellen Modells
 
-**KI als Sparring Partner:**
-- Architektur-Reviews (Repository vs Service Pattern)
-- Dependency Injection Lifetime-Entscheidungen
-- Code-Reviews und Bug-Identification
-- Debugging von HTTP 405 Fehlern
-- API-Endpoint-Analyse
+**Hinweis:** Diese Dateien wurden automatisch durch Entity Framework Core Tools generiert.
 
-**Vom Entwickler explizit abgelehnte Vorschläge:**
-- Code-behind statt XAML für Visibility-Logik
-- Mock-Daten-Beibehaltung bei AI-Ergebnissen
-- Speicherung voller Dateipfade in der Datenbank
+**Quelle:** Verzeichnis `StudyMate.Wpf/Migrations/`, `README.md` (Abschnitt "Migrations")
+
+### Automatische Datenbankerstellung
+
+Beim ersten Start der Anwendung wird die Datenbank automatisch erstellt:
+
+```csharp
+dbContext.Database.EnsureCreated();
+```
+
+**Quelle:** `App.xaml.cs` (Zeile 39)
+
+### Dateispeicherung
+
+Hochgeladene PDF-Dateien werden gespeichert unter:
+
+```
+C:\Users\<Benutzername>\AppData\Local\StudyMate\uploads\<StoredFileName>.pdf
+```
+
+**Wichtig:** Die Datenbank speichert nur den Dateinamen (`FilePath`), nicht den vollständigen Pfad. Der vollständige Pfad wird zur Laufzeit dynamisch konstruiert using `Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)`.
+
+**Quellen:** `FileStorageService.cs`, `Ki-Nutzungsprotokoll` vom 21.07.2026 ("Fixed file storage path mismatch")
 
 ---
 
-## 6. Lizenzinformationen
+## 7. Entwicklungswerkzeuge
 
-### NuGet-Paket-Lizenzen
+### Aus dem Repository verifizierte Werkzeuge
 
-| Paket | Lizenz | Bestätigung |
-|-------|--------|-------------|
-| CommunityToolkit.Mvvm 8.4.2 | MIT License | Offizielle Microsoft-Lizenz |
-| DotNetEnv 3.1.1 | MIT License | Unklar - muss vom Entwickler bestätigt werden |
-| Microsoft.EntityFrameworkCore 10.0.8 | MIT License | Offizielle Microsoft-Lizenz |
-| Microsoft.EntityFrameworkCore.Design 10.0.8 | MIT License | Offizielle Microsoft-Lizenz |
-| Microsoft.EntityFrameworkCore.Sqlite 10.0.8 | MIT License | Offizielle Microsoft-Lizenz |
-| Microsoft.EntityFrameworkCore.Tools 10.0.8 | MIT License | Offizielle Microsoft-Lizenz |
-| Microsoft.Extensions.DependencyInjection 10.0.8 | MIT License | Offizielle Microsoft-Lizenz |
-| Microsoft.Extensions.Http 10.0.8 | MIT License | Offizielle Microsoft-Lizenz |
-| PdfPig 0.1.8 | Apache License 2.0 | Unklar - muss vom Entwickler bestätigt werden |
+| Werkzeug | Zweck | Version / Angabe | Quelle |
+|----------|-------|------------------|--------|
+| .NET SDK | Compiler, Runtime, CLI-Tools | .NET 10.0 | `StudyMate.Wpf.csproj`, Zeile 5 |
+| NuGet Package Manager | Abhängigkeitsverwaltung | Integriert in .NET SDK / Visual Studio | `StudyMate.Wpf.csproj` |
+| Entity Framework Core Tools | Datenbank-Migrationen | 10.0.8 | `StudyMate.Wpf.csproj`, Zeile 25, 28 |
+| Git | Versionskontrolle | Nicht spezifiziert | Vorhandenes `.git`-Verzeichnis, `.gitignore` |
+| GitHub | Remote-Repository Hosting | Nicht spezifiziert | README.md, Zeile 17 |
+| PowerShell | Skripting und Automatisierung | Nicht spezifiziert (Windows Standard) | README.md, Zeile 89 |
 
-### Projektlizenz
+### Laut README.md empfohlene Werkzeuge
 
-**Hinweis:** Das Projekt enthält keine LICENSE-Datei im Repository.
+| Werkzeug | Zweck | Version | Quelle |
+|----------|-------|---------|--------|
+| Visual Studio 2022 | Integrierte Entwicklungsumgebung | 2022 (empfohlen) | README.md, Zeile 9 |
+| VS Code | Alternative IDE | Mit C# Extension | README.md, Zeile 9 |
+| DB Browser for SQLite | Datenbank-Inspektion | Nicht spezifiziert | README.md, Zeile 84 |
+| sqlite3 CLI | Kommandozeilen-Datenbanktool | Nicht spezifiziert | README.md, Zeile 89 |
+| winget | Windows Package Manager | Integriert in Windows 10/11 | README.md, Zeile 90 |
 
-**Empfehlung:** Für eine Studienarbeit sollte geklärt werden:
+### Build- und Ausführungsprozesse
+
+**Laut README.md dokumentierte Befehle:**
+
+```bash
+# Abhängigkeiten wiederherstellen
+dotnet restore
+
+# Build erstellen
+dotnet build --configuration Release
+
+# Anwendung ausführen
+dotnet run --project StudyMate.Wpf/StudyMate.Wpf.csproj
+```
+
+**Quelle:** README.md, Zeilen 23–57
+
+### Git-History als Nachverfolgungsinstrument
+
+Das KI-Nutzungsprotokoll verweist explizit auf die Git-History zur Nachverfolgung der Entwicklung:
+
+> "This protocol is maintained as a Markdown file in the group's Git repository. [...] Traceability across versions is provided by the Git history of this file."
+
+**Quelle:** `ki-nutzungsprotokoll-vorlage.md`, Zeilen 14–16
+
+---
+
+## 8. Fremdcode
+
+### Definition von Fremdcode
+
+In diesem Bericht bezeichnet **Fremdcode** Quellcode, der aus externen Quellen (z.B. Open-Source-Repositories, Code-Snippets aus dem Internet, Tutorials, Stack Overflow) unverändert oder mit geringfügigen Anpassungen in das Projekt übernommen wurde.
+
+### Analyseergebnis
+
+Eine sorgfältige Prüfung des Repositories ergab Folgendes:
+
+- **Keine LICENSE-Datei** im Repository vorhanden → Keine Hinweise auf kopierten Code mit Lizenzverpflichtungen
+- **Keine Copyright-Vermerke** in den Quelldateien festgestellt
+- **Keine URLs oder Quellenangaben** zu externem Code in Kommentaren gefunden
+- **Alle NuGet-Pakete** werden über offizielle PackageReference-Einträge eingebunden, es wurde kein Code aus diesen Paketen in das Projekt kopiert
+
+**Feststellung:**
+
+> Es wurde kein unverändert übernommener Fremdcode aus externen Quellcode-Repositories oder Internetquellen festgestellt.
+
+Alle im Projekt enthaltenen Quelldateien sind entweder:
+
+- Eigene Entwicklungen des Entwicklungsteams
+- Durch KI-Werkzeuge unterstützte Entwürfe (siehe Abschnitt 10)
+- Automatisch generierter Code von Entity Framework Core Tools (siehe Abschnitt 9)
+
+### Verwendung externer Bibliotheken
+
+Die Verwendung externer Bibliotheken erfolgt ausschließlich über NuGet-PackageReferenzen. Der Quellcode dieser Bibliotheken bleibt außerhalb des Projekts und wird zur Laufzeit über das .NET-Paketmanagement eingebunden. Dies stellt keine Übernahme von Fremdcode dar, sondern die bestimmungsgemäße Nutzung von Bibliotheken gemäß deren Lizenzbedingungen.
+
+---
+
+## 9. Automatisch generierter Code
+
+### Definition
+
+Automatisch generierter Code bezeichnet Quellcode, der durch Software-Werkzeuge (z.B. ORM-Tools, Code-Generatoren, Designer) ohne manuelle Programmierung erstellt wurde.
+
+### Identifizierte automatisch generierte Dateien
+
+#### Entity Framework Core Migrationen
+
+| Datei | Beschreibung | Generator |
+|-------|--------------|-----------|
+| `20260713142448_InitialCreate.cs` | Erstellt alle Datenbanktabellen basierend auf dem DbContext-Modell | Entity Framework Core Tools 10.0.8 |
+| `20260713142448_InitialCreate.Designer.cs` | Designer-Informationen für die Migration | Entity Framework Core Tools 10.0.8 |
+| `AppDbContextModelSnapshot.cs` | Momentaufnahme des aktuellen Datenbankmodells | Entity Framework Core Tools 10.0.8 |
+
+**Quellen:** Verzeichnis `StudyMate.Wpf/Migrations/`, `StudyMate.Wpf.csproj` (Zeilen 20–23, 25–28)
+
+#### Zweck der generierten Dateien
+
+Diese Dateien dienen der versionskontrollierten Datenbank-Schema-Verwaltung im Rahmen des Code-First-Ansatzes von Entity Framework Core. Sie werden automatisch erstellt und sollten nicht manuell bearbeitet werden.
+
+#### Behandlung im Codeumfang
+
+Diese Dateien sind automatisch generiert und werden im Abschnitt 11 gesondert betrachtet.
+
+### Weitere möglicherweise generierte Artefakte
+
+- **XAML-Designer-Dateien** (`*.g.i.cs`, `*.g.cs`) – Werden von WPF zur Kompilierzeit generiert, sind nicht im Repository enthalten
+- **AssemblyInfo.cs** – Kann teilweise automatisch generiert sein, enthält aber auch projektspezifische Metadaten
+
+---
+
+## 10. Einsatz von KI-Werkzeugen
+
+### Dokumentierte KI-Nutzung
+
+Die Verwendung von KI-Werkzeugen ist im Dokument `Documentation/ki-nutzungsprotokoll-vorlage.md` ausführlich protokolliert. Nachfolgend eine Zusammenfassung der dokumentierten Aktivitäten, basierend ausschließlich auf diesem Protokoll.
+
+### Verwendetes KI-Werkzeug
+
+- **Tool:** Lisa Pro (LLM Chat Assistant)
+- **Zeitraum der Nutzung:** 14.07.2026 – 21.07.2026
+- **Nutzer:** Truc Trinh
+
+**Quelle:** `ki-nutzungsprotokoll-vorlage.md`, Zeilen 5–8, 29–34
+
+### Tabellarische Übersicht der KI-Unterstützung
+
+| Datum | Bereich | Art der KI-Unterstützung | Prüfung und eigene Anpassung |
+|-------|---------|--------------------------|------------------------------|
+| 14.07.2026 | Backend File Service | - Erklärung der Repository vs. Service Layer Architektur<br>- Erklärung der Trennung FileStorageService vs. StudyFileService<br>- Identifikation von Bugs in UpdateFileAsync und FileStorageService<br>- Code-Review | - Eigene Implementierung aller Repositories und Services<br>- Behebung der identifizierten Bugs<br>- Test aller Code-Implementierungen vor Commit |
+| 14.07.2026 | UI Implementation File Management | - Erstellung FileListViewModel mit MVVM Pattern<br>- Implementierung FileListView XAML<br>- Hinzufügen von ViewConvertern<br>- DI-Container Konfiguration<br>- Behebung von XAML Binding Fehlern | - Entwurf des Zwei-Panel-Layouts (Ordner + Dateien)<br>- Implementierung von Upload/Delete/Update-Funktionen<br>- Integration von Dateidialogen<br>- Test aller CRUD-Operationen |
+| 16.07.2026 | Modern UI Redesign | - Redesign FolderListView und FileListView XAML mit modernem Purple Theme (#6C4CF1)<br>- Refactoring MainViewModel zur Koordination<br>- Implementierung der Ordnerauswahl-Kommunikation<br>- Behebung von ObjectDisposedException (DbContext Lifetime)<br>- Behebung von UI State Management Problemen<br>- Übersetzung vietnamesischer Kommentare ins Englische | - Entwurf der card-basierten UI für Dateien mit PDF Icons<br>- Implementierung der Drei-Zustands-Logik (kein Ordner / leerer Ordner / hat Dateien)<br>- Integration von Dateidialogen<br>- End-to-End-Test aller UI-Zustände |
+| 16.07.2026 | Quiz Feature | - Erstellung FileDetailViewModel mit Summary und Quiz Tabs<br>- Implementierung QuizQuestionViewModel und QuizOptionViewModel<br>- CheckAnswerCommand mit Validierungslogik<br>- Previous/Next Navigation<br>- Radio Button Command Binding | - Entwurf des Drei-Spalten-Layouts (360px Ordner \| 440px Dateien \| * Details)<br>- Implementierung von TabControl<br>- Erstellung von Mock-Quizdaten (2 ML Fragen)<br>- Farbliches Feedback (grün Korrekt / rot Falsch)<br>- Test des gesamten Quiz-Interaktionsflusses |
+| 21.07.2026 | Complete AI Integration | - Identifikation der HTTP 405 Error Ursache (falsches Format)<br>- Empfehlung IPdfTextExtractor Pattern mit PdfPig<br>- Refactoring AiClient für JSON Payload<br>- Implementierung ParseChatResponse()<br>- DI-Konfiguration (Scoped zu Singleton)<br>- Pfad-Problematik gelöst<br>- .env Konfiguration korrigiert<br>- Logging hinzugefügt | - Installation PdfPig NuGet Package<br>- Implementierung PdfTextExtractor<br>- Debugging der HTTP 405 Errors mit PowerShell<br>- Test der PDF-Textextraktion<br>- End-to-End-Test: Upload PDF → Text extrahieren → Lisa API → Datenbank → UI |
+
+**Quelle:** `ki-nutzungsprotokoll-vorlage.md`, Zeilen 29–34
+
+### Umgang mit fehlerhaften KI-Antworten
+
+Das Protokoll dokumentiert explizit Fälle, in denen KI-Empfehlungen fehlerhaft waren und korrigiert werden mussten:
+
+| Problem | Ursprüngliche KI-Empfehlung | Identifiziertes Problem | Lösung |
+|---------|----------------------------|------------------------|--------|
+| Files.Count Binding | `Mode=OneTime` | Verhinderte UI-Updates | Geändert zu `Mode=OneWay` |
+| API Request Format | multipart/form-data | Lisa API unterstützt nur JSON | Umstellung auf Textextraktion + JSON Payload |
+| Direkter Dateipfad an API | Senden des Dateipfads | HTTP 405 Method Not Allowed | PDF-Text clientseitig extrahieren, dann Text senden |
+
+**Quelle:** `ki-nutzungsprotokoll-vorlage.md`, Zeilen 39–42
+
+### Bewusst abgelehnte KI-Vorschläge
+
+Das Entwicklungsteam hat folgende KI-Empfehlungen ausdrücklich abgelehnt:
+
+1. **Code-behind statt XAML für Visibility-Logik**  
+   Stattdessen: Reine XAML MultiDataTriggers für bessere Wartbarkeit
+
+2. **Mock-Daten Auto-Trigger bei Dateiauswahl**  
+   Stattdessen: Entfernung von `LoadMockData`-Aufrufen, um nur echte KI-Analysen anzuzeigen
+
+3. **Speicherung voller Dateipfade in der Datenbank**  
+   Stattdessen: Dynamische Pfadkonstruktion using `Environment.GetFolderPath()`
+
+**Quelle:** `ki-nutzungsprotokoll-vorlage.md`, Zeilen 44–47
+
+### KI als Sparring Partner
+
+Neben der konkreten Code-Generierung wurde KI für folgende Aktivitäten eingesetzt:
+
+- Architektur-Reviews (Repository vs. Service Pattern)
+- Validierung von Dependency Injection Lifetime-Entscheidungen (Scoped vs. Singleton)
+- Code-Review und Bug-Identifikation
+- Debugging von HTTP 405 Fehlern durch API-Endpoint-Analyse
+- Architektur-Design: Separation von IPdfTextExtractor Interface für Testbarkeit
+
+**Quelle:** `ki-nutzungsprotokoll-vorlage.md`, Zeilen 49–54
+
+### Kritische Bugs gefunden durch KI-Zusammenarbeit
+
+1. **Dateipfad-Mismatch:** FileStorageService speichert in `AppData/Local/StudyMate/uploads/`, AiClient suchte in `AppData/Local/Temp/uploads/` – Gelöst durch dynamische Pfadkonstruktion
+
+2. **Database Cache Issue:** SelectedFile Setter rief GenerateAnalysisAsync jedes Mal auf, erstellte doppelte API Calls – Umgestellt auf LoadAnalysisAsync mit Datenbank-Check zuerst
+
+3. **ViewModel Instance Mismatch:** AddScoped verursachte verschiedene Instanzen in verschiedenen Views – Geändert zu AddSingleton für geteilten Zustand
+
+4. **API Endpoint Format:** .env hatte BaseUrl mit /apiSuffix UND Endpoint mit / Präfix导致 malformed URLs – Standardisiert auf BaseUrl ohne Suffix, Endpoint mit vollständigem Pfad
+
+**Quelle:** `ki-nutzungsprotokoll-vorlage.md`, Zeilen 56–60
+
+### Zusammenfassung und Bestätigung
+
+Das Protokoll bestätigt abschließend:
+
+> "All adopted content has been reviewed for technical accuracy, adapted as needed, and responsibly integrated into the work."
+
+> "We confirm that the use of AI in this work has been fully and accurately documented to the best of our knowledge. We take responsibility for the technical accuracy, the selection of adopted content, and the entire submitted work."
+
+**Quelle:** `ki-nutzungsprotokoll-vorlage.md`, Zeilen 20, 64–65
+
+### Hinweis zur Zuordnung von Code zu KI-Nutzung
+
+**Eine zuverlässige Zuordnung einzelner Quelldateien zu menschlicher oder KI-generierter Urheberschaft ist allein anhand des Quellcodes nicht möglich.**
+
+Die obige Tabelle basiert ausschließlich auf den im KI-Nutzungsprotokoll dokumentierten Aktivitäten. Welche konkreten Codezeilen von welcher Tätigkeit betroffen sind, lässt sich ohne zusätzliche Dokumentation nicht feststellen.
+
+Alle im Protokoll genannten Bereiche wurden laut Dokumentation vom Entwicklungsteam geprüft, angepasst und getestet.
+
+---
+
+## 11. Codeumfang laut cloc
+
+### Gesamtergebnis
+
+| Kategorie | Anzahl Zeilen |
+|-----------|---------------|
+| **Total C# und XAML** | **3454** |
+| Davon C# Code | 2207 |
+| Davon XAML Code | 1247 |
+| Kommentarzeilen | 70 |
+| Leerzeilen | 975 |
+
+### Aufschlüsselung nach Dateitypen
+
+**Hinweis:** Diese Zahlen beinhalten sowohl manuell geschriebenen Code als auch automatisch generierten Code (z.B. EF Core Migrationen). Eine exakte Trennung der Zeilenzahlen zwischen generierten und nicht-generierten Dateien liegt nicht vor.
+
+### Automatisch generierte Dateien (gesondert betrachtet)
+
+Folgende Dateien sind als automatisch generiert identifiziert und sollten bei der Betrachtung des manuell erstellten Codes separat berücksichtigt werden:
+
+- `Migrations/20260713142448_InitialCreate.cs`
+- `Migrations/20260713142448_InitialCreate.Designer.cs`
+- `Migrations/AppDbContextModelSnapshot.cs`
+
+**Empfehlung:** Für eine präzise Analyse des manuell geschriebenen Codes sollten diese Dateien separat gezählt und von der Gesamtsumme subtrahiert werden.
+
+---
+
+## 12. Offene oder nicht verifizierbare Angaben
+
+Folgende Angaben konnten aus dem Repository nicht eindeutig verifiziert werden und müssen separat bestätigt werden:
+
+### Nicht verifizierte Angaben
+
+| Angabe | aktueller Stand | Erforderliche Bestätigung |
+|--------|-----------------|---------------------------|
+| **Lizenzen der NuGet-Pakete** | Nur Paketnamen und Versionen aus `.csproj` bekannt | Alle Lizenzen müssen separat überprüft werden (NuGet.org oder Paket-Metadaten) |
+| **Visual Studio Version** | README.md nennt "Visual Studio 2022 (recommended)" | Tatsächlich verwendete Version im Entwicklungsprozess |
+| **Git Version** | Git-Repository vorhanden | Installierte Git-Version |
+| **GitHub Account / Repository Details** | Remote-URL: https://github.com/NET-2026/thi-thanh-truc-trinh.git | Organisation, Zugriffsberechtigungen, Branch-Strategie |
+| **Nutzungsbedingungen Lisa Chat API** | API wird verwendet (.env, AiClient.cs) | Lizenzbedingungen, Rate Limits, Datenschutzbestimmungen der API |
+| **DB Browser for SQLite Version** | In README.md empfohlen | Tatsächlich verwendete Version |
+| **PowerShell Version** | PowerShell-Skripte in README.md | Konkrete PowerShell-Version (5.1, 7.x) |
+| **Externe Code-Größe** | Cloc-Gesamtsumme: 3454 Zeilen | Genau Aufschlüsselung nach Dateien inkl. Exclude der generierten Dateien |
+
+### Lizenzhinweise
+
+Für alle verwendeten NuGet-Pakete gilt:
+
+> **Lizenz muss separat überprüft werden.**
+
+Es wird empfohlen, die offiziellen Lizenzinformationen von NuGet.org oder aus den Paket-Metadaten zu beziehen und in einer separaten Lizenzdatei zu dokumentieren.
+
+### Projekt-Lizenz
+
+Das Repository enthält **keine LICENSE-Datei**. Für eine Studienarbeit sollte geklärt werden:
+
 - Unter welcher Lizenz der eigene Code veröffentlicht wird
-- Ob alle externen Abhängigkeiten kompatibel sind
-- Insbesondere: Apache License 2.0 (PdfPig) hat andere Bedingungen als MIT-Lizenzen
-
-### Externe API-Nutzung
-
-**Lisa Chat API:**
-- Nutzungsbedingungen: Unklar - muss vom Entwickler bestätigt werden
-- API-Key: Erforderlich (wird über .env verwaltet)
-- Zugriff: Über Hochschule/System (iisys.de Domain)
+- Ob alle externen Abhängigkeiten (insbesondere Apache License 2.0 bei PdfPig) mit der gewählten Lizenz kompatibel sind
 
 ---
 
-## 7. Zusammenfassung für Dokumentation
+## 13. Kurzfassung für die Studienarbeitsdokumentation
 
-### Tabelle 1: Verwendete Bibliotheken
+Die folgenden Tabellen sind für die direkte Übernahme in die Dokumentation der Studienarbeit vorgesehen.
 
-| Name | Version | Zweck | Lizenz |
-|------|---------|-------|--------|
-| CommunityToolkit.Mvvm | 8.4.2 | MVVM-Framework mit ObservableObject, RelayCommand | MIT |
-| DotNetEnv | 3.1.1 | Laden von .env-Konfigurationsdateien | MIT |
-| Microsoft.EntityFrameworkCore | 10.0.8 | ORM für Datenzugriff und Migrationen | MIT |
-| Microsoft.EntityFrameworkCore.Design | 10.0.8 | Design-Time-Tools für EF-Migrationen | MIT |
-| Microsoft.EntityFrameworkCore.Sqlite | 10.0.8 | SQLite Database Provider für EF Core | MIT |
-| Microsoft.EntityFrameworkCore.Tools | 10.0.8 | CLI/PowerShell-Tools für EF Core | MIT |
-| Microsoft.Extensions.DependencyInjection | 10.0.8 | Dependency Injection Container | MIT |
-| Microsoft.Extensions.Http | 10.0.8 | Typed HttpClient Factory | MIT |
-| PdfPig | 0.1.8 | PDF-Textextraktion vor AI-Analyse | Apache 2.0 |
+### Tabelle 1: Verwendete externe Bibliotheken und NuGet-Pakete
 
-### Tabelle 2: Externe Dienste
+| Paketname | Version | Zweck | Lizenz |
+|-----------|---------|-------|--------|
+| CommunityToolkit.Mvvm | 8.4.2 | MVVM-Framework für .NET (ObservableObject, RelayCommand) | Zu überprüfen |
+| DotNetEnv | 3.1.1 | Laden von .env-Konfigurationsdateien | Zu überprüfen |
+| Microsoft.EntityFrameworkCore | 10.0.8 | ORM für Datenzugriff und Migrationen (Code First) | Zu überprüfen |
+| Microsoft.EntityFrameworkCore.Design | 10.0.8 | Design-Time-Tools für EF Core Migrationen | Zu überprüfen |
+| Microsoft.EntityFrameworkCore.Sqlite | 10.0.8 | SQLite Database Provider für Entity Framework Core | Zu überprüfen |
+| Microsoft.EntityFrameworkCore.Tools | 10.0.8 | CLI/PowerShell-Tools für EF Core | Zu überprüfen |
+| Microsoft.Extensions.DependencyInjection | 10.0.8 | Dependency Injection Container (IoC) | Zu überprüfen |
+| Microsoft.Extensions.Http | 10.0.8 | Typed HttpClient Factory für API-Kommunikation | Zu überprüfen |
+| PdfPig | 0.1.8 | PDF-Textextraktion vor KI-Analyse | Zu überprüfen |
 
-| Dienst | Zweck | Konfiguration |
-|--------|-------|---------------|
-| Lisa Chat API | KI-gestützte PDF-Analyse (Summary, StructuredContent, Quiz) | .env: AiBaseUrl, AiEndpoint, ApiKey, AiModel |
-| SQLite Database | Lokale persistente Datenspeicherung | Automatisch: %LOCALAPPDATA%\StudyMate\studymate.db |
+**Hinweis:** Alle Lizenzangaben müssen separat überprüft werden. Quellen: NuGet.org oder Paket-Metadaten.
+
+### Tabelle 2: Externe Dienste und APIs
+
+| Dienst / API | Zweck | Konfiguration |
+|--------------|-------|---------------|
+| Lisa Chat API | KI-gestützte PDF-Analyse (Summary, StructuredContent, Quiz) | `.env`: AiBaseUrl, AiEndpoint, ApiKey, AiModel |
+| SQLite Database | Lokale persistente Datenspeicherung | Automatisch: `%LOCALAPPDATA%\StudyMate\studymate.db` |
 
 ### Tabelle 3: Entwicklungswerkzeuge
 
 | Werkzeug | Zweck | Version |
 |----------|-------|---------|
-| Visual Studio 2022 | Integrierte Entwicklungsumgebung | 2022 (empfohlen) |
-| .NET SDK 10.0 | Compiler, Runtime, CLI-Tools | 10.0 |
+| .NET SDK | Compiler, Runtime, CLI-Tools | 10.0 |
 | Entity Framework Core Tools | Datenbank-Migrationen | 10.0.8 |
-| Git | Versionskontrolle | Unklar |
-| GitHub | Remote-Repository Hosting | Unklar |
-| DB Browser for SQLite | Datenbank-Inspektion | Unklar |
-| PowerShell | Skripting und Automatisierung | 5.1+ |
-| NuGet Package Manager | Abhängigkeitsverwaltung | Integriert |
+| Visual Studio 2022 | Integrierte Entwicklungsumgebung | 2022 (empfohlen laut README) |
+| Git | Versionskontrolle | Nicht spezifiziert |
+| GitHub | Remote-Repository Hosting | Nicht spezifiziert |
+| NuGet Package Manager | Abhängigkeitsverwaltung | Integriert in .NET SDK |
+| PowerShell | Skripting und Automatisierung | Nicht spezifiziert |
+| DB Browser for SQLite | Datenbank-Inspektion | Nicht spezifiziert |
 
-### Architekturübersicht
+### Tabelle 4: KI-Nutzung im Entwicklungsprozess
 
-**Schichtenarchitektur:**
-```
-┌─────────────────────────────────────────┐
-│              WPF UI Layer               │
-│  (MainWindow, Views, Converters, XAML) │
-└─────────────────────────────────────────┘
-                    ↕
-┌─────────────────────────────────────────┐
-│            ViewModel Layer              │
-│     (MVVM mit CommunityToolkit)         │
-└─────────────────────────────────────────┘
-                    ↕
-┌─────────────────────────────────────────┐
-│             Service Layer               │
-│   (Business Logic, Orchestrierung)      │
-└─────────────────────────────────────────┘
-                    ↕
-┌─────────────────────────────────────────┐
-│           Repository Layer              │
-│      (Datenzugriff mit EF Core)         │
-└─────────────────────────────────────────┘
-                    ↕
-┌─────────────────────────────────────────┐
-│          External Integrations          │
-│    (AI Client, PDF Extractor, Files)    │
-└─────────────────────────────────────────┘
-```
+| Bereich | Art der KI-Unterstützung | Prüfung und eigene Anpassung |
+|---------|--------------------------|------------------------------|
+| Backend File Service | Architekturerklärung, Bug-Identification, Code-Review | Eigene Implementierung, Bugfixes, Tests |
+| UI Implementation | ViewModel-Erstellung, XAML-Design, Converter | Layout-Entwurf, CRUD-Implementierung, Tests |
+| Modern UI Redesign | Refactoring, Bugfixes, Übersetzung | Card-UI-Entwurf, Drei-Zustands-Logik, End-to-End-Tests |
+| Quiz Feature | ViewModel-Erstellung, Command-Implementierung | Drei-Spalten-Layout, Quiz-UI, Farbdfeedback |
+| AI Integration | API-Debugging, PDF-Extraktion, DI-Konfiguration | Bibliotheksinstallation, Debugging, Flow-Tests |
 
-**Besonderheiten:**
-- Dependency Injection über Microsoft.Extensions.DependencyInjection
-- Singleton-ViewModels für zustandsbehaftete Kommunikation zwischen Views
-- Scoped-Repositories und Services pro Use-Case
-- Code-First EF-Core-Ansatz mit automatischen Migrationen
-- AI-Integration über typisierten HttpClient mit JSON-Payload
+**Datenquelle:** `Documentation/ki-nutzungsprotokoll-vorlage.md` (vollständiges Protokoll liegt bei)
+
+### Architekturübersicht (textuell)
+
+Die Anwendung folgt einer mehrschichtigen Architektur:
+
+1. **Präsentationsschicht:** WPF Views (XAML) mit Data Binding an ViewModels
+2. **ViewModel-Schicht:** MVVM mit CommunityToolkit.Mvvm (ObservableObject, RelayCommand)
+3. **Service-Schicht:** Geschäftslogik und Orchestrierung
+4. **Repository-Schicht:** Datenzugriff mit Entity Framework Core
+5. **Datenzugriffsschicht:** SQLite-Datenbank (lokal, dateibasiert)
+6. **Externe Integrationen:** Lisa Chat API (HTTP), PDF-Textextraktion (PdfPig)
+
+Kommunikation zwischen den Schichten erfolgt über Dependency Injection (Microsoft.Extensions.DependencyInjection) mit Constructor Injection Pattern.
 
 ---
 
-## Anmerkungen zur Vollständigkeit
+## Verzeichnis der referenzierten Dateien
 
-**Unklare Angaben (müssen vom Entwickler bestätigt werden):**
-1. Exakte Git-Version
-2. Lizenz von DotNetEnv (vermutet: MIT)
-3. Lizenz von PdfPig (vermutet: Apache 2.0)
-4. Nutzungsbedingungen der Lisa Chat API
-5. Visual Studio Exact Version (nur "2022 recommended" bekannt)
+Alle Aussagen in diesem Bericht basieren auf folgenden Dateien des Repositories:
 
-**Nicht im Report enthalten:**
-- .NET Standard Library Klassen (werden nicht als extern betrachtet)
-- Windows-spezifische APIs (Teil des .NET Frameworks)
-- Auto-generierte EF-Core-Migrationen (Tools, keine Bibliotheken)
+- `StudyMate.Wpf/StudyMate.Wpf.csproj` – Paketreferenzen, Target Framework
+- `StudyMate.slnx` – Solution-Datei
+- `README.md` – Systemvoraussetzungen, Setup-Anleitung
+- `.env.example` – API-Konfiguration (Template)
+- `Documentation/ki-nutzungsprotokoll-vorlage.md` – KI-Nutzungsprotokoll
+- `.gitignore` – Git-Ignorierregeln
+- `StudyMate.Wpf/App.xaml.cs` – Dependency Injection Konfiguration
+- `StudyMate.Wpf/Data/AppDbContext.cs` – DbContext-Definition
+- `StudyMate.Wpf/Migrations/` – Automatisch generierte EF-Core-Dateien
+- Alle Quelldateien in `StudyMate.Wpf/` (Models, ViewModels, Services, Repositories, Views, Integrations)
 
 ---
-*Dieser Report wurde automatisch generiert basierend auf der Codebasis-Analyse.*
+
+## Prüfcheckliste für den Entwickler
+
+Vor Einreichung der Studienarbeit müssen folgende Punkte manuell bestätigt werden:
+
+- [ ] **Lizenzen aller NuGet-Pakete überprüft** (insbesondere PdfPig: Apache 2.0 vs. MIT bei anderen)
+- [ ] **Eigenes Projekt unter eine Lizenz gestellt** (LICENSE-Datei erstellt)
+- [ ] **Tatsächlich verwendete Visual Studio Version dokumentiert**
+- [ ] **Git Version dokumentiert**
+- [ ] **Nutzungsbedingungen der Lisa Chat API gelesen und akzeptiert**
+- [ ] **Datenschutzkonformität der API-Nutzung geprüft** (speichert API Anbieter Daten?)
+- [ ] **Cloc-Analyse mit exakter Trennung generierter Dateien durchgeführt**
+- [ ] **Alle im KI-Nutzungsprotokoll genannten Aktivitäten auf Vollständigkeit geprüft**
+- [ ] **Entscheidung getroffen: Wird der Code unter Open-Source-Lizenz veröffentlicht oder proprietär?**
+
+---
+
+*Dieser Report wurde erstellt basierend auf einer automatisierten Analyse des Repository-Stands vom 24. Juli 2026. Alle Aussagen sind ausschließlich durch repository-interne Dokumente und Quelldateien verifiziert.*
