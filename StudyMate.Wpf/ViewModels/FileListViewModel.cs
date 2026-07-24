@@ -200,7 +200,7 @@ namespace StudyMate.Wpf.ViewModels
                     Files.Remove(file);
                     if (SelectedFile?.Id == file.Id)
                     {
-                        selectedFile = null;
+                        SelectedFile = null;
                     }
 
                     SuccessMessage = "File deleted successfully!";

@@ -20,8 +20,8 @@ namespace StudyMate.Wpf;
 
 public partial class App : Application
 {
-    public static IServiceProvider Services { get; private set; } = null;
-    public static IServiceScope Scope { get; private set; } = null;
+    public static IServiceProvider? Services { get; private set; }
+    public static IServiceScope? Scope { get; private set; }
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -30,7 +30,7 @@ public partial class App : Application
         ConfigureServices(services);
 
         Services = services.BuildServiceProvider();
-        
+
         // Create scope for the entire application
         Scope = Services.CreateScope();
 
@@ -100,13 +100,15 @@ public partial class App : Application
 
         DotNetEnv.Env.Load();
 
+#pragma warning disable CS8601 // Possible null reference assignment - Environment variables can be null but we handle with ?? string.Empty
         var AiSettings = new AiSettings()
         {
-            BaseUrl = Environment.GetEnvironmentVariable("AiBaseUrl"),
-            AnalysisEndpoint = Environment.GetEnvironmentVariable("AiEndpoint"),
-            ApiKey = Environment.GetEnvironmentVariable("ApiKey"),
-            ModelName = Environment.GetEnvironmentVariable("AiModel")
+            BaseUrl = Environment.GetEnvironmentVariable("AiBaseUrl") ?? string.Empty,
+            AnalysisEndpoint = Environment.GetEnvironmentVariable("AiEndpoint") ?? string.Empty,
+            ApiKey = Environment.GetEnvironmentVariable("ApiKey") ?? string.Empty,
+            ModelName = Environment.GetEnvironmentVariable("AiModel") ?? string.Empty
         };
+#pragma warning restore CS8601
         services.AddSingleton<AiSettings>(AiSettings);
         services.AddSingleton<IPdfTextExtractor, PdfTextExtractor>();
         services.AddHttpClient<IAiClient, AiClient>();

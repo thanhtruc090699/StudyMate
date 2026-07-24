@@ -17,6 +17,9 @@ namespace StudyMate.Wpf.Services.Interfaces
         /// <summary>
         /// Retrieves the most recent analysis for a study file.
         /// </summary>
-        Task<AiAnalysis> GetLatestAnalysisByStudyFileIdAsync(int studyFileId);
+        /// <returns>
+        /// The latest AI analysis if found; otherwise, <see langword="null"/>.
+        /// </returns>
+        Task<AiAnalysis?> GetLatestAnalysisByStudyFileIdAsync(int studyFileId);
     }
 }
