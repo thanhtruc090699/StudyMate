@@ -4,160 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Background="#F8F9FC"
+    Background="{StaticResource SurfaceColor}"
     mc:Ignorable="d">
 
     <UserControl.Resources>
 
-        <!--  Primary purple color  -->
-        <SolidColorBrush x:Key="PrimaryBrush" Color="#6C4CF1" />
-
-        <!--  Primary button  -->
-        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-
-            <Setter Property="Height" Value="48" />
-
-            <Setter Property="Padding" Value="18,0" />
-
-            <Setter Property="Foreground" Value="White" />
-
-            <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
-
-            <Setter Property="BorderThickness" Value="0" />
-
-            <Setter Property="FontWeight" Value="SemiBold" />
-
-            <Setter Property="Cursor" Value="Hand" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
-
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--  Secondary button  -->
-        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
-
-            <Setter Property="Height" Value="36" />
-
-            <Setter Property="Padding" Value="16,0" />
-
-            <Setter Property="Foreground" Value="#343842" />
-
-            <Setter Property="Background" Value="White" />
-
-            <Setter Property="BorderBrush" Value="#E1E4EA" />
-
-            <Setter Property="BorderThickness" Value="1" />
-
-            <Setter Property="FontWeight" Value="Medium" />
-
-            <Setter Property="Cursor" Value="Hand" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="8">
-
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--  Modern TextBox  -->
-        <Style x:Key="SearchTextBoxStyle" TargetType="TextBox">
-
-            <Setter Property="Height" Value="42" />
-
-            <Setter Property="Padding" Value="14,0" />
-
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-
-            <Setter Property="Background" Value="White" />
-
-            <Setter Property="BorderBrush" Value="#E1E4EA" />
-
-            <Setter Property="BorderThickness" Value="1" />
-
-            <Setter Property="FontSize" Value="14" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="8">
-
-                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--  ListBox item container  -->
-        <Style TargetType="ListBoxItem">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-
-            <Setter Property="Margin" Value="0,0,0,10" />
-
-            <Setter Property="Padding" Value="0" />
-
-            <Setter Property="Background" Value="Transparent" />
-
-            <Setter Property="BorderThickness" Value="0" />
-
-            <Setter Property="Cursor" Value="Hand" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <Border
-                            x:Name="ItemBorder"
-                            Padding="14"
-                            Background="White"
-                            BorderBrush="#E7E9EF"
-                            BorderThickness="1"
-                            CornerRadius="10">
-
-                            <ContentPresenter />
-                        </Border>
-
-                        <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsMouseOver" Value="True">
-
-                                <Setter TargetName="ItemBorder" Property="Background" Value="#F5F1FF" />
-
-                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#BCAEFF" />
-                            </Trigger>
-
-                            <Trigger Property="IsSelected" Value="True">
-
-                                <Setter TargetName="ItemBorder" Property="Background" Value="#EEE9FF" />
-
-                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#6C4CF1" />
-                            </Trigger>
-
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <!--  ListBox item container - Use shared style with custom triggers -->
+        <Style TargetType="ListBoxItem" BasedOn="{StaticResource FolderListBoxItem}"/>
 
     </UserControl.Resources>
 
@@ -180,7 +33,7 @@
                 <Border
                     Width="42"
                     Height="42"
-                    Background="#EEE9FF"
+                    Background="{StaticResource HeaderIconBackground}"
                     CornerRadius="10">
 
                     <TextBlock
@@ -193,9 +46,7 @@
                 <TextBlock
                     Margin="12,0,0,0"
                     VerticalAlignment="Center"
-                    FontSize="25"
-                    FontWeight="Bold"
-                    Foreground="#171A21"
+                    Style="{StaticResource Heading2}"
                     Text="StudyMate" />
 
             </StackPanel>
@@ -209,15 +60,15 @@
             Margin="0,0,0,18"
             Command="{Binding ShowCreateFolderCommand}"
             Content="+  New Folder"
-            Style="{StaticResource PrimaryButtonStyle}" />
+            Style="{StaticResource PrimaryButton}" />
 
         <!--  Create folder form  -->
         <Border
             Grid.Row="2"
             Margin="0,0,0,20"
             Padding="14"
-            Background="#F2EEFF"
-            BorderBrush="#CABDFF"
+            Background="{StaticResource FolderFormBackground}"
+            BorderBrush="{StaticResource FolderFormBorder}"
             BorderThickness="1"
             CornerRadius="10"
             Visibility="{Binding IsCreateFolderVisible, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -226,24 +77,24 @@
 
                 <TextBlock
                     Margin="0,0,0,7"
-                    FontSize="13"
+                    Style="{StaticResource BodyText}"
                     FontWeight="SemiBold"
-                    Foreground="#343842"
                     Text="Folder name" />
 
                 <TextBox
                     Height="42"
-                    Style="{StaticResource SearchTextBoxStyle}"
+                    Style="{StaticResource ModernTextBox}"
                     Text="{Binding NewFolderName, UpdateSourceTrigger=PropertyChanged}" />
 
                 <TextBlock
                     Margin="0,5,0,0"
-                    Foreground="#9A9EAA"
+                    Foreground="{StaticResource TextMutedColor}"
                     IsHitTestVisible="False"
                     Text="Enter folder name...">
 
                     <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryText}">
+
                             <Setter Property="Visibility" Value="Collapsed" />
 
                             <Style.Triggers>
@@ -273,14 +124,14 @@
                         Margin="0,0,8,0"
                         Command="{Binding CancelCreateFolderCommand}"
                         Content="Cancel"
-                        Style="{StaticResource SecondaryButtonStyle}" />
+                        Style="{StaticResource SecondaryButton}" />
 
                     <Button
                         Width="90"
                         Height="36"
                         Command="{Binding CreateFolderCommand}"
                         Content="Create"
-                        Style="{StaticResource PrimaryButtonStyle}" />
+                        Style="{StaticResource PrimaryButton}" />
 
                 </StackPanel>
 
@@ -294,7 +145,7 @@
             Margin="0,0,0,12"
             FontSize="13"
             FontWeight="SemiBold"
-            Foreground="#777D8B"
+            Foreground="{StaticResource TextSecondaryColor}"
             Text="FOLDERS" />
 
         <!--  Error message  -->
@@ -302,7 +153,7 @@
             Grid.Row="4"
             Margin="0,0,0,12"
             Padding="10"
-            Background="#FFF0F0"
+            Background="{StaticResource ErrorLightColor}"
             CornerRadius="6">
 
             <Border.Style>
@@ -326,7 +177,7 @@
             </Border.Style>
 
             <TextBlock
-                Foreground="#C62828"
+                Foreground="{StaticResource ErrorColor}"
                 Text="{Binding ErrorMessage}"
                 TextWrapping="Wrap" />
 
@@ -365,7 +216,7 @@
                                 Grid.Column="0"
                                 Width="40"
                                 Height="40"
-                                Background="#F1ECFF"
+                                Background="{StaticResource FolderIconBackground}"
                                 CornerRadius="8">
 
                                 <TextBlock
@@ -385,14 +236,14 @@
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
-                                    Foreground="#25272D"
+                                    Foreground="{StaticResource TextColorDark}"
                                     Text="{Binding Name}"
                                     TextTrimming="CharacterEllipsis" />
 
                                 <TextBlock
                                     Margin="0,4,0,0"
                                     FontSize="12"
-                                    Foreground="#808590"
+                                    Foreground="{StaticResource TextMutedColor}"
                                     Text="{Binding FileCount, StringFormat={}{0} files}" />
 
                             </StackPanel>
@@ -403,7 +254,7 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 FontSize="27"
-                                Foreground="#90949D"
+                                Foreground="{StaticResource IconArrowColor}"
                                 Text="›" />
 
                         </Grid>
@@ -440,12 +291,13 @@
                     HorizontalAlignment="Center"
                     FontSize="17"
                     FontWeight="SemiBold"
+                    Foreground="{StaticResource TextPrimaryColor}"
                     Text="No folders yet" />
 
                 <TextBlock
                     Margin="0,7,0,0"
                     HorizontalAlignment="Center"
-                    Foreground="#808590"
+                    Foreground="{StaticResource TextMutedColor}"
                     Text="Create your first study folder." />
 
             </StackPanel>

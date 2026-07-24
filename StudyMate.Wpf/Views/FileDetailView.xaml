@@ -6,243 +6,19 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="820"
     d:DesignWidth="620"
-    Background="White"
+    Background="{StaticResource BackgroundColor}"
     mc:Ignorable="d">
 
     <UserControl.Resources>
 
-        <SolidColorBrush x:Key="PrimaryBrush" Color="#6C4CF1" />
+        <!--  Close button style  -->
+        <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource CloseButton}"/>
 
-        <!--  Close button  -->
-        <Style x:Key="CloseButtonStyle" TargetType="Button">
+        <!--  Tab item style  -->
+        <Style x:Key="ModernTabItemStyle" TargetType="TabItem" BasedOn="{StaticResource ModernTabItem}"/>
 
-            <Setter Property="Width" Value="42" />
-
-            <Setter Property="Height" Value="42" />
-
-            <Setter Property="Background" Value="White" />
-
-            <Setter Property="BorderBrush" Value="#E3E6EC" />
-
-            <Setter Property="BorderThickness" Value="1" />
-
-            <Setter Property="Foreground" Value="#20242C" />
-
-            <Setter Property="FontSize" Value="24" />
-
-            <Setter Property="Cursor" Value="Hand" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-
-                        <Border
-                            x:Name="ButtonBorder"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="8">
-
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-
-                        </Border>
-
-                        <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsMouseOver" Value="True">
-
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#F5F5F8" />
-
-                            </Trigger>
-
-                            <Trigger Property="IsPressed" Value="True">
-
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#ECECF1" />
-
-                            </Trigger>
-
-                        </ControlTemplate.Triggers>
-
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-
-        </Style>
-
-        <!--  Tab style  -->
-        <Style x:Key="ModernTabItemStyle" TargetType="TabItem">
-
-            <Setter Property="Foreground" Value="#20242C" />
-
-            <Setter Property="FontSize" Value="15" />
-
-            <Setter Property="FontWeight" Value="SemiBold" />
-
-            <Setter Property="Padding" Value="16,14" />
-
-            <Setter Property="Margin" Value="0,0,12,0" />
-
-            <Setter Property="Cursor" Value="Hand" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
-
-                        <Grid
-                            Width="Auto"
-                            HorizontalAlignment="Left"
-                            Background="Transparent">
-
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="3" />
-                            </Grid.RowDefinitions>
-
-                            <Border Grid.Row="0" Background="Transparent">
-
-                                <ContentPresenter
-                                    Margin="{TemplateBinding Padding}"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Center"
-                                    ContentSource="Header" />
-
-                            </Border>
-
-                            <Border
-                                x:Name="SelectedLine"
-                                Grid.Row="1"
-                                Height="3"
-                                Margin="8,0"
-                                Background="Transparent"
-                                CornerRadius="2" />
-
-                        </Grid>
-
-                        <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsSelected" Value="True">
-
-                                <Setter Property="Foreground" Value="#6C4CF1" />
-
-                                <Setter TargetName="SelectedLine" Property="Background" Value="#6C4CF1" />
-
-                            </Trigger>
-
-                            <Trigger Property="IsMouseOver" Value="True">
-
-                                <Setter Property="Foreground" Value="#6C4CF1" />
-
-                            </Trigger>
-
-                        </ControlTemplate.Triggers>
-
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-
-        </Style>
-
-        <!--  Answer option  -->
-        <Style x:Key="QuizOptionStyle" TargetType="RadioButton">
-
-            <Setter Property="Margin" Value="0,0,0,10" />
-
-            <Setter Property="Padding" Value="12" />
-
-            <Setter Property="Background" Value="White" />
-
-            <Setter Property="BorderBrush" Value="#E1E4EA" />
-
-            <Setter Property="BorderThickness" Value="1" />
-
-            <Setter Property="FontSize" Value="14" />
-
-            <Setter Property="Cursor" Value="Hand" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-
-                        <Border
-                            x:Name="OptionBorder"
-                            Padding="{TemplateBinding Padding}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="8">
-
-                            <Grid>
-
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="24" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <Ellipse
-                                    x:Name="OuterCircle"
-                                    Width="16"
-                                    Height="16"
-                                    VerticalAlignment="Center"
-                                    Stroke="#8A909C"
-                                    StrokeThickness="1.5" />
-
-                                <Ellipse
-                                    x:Name="InnerCircle"
-                                    Width="8"
-                                    Height="8"
-                                    VerticalAlignment="Center"
-                                    Fill="Transparent" />
-
-                                <ContentPresenter
-                                    Grid.Column="1"
-                                    Margin="8,0,0,0"
-                                    VerticalAlignment="Center" />
-
-                            </Grid>
-
-                        </Border>
-
-                        <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsMouseOver" Value="True">
-
-                                <Setter TargetName="OptionBorder" Property="Background" Value="#F8F5FF" />
-
-                                <Setter TargetName="OptionBorder" Property="BorderBrush" Value="#C3B2FF" />
-
-                            </Trigger>
-
-                            <Trigger Property="IsChecked" Value="True">
-
-                                <Setter TargetName="OptionBorder" Property="Background" Value="#F3EEFF" />
-
-                                <Setter TargetName="OptionBorder" Property="BorderBrush" Value="#6C4CF1" />
-
-                                <Setter TargetName="OuterCircle" Property="Stroke" Value="#6C4CF1" />
-
-                                <Setter TargetName="InnerCircle" Property="Fill" Value="#6C4CF1" />
-
-                            </Trigger>
-
-                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
-
-                                <Setter TargetName="OptionBorder" Property="Background" Value="#F3EEFF" />
-
-                                <Setter TargetName="OptionBorder" Property="BorderBrush" Value="#6C4CF1" />
-
-                                <Setter TargetName="OuterCircle" Property="Stroke" Value="#6C4CF1" />
-
-                                <Setter TargetName="InnerCircle" Property="Fill" Value="#6C4CF1" />
-
-                            </DataTrigger>
-
-                        </ControlTemplate.Triggers>
-
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-
-        </Style>
+        <!--  Quiz option style  -->
+        <Style x:Key="QuizOptionStyle" TargetType="RadioButton" BasedOn="{StaticResource QuizOptionStyle}"/>
 
     </UserControl.Resources>
 
@@ -272,7 +48,7 @@
             <Border
                 Width="82"
                 Height="82"
-                Background="#F3EEFF"
+                Background="{StaticResource PrimaryLightColor}"
                 CornerRadius="18">
 
                 <TextBlock
@@ -280,7 +56,7 @@
                     VerticalAlignment="Center"
                     FontSize="21"
                     FontWeight="Bold"
-                    Foreground="#6C4CF1"
+                    Foreground="{StaticResource PrimaryColor}"
                     Text="PDF" />
 
             </Border>
@@ -290,7 +66,7 @@
                 HorizontalAlignment="Center"
                 FontSize="22"
                 FontWeight="SemiBold"
-                Foreground="#20242C"
+                Foreground="{StaticResource TextDarkColor}"
                 Text="Select a PDF file" />
 
             <TextBlock
@@ -342,8 +118,8 @@
                     Grid.Column="0"
                     Width="46"
                     Height="54"
-                    Background="#FFF3F3"
-                    BorderBrush="#F4D5D5"
+                    Background="{StaticResource PDFIconBackground}"
+                    BorderBrush="{StaticResource PDFBorderColor}"
                     BorderThickness="1"
                     CornerRadius="7">
 
@@ -352,14 +128,14 @@
                         <TextBlock
                             HorizontalAlignment="Center"
                             FontSize="18"
-                            Foreground="#E53935"
+                            Foreground="{StaticResource PDFIconForeground}"
                             Text="⌁" />
 
                         <TextBlock
                             HorizontalAlignment="Center"
                             FontSize="10"
                             FontWeight="Bold"
-                            Foreground="#E53935"
+                            Foreground="{StaticResource PDFIconForeground}"
                             Text="PDF" />
 
                     </StackPanel>
@@ -375,7 +151,7 @@
                     <TextBlock
                         FontSize="19"
                         FontWeight="SemiBold"
-                        Foreground="#171A21"
+                        Foreground="{StaticResource TextPrimaryColor}"
                         Text="{Binding SelectedFile.OriginalFileName}"
                         TextTrimming="CharacterEllipsis" />
 
@@ -383,7 +159,7 @@
 
                         <TextBlock
                             FontSize="13"
-                            Foreground="#737988"
+                            Foreground="{StaticResource TextSecondaryColor}"
                             Text="{Binding SelectedFile.FileSizeDisplay}" />
 
                         <TextBlock
@@ -393,7 +169,7 @@
 
                         <TextBlock
                             FontSize="13"
-                            Foreground="#737988"
+                            Foreground="{StaticResource TextSecondaryColor}"
                             Text="PDF Document" />
 
                     </StackPanel>
@@ -437,8 +213,8 @@
 
                         <Border
                             Padding="24"
-                            Background="White"
-                            BorderBrush="#E4E7EC"
+                            Background="{StaticResource BackgroundColor}"
+                            BorderBrush="{StaticResource TabBorderColor}"
                             BorderThickness="1"
                             CornerRadius="10">
 
@@ -447,13 +223,13 @@
                                 <TextBlock
                                     FontSize="21"
                                     FontWeight="Bold"
-                                    Foreground="#171A21"
+                                    Foreground="{StaticResource TextPrimaryColor}"
                                     Text="Summary" />
 
                                 <TextBlock
                                     Margin="0,20,0,0"
                                     FontSize="15"
-                                    Foreground="#30343C"
+                                    Foreground="{StaticResource TextColorMedium}"
                                     LineHeight="26"
                                     Text="{Binding Summary}"
                                     TextWrapping="Wrap" />
@@ -462,7 +238,7 @@
                                     Margin="0,28,0,0"
                                     FontSize="20"
                                     FontWeight="Bold"
-                                    Foreground="#171A21"
+                                    Foreground="{StaticResource TextPrimaryColor}"
                                     Text="Key Points" />
 
                                 <ItemsControl Margin="0,14,0,0" ItemsSource="{Binding KeyPoints}">
@@ -481,13 +257,13 @@
                                                     Grid.Column="0"
                                                     VerticalAlignment="Top"
                                                     FontSize="18"
-                                                    Foreground="#20242C"
+                                                    Foreground="{StaticResource TextDarkColor}"
                                                     Text="•" />
 
                                                 <TextBlock
                                                     Grid.Column="1"
                                                     FontSize="15"
-                                                    Foreground="#30343C"
+                                                    Foreground="{StaticResource TextColorMedium}"
                                                     LineHeight="24"
                                                     Text="{Binding}"
                                                     TextWrapping="Wrap" />
@@ -517,8 +293,8 @@
 
                         <Border
                             Padding="24"
-                            Background="White"
-                            BorderBrush="#E4E7EC"
+                            Background="{StaticResource BackgroundColor}"
+                            BorderBrush="{StaticResource TabBorderColor}"
                             BorderThickness="1"
                             CornerRadius="10">
 
@@ -533,7 +309,7 @@
                                     Margin="0,12,0,20"
                                     FontSize="19"
                                     FontWeight="SemiBold"
-                                    Foreground="#171A21"
+                                    Foreground="{StaticResource TextPrimaryColor}"
                                     Text="{Binding CurrentQuestion.QuestionText}"
                                     TextWrapping="Wrap" />
 
@@ -572,7 +348,7 @@
 
                                             <Setter Property="Visibility" Value="Collapsed" />
 
-                                            <Setter Property="Background" Value="#EEF8F0" />
+                                            <Setter Property="Background" Value="{StaticResource SuccessLightColor}" />
 
                                             <Style.Triggers>
 
@@ -593,7 +369,7 @@
                                         </Style>
                                     </Border.Style>
 
-                                    <TextBlock FontWeight="SemiBold">
+                                    <TextBlock FontWeight="SemiBold" Foreground="{StaticResource TextDarkColor}">
                                         <TextBlock.Text>
                                             <MultiBinding Converter="{StaticResource ResultTextConverter}">
                                                 <Binding Path="CurrentQuestion.IsSubmitted" />
@@ -608,8 +384,8 @@
                                 <Border
                                     Margin="0,12,0,0"
                                     Padding="14"
-                                    Background="#F8F5FF"
-                                    BorderBrush="#DDD3FF"
+                                    Background="{StaticResource ExplanationBackground}"
+                                    BorderBrush="{StaticResource ExplanationBorder}"
                                     BorderThickness="1"
                                     CornerRadius="8"
                                     Visibility="{Binding CurrentQuestion.IsSubmitted, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -619,13 +395,13 @@
                                         <TextBlock
                                             FontSize="14"
                                             FontWeight="SemiBold"
-                                            Foreground="#5E3FD6"
+                                            Foreground="{StaticResource ExplanationText}"
                                             Text="Explanation" />
 
                                         <TextBlock
                                             Margin="0,6,0,0"
                                             FontSize="13"
-                                            Foreground="#444952"
+                                            Foreground="{StaticResource TextColorLight}"
                                             Text="{Binding CurrentQuestion.Explanation}"
                                             TextWrapping="Wrap" />
 
@@ -665,11 +441,11 @@
                                         Width="100"
                                         Height="38"
                                         Margin="16,0,0,0"
-                                        Background="#6C4CF1"
+                                        Background="{StaticResource PrimaryColor}"
                                         BorderThickness="0"
                                         Command="{Binding NextQuestionCommand}"
                                         Content="Next"
-                                        Foreground="White" />
+                                        Foreground="{StaticResource TextOnPrimaryColor}" />
 
                                 </Grid>
 
@@ -686,7 +462,9 @@
         </Grid>
 
         <!--  Loading overlay  -->
-        <Border Background="#CCFFFFFF" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+        <Border
+            Background="{StaticResource LoadingOverlayColor}"
+            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
 
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
@@ -698,7 +476,7 @@
                 <TextBlock
                     Margin="0,12,0,0"
                     FontSize="14"
-                    Foreground="#606674"
+                    Foreground="{StaticResource LoadingTextColor}"
                     Text="Generating study material..." />
 
             </StackPanel>

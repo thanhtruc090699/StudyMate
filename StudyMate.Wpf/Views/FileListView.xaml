@@ -6,124 +6,20 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="720"
     d:DesignWidth="440"
-    Background="White"
+    Background="{StaticResource BackgroundColor}"
     mc:Ignorable="d">
 
     <UserControl.Resources>
 
-        <!--  Upload button  -->
-        <Style x:Key="UploadButtonStyle" TargetType="Button">
+        <!--  Upload button style  -->
+        <Style x:Key="UploadButtonStyle" TargetType="Button" BasedOn="{StaticResource UploadButton}"/>
 
-            <Setter Property="Height" Value="48" />
-
-            <Setter Property="Foreground" Value="#6C43F3" />
-
-            <Setter Property="Background" Value="White" />
-
-            <Setter Property="BorderBrush" Value="#BCA9FF" />
-
-            <Setter Property="BorderThickness" Value="1.5" />
-
-            <Setter Property="FontSize" Value="15" />
-
-            <Setter Property="FontWeight" Value="SemiBold" />
-
-            <Setter Property="Cursor" Value="Hand" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-
-                        <Border
-                            x:Name="ButtonBorder"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="8">
-
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-
-                        </Border>
-
-                        <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsMouseOver" Value="True">
-
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#F7F4FF" />
-
-                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#7A55F5" />
-
-                            </Trigger>
-
-                            <Trigger Property="IsPressed" Value="True">
-
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#EEE9FF" />
-
-                            </Trigger>
-
-                            <Trigger Property="IsEnabled" Value="False">
-
-                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.5" />
-
-                            </Trigger>
-
-                        </ControlTemplate.Triggers>
-
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-
-        </Style>
-
-        <!--  Icon button  -->
-        <Style x:Key="IconButtonStyle" TargetType="Button">
-
-            <Setter Property="Width" Value="34" />
-
-            <Setter Property="Height" Value="34" />
-
-            <Setter Property="Background" Value="Transparent" />
-
-            <Setter Property="BorderThickness" Value="0" />
-
-            <Setter Property="Foreground" Value="#687080" />
-
-            <Setter Property="FontSize" Value="18" />
-
-            <Setter Property="Cursor" Value="Hand" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-
-                        <Border
-                            x:Name="IconBorder"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="6">
-
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-
-                        </Border>
-
-                        <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsMouseOver" Value="True">
-
-                                <Setter TargetName="IconBorder" Property="Background" Value="#EEEAFB" />
-
-                            </Trigger>
-
-                        </ControlTemplate.Triggers>
-
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-
-        </Style>
+        <!--  Icon button style  -->
+        <Style x:Key="IconButtonStyle" TargetType="Button" BasedOn="{StaticResource IconButton}"/>
 
     </UserControl.Resources>
 
-    <Grid Background="White">
+    <Grid Background="{StaticResource BackgroundColor}">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -157,7 +53,7 @@
             <Border
                 Width="80"
                 Height="80"
-                Background="#F3EEFF"
+                Background="{StaticResource PrimaryLightColor}"
                 CornerRadius="18">
 
                 <TextBlock
@@ -173,14 +69,14 @@
                 HorizontalAlignment="Center"
                 FontSize="22"
                 FontWeight="SemiBold"
-                Foreground="#202124"
+                Foreground="{StaticResource TextDarkColor}"
                 Text="Select a folder" />
 
             <TextBlock
                 Margin="0,8,0,0"
                 HorizontalAlignment="Center"
                 FontSize="14"
-                Foreground="#7D8492"
+                Foreground="{StaticResource TextSecondaryColor}"
                 Text="Choose a folder on the left to view its PDF files." />
 
         </StackPanel>
@@ -207,14 +103,14 @@
             <TextBlock
                 FontSize="26"
                 FontWeight="Bold"
-                Foreground="#191C24"
+                Foreground="{StaticResource TextPrimaryColor}"
                 Text="{Binding SelectedFolder.Name}"
                 TextTrimming="CharacterEllipsis" />
 
             <TextBlock
                 Margin="0,5,0,0"
                 FontSize="14"
-                Foreground="#737988">
+                Foreground="{StaticResource TextSecondaryColor}">
 
                 <Run Text="{Binding Files.Count, Mode=OneWay}" />
                 <Run Text=" files" />
@@ -268,12 +164,12 @@
             <Border
                 Margin="0,0,0,8"
                 Padding="11"
-                Background="#FFF1F1"
+                Background="{StaticResource ErrorLightColor}"
                 CornerRadius="7"
                 Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
 
                 <TextBlock
-                    Foreground="#D93025"
+                    Foreground="{StaticResource ErrorColor}"
                     Text="{Binding ErrorMessage}"
                     TextWrapping="Wrap" />
 
@@ -282,12 +178,12 @@
             <Border
                 Margin="0,0,0,8"
                 Padding="11"
-                Background="#EDF8F0"
+                Background="{StaticResource SuccessLightColor}"
                 CornerRadius="7"
                 Visibility="{Binding SuccessMessage, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
 
                 <TextBlock
-                    Foreground="#218739"
+                    Foreground="{StaticResource SuccessColor}"
                     Text="{Binding SuccessMessage}"
                     TextWrapping="Wrap" />
 
@@ -323,63 +219,7 @@
 
                 <ListBox.ItemContainerStyle>
 
-                    <Style TargetType="ListBoxItem">
-
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-
-                        <Setter Property="Padding" Value="0" />
-
-                        <Setter Property="Margin" Value="0,0,0,12" />
-
-                        <Setter Property="Background" Value="Transparent" />
-
-                        <Setter Property="BorderThickness" Value="0" />
-
-                        <Setter Property="Cursor" Value="Hand" />
-
-                        <Setter Property="Template">
-                            <Setter.Value>
-
-                                <ControlTemplate TargetType="ListBoxItem">
-
-                                    <Border
-                                        x:Name="FileCard"
-                                        Padding="14"
-                                        Background="White"
-                                        BorderBrush="Transparent"
-                                        BorderThickness="1"
-                                        CornerRadius="10">
-
-                                        <ContentPresenter />
-
-                                    </Border>
-
-                                    <ControlTemplate.Triggers>
-
-                                        <Trigger Property="IsMouseOver" Value="True">
-
-                                            <Setter TargetName="FileCard" Property="Background" Value="#FAF8FF" />
-
-                                            <Setter TargetName="FileCard" Property="BorderBrush" Value="#D7CBFF" />
-
-                                        </Trigger>
-
-                                        <Trigger Property="IsSelected" Value="True">
-
-                                            <Setter TargetName="FileCard" Property="Background" Value="#F3EEFF" />
-
-                                            <Setter TargetName="FileCard" Property="BorderBrush" Value="#BCA9FF" />
-
-                                        </Trigger>
-
-                                    </ControlTemplate.Triggers>
-
-                                </ControlTemplate>
-
-                            </Setter.Value>
-                        </Setter>
-
-                    </Style>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource FileListBoxItem}"/>
 
                 </ListBox.ItemContainerStyle>
 
@@ -402,8 +242,8 @@
                                 Grid.Column="0"
                                 Width="42"
                                 Height="50"
-                                Background="#FFF4F4"
-                                BorderBrush="#F4D7D7"
+                                Background="{StaticResource PDFIconBackground}"
+                                BorderBrush="{StaticResource PDFBorderColor}"
                                 BorderThickness="1"
                                 CornerRadius="7">
 
@@ -412,14 +252,14 @@
                                     <TextBlock
                                         HorizontalAlignment="Center"
                                         FontSize="18"
-                                        Foreground="#E53935"
+                                        Foreground="{StaticResource PDFIconForeground}"
                                         Text="⌁" />
 
                                     <TextBlock
                                         HorizontalAlignment="Center"
                                         FontSize="9"
                                         FontWeight="Bold"
-                                        Foreground="#E53935"
+                                        Foreground="{StaticResource PDFIconForeground}"
                                         Text="PDF" />
 
                                 </StackPanel>
@@ -435,13 +275,13 @@
                                 <TextBlock
                                     FontSize="15"
                                     FontWeight="SemiBold"
-                                    Foreground="#262A33"
+                                    Foreground="{StaticResource TextColorDark}"
                                     Text="{Binding OriginalFileName}"
                                     TextTrimming="CharacterEllipsis" />
 
                                 <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
 
-                                    <TextBlock FontSize="12" Foreground="#7D8492">
+                                    <TextBlock FontSize="12" Foreground="{StaticResource TextSecondaryColor}">
 
                                         <Run Text="{Binding FileSizeBytes, StringFormat={}{0:F0}}" />
                                         <Run Text=" bytes" />
@@ -450,12 +290,12 @@
 
                                     <TextBlock
                                         Margin="7,0"
-                                        Foreground="#A3A7AF"
+                                        Foreground="{StaticResource TextMutedColor}"
                                         Text="•" />
 
                                     <TextBlock
                                         FontSize="12"
-                                        Foreground="#7D8492"
+                                        Foreground="{StaticResource TextSecondaryColor}"
                                         Text="{Binding UploadedAt, StringFormat={}{0:dd MMM yyyy}}" />
 
                                 </StackPanel>
@@ -480,7 +320,7 @@
                                         <MenuItem
                                             Command="{Binding DataContext.DeleteFileCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                             CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                            Foreground="#D93025"
+                                            Foreground="{StaticResource ErrorColor}"
                                             Header="Delete" />
 
                                     </ContextMenu>
@@ -536,7 +376,7 @@
                         VerticalAlignment="Center"
                         FontSize="20"
                         FontWeight="Bold"
-                        Foreground="#6C4CF1"
+                        Foreground="{StaticResource PrimaryColor}"
                         Text="PDF" />
 
                 </Border>
@@ -553,7 +393,7 @@
                     Margin="0,7,0,0"
                     HorizontalAlignment="Center"
                     FontSize="13"
-                    Foreground="#7D8492"
+                    Foreground="{StaticResource TextSecondaryColor}"
                     Text="Upload a PDF file to create a summary and quiz." />
 
             </StackPanel>
@@ -563,7 +403,7 @@
         <!--  Loading overlay  -->
         <Border
             Grid.RowSpan="4"
-            Background="#BFFFFFFF"
+            Background="{StaticResource LoadingOverlayColor}"
             Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
 
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -576,7 +416,7 @@
                 <TextBlock
                     Margin="0,12,0,0"
                     HorizontalAlignment="Center"
-                    Foreground="#606674"
+                    Foreground="{StaticResource LoadingTextColor}"
                     Text="Loading..." />
 
             </StackPanel>
