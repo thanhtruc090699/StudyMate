@@ -1,6 +1,6 @@
 # Codeumfang-Analyse (cloc)
 
-**Datum der Analyse:** 24. Juli 2026  
+**Datum der Analyse:** 29. Juli 2026  
 **Werkzeug:** cloc v2.10 (https://github.com/AlDanial/cloc)  
 **Projekt:** StudyMate 
 
@@ -10,14 +10,14 @@
 
 | Kategorie | Anzahl Zeilen |
 |-----------|---------------|
-| **Gesamt (C# + XAML)** | **3.652** |
-| Davon C#-Code | 2.223 |
+| **Gesamt (C# + XAML)** | **3.926** |
+| Davon C#-Code | 2.497 |
 | Davon XAML-Code | 1.429 |
-| Kommentarzeilen | 513 |
-| Leerzeilen | 864 |
+| Kommentarzeilen | 553 |
+| Leerzeilen | 913 |
 
-**Anzahl Dateien:** 52 (44 C#, 8 XAML)  
-**Analysezeit:** 0,27 Sekunden
+**Anzahl Dateien:** 55 (47 C#, 8 XAML)  
+**Analysezeit:** 0,35 Sekunden
 
 ---
 
@@ -29,24 +29,24 @@
 |------|-------|------------|------------|-------------|
 | 1 | `Resources/Styles.xaml` | 37 | 23 | 443 |
 | 2 | `Views/FileDetailView.xaml` | 17 | 126 | 345 |
-| 3 | `ViewModels/FileDetailViewModel.cs` | 9 | 72 | 337 |
+| 3 | `ViewModels/FileDetailViewModel.cs` | 10 | 71 | 338 |
 | 4 | `Views/FileListView.xaml` | 12 | 112 | 304 |
 | 5 | `Views/FolderListView.xaml` | 11 | 71 | 227 |
-| 6 | `ViewModels/FileListViewModel.cs` | 17 | 32 | 197 |
-| 7 | `Integrations/Ai/AipromptBuilder.cs` | 28 | 42 | 160 |
-| 8 | `Migrations/AppDbContextModelSnapshot.cs` | 1 | 41 | 124 |
-| 9 | `Integrations/Ai/AiClient.cs` | 36 | 30 | 123 |
-| 10 | `ViewModels/FolderListViewModel.cs` | 10 | 24 | 102 |
-| 11 | `Migrations/20260713142448_InitialCreate.cs` | 3 | 9 | 97 |
-| 12 | `ViewModels/QuizQuestionViewModel.cs` | 0 | 18 | 88 |
-| 13 | `App.xaml.cs` | 8 | 23 | 85 |
-| 14 | `Converters/Converters.cs` | 93 | 11 | 73 |
-| 15 | `Data/AppDbContext.cs` | 10 | 29 | 73 |
-| 16 | `Services/FileStorageService.cs` | 3 | 13 | 66 |
-| 17 | `Services/StudyFileService.cs` | 5 | 12 | 66 |
-| 18 | `Services/AiAnalysisService.cs` | 3 | 14 | 62 |
-| 19 | `Resources/Colors.xaml` | 21 | 8 | 56 |
-| 20 | `ViewModels/QuizOptionViewModel.cs` | 0 | 12 | 52 |
+| 6 | `App.xaml.cs` | 11 | 36 | 186 |
+| 7 | `ViewModels/FileListViewModel.cs` | 18 | 35 | 201 |
+| 8 | `Integrations/Ai/AipromptBuilder.cs` | 28 | 42 | 160 |
+| 9 | `Migrations/AppDbContextModelSnapshot.cs` | 1 | 41 | 124 |
+| 10 | `Integrations/Ai/AiClient.cs` | 36 | 30 | 123 |
+| 11 | `Migrations/20260729133638_UpdateForEFCore10.cs` | 3 | 25 | 110 |
+| 12 | `ViewModels/FolderListViewModel.cs` | 10 | 24 | 105 |
+| 13 | `Migrations/20260713142448_InitialCreate.cs` | 3 | 9 | 97 |
+| 14 | `ViewModels/QuizQuestionViewModel.cs` | 0 | 18 | 88 |
+| 15 | `Converters/Converters.cs` | 93 | 11 | 73 |
+| 16 | `Data/AppDbContext.cs` | 10 | 29 | 73 |
+| 17 | `Services/FileStorageService.cs` | 3 | 13 | 66 |
+| 18 | `Services/StudyFileService.cs` | 5 | 12 | 66 |
+| 19 | `Services/AiAnalysisService.cs` | 3 | 14 | 62 |
+| 20 | `Resources/Colors.xaml` | 21 | 8 | 56 |
 
 ### Vollständige Liste aller Dateien
 
@@ -54,17 +54,18 @@
 |-------|------------|------------|------|
 | `StudyMate.Wpf/Resources/Styles.xaml` | 23 | 37 | 443 |
 | `StudyMate.Wpf/Views/FileDetailView.xaml` | 126 | 17 | 345 |
-| `StudyMate.Wpf/ViewModels/FileDetailViewModel.cs` | 72 | 9 | 337 |
+| `StudyMate.Wpf/ViewModels/FileDetailViewModel.cs` | 71 | 10 | 338 |
 | `StudyMate.Wpf/Views/FileListView.xaml` | 112 | 12 | 304 |
 | `StudyMate.Wpf/Views/FolderListView.xaml` | 71 | 11 | 227 |
-| `StudyMate.Wpf/ViewModels/FileListViewModel.cs` | 32 | 17 | 197 |
+| `StudyMate.Wpf/ViewModels/FileListViewModel.cs` | 35 | 18 | 201 |
+| `StudyMate.Wpf/App.xaml.cs` | 36 | 11 | 186 |
 | `StudyMate.Wpf/Integrations/Ai/AipromptBuilder.cs` | 42 | 28 | 160 |
 | `StudyMate.Wpf/Migrations/AppDbContextModelSnapshot.cs` | 41 | 1 | 124 |
 | `StudyMate.Wpf/Integrations/Ai/AiClient.cs` | 30 | 36 | 123 |
-| `StudyMate.Wpf/ViewModels/FolderListViewModel.cs` | 24 | 10 | 102 |
+| `StudyMate.Wpf/Migrations/20260729133638_UpdateForEFCore10.cs` | 25 | 3 | 110 |
+| `StudyMate.Wpf/ViewModels/FolderListViewModel.cs` | 24 | 10 | 105 |
 | `StudyMate.Wpf/Migrations/20260713142448_InitialCreate.cs` | 9 | 3 | 97 |
 | `StudyMate.Wpf/ViewModels/QuizQuestionViewModel.cs` | 18 | 0 | 88 |
-| `StudyMate.Wpf/App.xaml.cs` | 23 | 8 | 85 |
 | `StudyMate.Wpf/Converters/Converters.cs` | 11 | 93 | 73 |
 | `StudyMate.Wpf/Data/AppDbContext.cs` | 29 | 10 | 73 |
 | `StudyMate.Wpf/Services/FileStorageService.cs` | 13 | 3 | 66 |
@@ -74,19 +75,20 @@
 | `StudyMate.Wpf/ViewModels/QuizOptionViewModel.cs` | 12 | 0 | 52 |
 | `StudyMate.Wpf/Views/FileListView.xaml.cs` | 10 | 0 | 49 |
 | `StudyMate.Wpf/Models/StudyFile.cs` | 18 | 0 | 48 |
-| `StudyMate.Wpf/Repositories/StudyFileRepository.cs` | 6 | 5 | 47 |
-| `StudyMate.Wpf/Repositories/AiAnalysisRepository.cs` | 6 | 4 | 33 |
+| `StudyMate.Wpf/Services/Interfaces/FileDialogService.cs` | 8 | 6 | 48 |
+| `StudyMate.Wpf/Repositories/StudyFileRepository.cs` | 6 | 5 | 44 |
+| `StudyMate.Wpf/Repositories/AiAnalysisRepository.cs` | 6 | 4 | 37 |
 | `StudyMate.Wpf/MainWindow.xaml` | 14 | 0 | 31 |
 | `StudyMate.Wpf/Services/StudyFolderService.cs` | 8 | 3 | 30 |
-| `StudyMate.Wpf/Repositories/StudyFolderRepository.cs` | 4 | 3 | 27 |
+| `StudyMate.Wpf/Repositories/StudyFolderRepository.cs` | 4 | 3 | 29 |
+| `StudyMate.Wpf/ViewModels/MainViewModel.cs` | 6 | 0 | 25 |
 | `StudyMate.Wpf/Integrations/Ai/PdfTextExtractor.cs` | 3 | 4 | 24 |
-| `StudyMate.Wpf/MainWindow.xaml.cs` | 4 | 0 | 23 |
-| `StudyMate.Wpf/ViewModels/MainViewModel.cs` | 5 | 0 | 20 |
 | `StudyMate.Wpf/Models/AiAnalysis.cs` | 11 | 0 | 18 |
 | `StudyMate.Wpf/Views/FileDetailView.xaml.cs` | 2 | 1 | 17 |
 | `StudyMate.Wpf/App.xaml` | 0 | 0 | 15 |
 | `StudyMate.Wpf/Data/AppDbContextFactory.cs` | 4 | 12 | 15 |
 | `StudyMate.Wpf/Models/StudyFolder.cs` | 5 | 0 | 13 |
+| `StudyMate.Wpf/MainWindow.xaml.cs` | 1 | 0 | 12 |
 | `StudyMate.Wpf/Models/Ai/StructuredContent.cs` | 2 | 0 | 12 |
 | `StudyMate.Wpf/Services/Interfaces/IStudyFileService.cs` | 4 | 15 | 12 |
 | `StudyMate.Wpf/Models/Ai/AiStudyMaterialResult.cs` | 5 | 0 | 11 |
@@ -96,7 +98,8 @@
 | `StudyMate.Wpf/Models/Ai/AiSettings.cs` | 3 | 0 | 10 |
 | `StudyMate.Wpf/Models/Ai/QuizQuestion.cs` | 3 | 0 | 10 |
 | `StudyMate.Wpf/Repositories/Interfaces/IAiAnalysisRepository.cs` | 3 | 32 | 10 |
-| `StudyMate.Wpf/Services/Interfaces/IAiAnalysisService.cs` | 2 | 10 | 10 |
+| `StudyMate.Wpf/Services/Interfaces/IAiAnalysisService.cs` | 2 | 13 | 10 |
+| `StudyMate.Wpf/Services/Interfaces/IFileDialogService.cs` | 3 | 23 | 10 |
 | `StudyMate.Wpf/Services/Interfaces/IFileStorageService.cs` | 2 | 9 | 10 |
 | `StudyMate.Wpf/Services/Interfaces/IStudyFolderService.cs` | 2 | 10 | 9 |
 | `StudyMate.Wpf/Integrations/Ai/Interfaces/IAiClient.cs` | 1 | 9 | 8 |
@@ -111,9 +114,9 @@
 
 | Sprache | Dateien | Leerzeilen | Kommentare | Code |
 |---------|---------|------------|------------|------|
-| **C#** | 44 | 507 | 413 | 2.223 |
+| **C#** | 47 | 556 | 453 | 2.497 |
 | **XAML** | 8 | 357 | 100 | 1.429 |
-| **SUMME** | **52** | **864** | **513** | **3.652** |
+| **SUMME** | **55** | **913** | **553** | **3.926** |
 
 ---
 
@@ -123,14 +126,14 @@
 
 | Datei | Code-Zeilen |
 |-------|-------------|
-| FileDetailViewModel.cs | 337 |
-| FileListViewModel.cs | 197 |
-| FolderListViewModel.cs | 102 |
+| FileDetailViewModel.cs | 338 |
+| FileListViewModel.cs | 201 |
+| FolderListViewModel.cs | 105 |
 | QuizQuestionViewModel.cs | 88 |
 | QuizOptionViewModel.cs | 52 |
-| MainViewModel.cs | 20 |
+| MainViewModel.cs | 25 |
 | ViewModelBase.cs | 11 |
-| **SUMME** | **807** |
+| **SUMME** | **820** |
 
 ### Views (XAML + Code-Behind)
 
@@ -158,16 +161,17 @@
 | StudyFileService.cs | 66 |
 | AiAnalysisService.cs | 62 |
 | StudyFolderService.cs | 30 |
-| **SUMME** | **224** |
+| FileDialogService.cs | 48 |
+| **SUMME** | **272** |
 
 ### Repositories (C#)
 
 | Datei | Code-Zeilen |
 |-------|-------------|
 | StudyFileRepository.cs | 47 |
-| AiAnalysisRepository.cs | 33 |
-| StudyFolderRepository.cs | 27 |
-| **SUMME** | **107** |
+| AiAnalysisRepository.cs | 37 |
+| StudyFolderRepository.cs | 29 |
+| **SUMME** | **113** |
 
 ### Models (C#)
 
@@ -213,8 +217,9 @@
 | Datei | Code-Zeilen | Hinweis |
 |-------|-------------|---------|
 | AppDbContextModelSnapshot.cs | 124 | Automatisch generiert |
+| 20260729133638_UpdateForEFCore10.cs | 110 | Automatisch generiert |
 | 20260713142448_InitialCreate.cs | 97 | Automatisch generiert |
-| **SUMME** | **221** | **Nicht manuell geschrieben** |
+| **SUMME** | **331** | **Nicht manuell geschrieben** |
 
 ### Interfaces (C#)
 
@@ -222,6 +227,7 @@
 |-------|-------------|
 | Repositories/Interfaces/IStudyFileRepository.cs | 11 |
 | Repositories/Interfaces/IAiAnalysisRepository.cs | 10 |
+| Services/Interfaces/IFileDialogService.cs | 10 |
 | Repositories/Interfaces/IStudyFolderRepository.cs | 7 |
 | Services/Interfaces/IStudyFileService.cs | 12 |
 | Services/Interfaces/IAiAnalysisService.cs | 10 |
@@ -229,7 +235,7 @@
 | Services/Interfaces/IStudyFolderService.cs | 9 |
 | Integrations/Ai/Interfaces/IAiClient.cs | 8 |
 | Integrations/Ai/Interfaces/IPdfTextExtractor.cs | 7 |
-| **SUMME** | **84** |
+| **SUMME** | **94** |
 
 ---
 
@@ -255,27 +261,28 @@ cloc.exe . --include-lang="C#,XAML" --exclude-dir=bin,obj --by-file-by-lang
 Folgende Dateien wurden automatisch von Entity Framework Core Tools generiert und sollten bei der Betrachtung des manuell geschriebenen Codes separat betrachtet werden:
 
 - `Migrations/AppDbContextModelSnapshot.cs` (124 Code-Zeilen)
+- `Migrations/20260729133638_UpdateForEFCore10.cs` (110 Code-Zeilen)
 - `Migrations/20260713142448_InitialCreate.cs` (97 Code-Zeilen)
 
-**Gesamtzeilen automatisch generiert:** 221 Code-Zeilen
+**Gesamtzeilen automatisch generiert:** 331 Code-Zeilen
 
 ### Bereinigter Codeumfang (ohne automatisch generierten Code)
 
 | Kategorie | bereinigte Zeilen |
 |-----------|-------------------|
-| Gesamt (C# + XAML) | 3.431 |
-| Davon C#-Code | 2.002 |
+| Gesamt (C# + XAML) | 3.595 |
+| Davon C#-Code | 2.166 |
 | Davon XAML-Code | 1.429 |
 
-**Berechnung:** 3.652 − 221 = 3.431 Code-Zeilen (manuell erstellt oder KI-gestützt)
+**Berechnung:** 3.926 − 331 = 3.595 Code-Zeilen (manuell erstellt oder KI-gestützt)
 
 ### Kommentare im Code
 
 Der Anteil der Kommentarzeilen am Gesamtcode beträgt:
 
-- **Absolut:** 513 Kommentarzeilen
-- **Relativ:** 14,0 % der Gesamtzeilen (513 / 3.652)
-- **Im Verhältnis zum Code:** 18,8 % (513 / 2.727 Code + Kommentare)
+- **Absolut:** 553 Kommentarzeilen
+- **Relativ:** 14,1 % der Gesamtzeilen (553 / 3.926)
+- **Im Verhältnis zum Code:** 18,4 % (553 / 3.039 Code + Kommentare)
 
 Der höhere Kommentaranteil resultiert aus der XML-Dokumentation für wichtige Interfaces, Services und ViewModel-Methoden gemäß dem dokumentierten XML-Dokumentationsrichtlinien.
 
@@ -287,13 +294,13 @@ Die folgenden Werte können als Referenz für ähnliche WPF-Projekte dienen:
 
 | Metrik | StudyMate | Typisches WPF-Projekt |
 |--------|-----------|----------------------|
-| Gesamtzeilen (C# + XAML) | 3.652 | 2.000 – 10.000 |
-| XAML-Anteil | 39,1 % | 30–40 % |
-| Kommentaranteil | 14,0 % | 5–15 % |
-| Dateien gesamt | 52 | 20–100 |
+| Gesamtzeilen (C# + XAML) | 3.926 | 2.000 – 10.000 |
+| XAML-Anteil | 36,4 % | 30–40 % |
+| Kommentaranteil | 14,1 % | 5–15 % |
+| Dateien gesamt | 55 | 20–100 |
 
 **Hinweis:** Diese Vergleichswerte sind Schätzwerte basierend auf typischen WPF-Anwendungen mit MVVM-Architektur.
 
 ---
 
-*Erstellt mit cloc v2.10 am 24. Juli 2026. Letzte Aktualisierung: 3.652 Code-Zeilen in 52 Dateien.*
+*Erstellt mit cloc v2.10 am 29. Juli 2026. Letzte Aktualisierung: 3.926 Code-Zeilen in 55 Dateien.*
