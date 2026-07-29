@@ -360,9 +360,9 @@ namespace StudyMate.Wpf.ViewModels;
                 }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Ignore parsing errors
+            ErrorMessage = $"Error parsing summary: {ex.Message}";
         }
     }
 
@@ -412,9 +412,9 @@ namespace StudyMate.Wpf.ViewModels;
                 }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Ignore parsing errors
+            ErrorMessage = $"Error parsing quiz: {ex.Message}";
         }
     }
 }
