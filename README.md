@@ -28,10 +28,10 @@ dotnet restore
 
 The application requires an `.env` file with API credentials to start:
 
-1. Copy `.env.template` to `.env` in the `StudyMate.Wpf` folder:
+1. Copy `.env.example` to `.env` in the `StudyMate.Wpf` folder:
    ```bash
    cd StudyMate.Wpf
-   copy .env.template .env
+   copy .env.example .env
    ```
 
 2. Open `.env` and paste your API key:
@@ -161,7 +161,7 @@ C:\Users\<username>\AppData\Local\StudyMate\uploads\
 - **Solution:** 
   ```bash
   cd StudyMate.Wpf
-  copy .env.template .env
+  copy .env.example .env
   # Edit .env and add your API key
   ```
 
