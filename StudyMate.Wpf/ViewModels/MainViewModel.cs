@@ -21,5 +21,11 @@ namespace StudyMate.Wpf.ViewModels
             FileListViewModel = fileListViewModel;
             FileDetailViewModel = fileDetailViewModel;
         }
+
+        public async Task InitializeAsync()
+        {
+            await FolderListViewModel.LoadAsync();
+            await FileListViewModel.LoadAsync();
+        }
     }
 }

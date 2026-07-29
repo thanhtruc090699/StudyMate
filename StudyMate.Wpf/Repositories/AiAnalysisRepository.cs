@@ -8,17 +8,19 @@ namespace StudyMate.Wpf.Repositories
     /// <inheritdoc />
     public class AiAnalysisRepository : IAiAnalysisRepository
     {
-        private readonly AppDbContext _dbContext;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
 
-        public AiAnalysisRepository(AppDbContext dbContext)
+        public AiAnalysisRepository(IDbContextFactory<AppDbContext> dbContextFactory)
         {
-            _dbContext = dbContext;
+            _dbContextFactory = dbContextFactory;
         }
 
         /// <inheritdoc />
         public async Task<AiAnalysis?> GetLatestByStudyFileIdAsync(int studyFileId)
         {
-            var result = await _dbContext.AiAnalyses.Where(x=> x.StudyFileId == studyFileId)
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            var result = await context.AiAnalyses
+                .Where(x => x.StudyFileId == studyFileId)
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync();
             
@@ -28,16 +30,18 @@ namespace StudyMate.Wpf.Repositories
         /// <inheritdoc />
         public async Task<AiAnalysis> AddAsync(AiAnalysis analysis)
         {
-            _dbContext.AiAnalyses.Add(analysis);
-            await _dbContext.SaveChangesAsync();
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            context.AiAnalyses.Add(analysis);
+            await context.SaveChangesAsync();
             return analysis;
         }
 
         /// <inheritdoc />
         public async Task UpdateAsync(AiAnalysis analysis)
         {
-            _dbContext.Update(analysis);
-            await _dbContext.SaveChangesAsync();
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            context.Update(analysis);
+            await context.SaveChangesAsync();
         }
     }
 }

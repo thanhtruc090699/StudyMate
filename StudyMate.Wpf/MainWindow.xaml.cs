@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using StudyMate.Wpf.ViewModels;
 
 namespace StudyMate.Wpf
@@ -9,19 +8,6 @@ namespace StudyMate.Wpf
         public MainWindow()
         {
             InitializeComponent();
-            
-            InitializeAsync();
-        }
-
-        private async void InitializeAsync()
-        {
-            await Task.Delay(100);
-            
-            if (DataContext is MainViewModel mainViewModel)
-            {
-                await mainViewModel.FolderListViewModel.LoadAsync();
-                await mainViewModel.FileListViewModel.LoadAsync();
-            }
         }
     }
 }

@@ -8,23 +8,25 @@ namespace StudyMate.Wpf.Repositories
     /// <inheritdoc />
     public class StudyFileRepository : IStudyFileRepository
     {
-        private readonly AppDbContext _dbContext;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
 
-        public StudyFileRepository(AppDbContext dbContext)
+        public StudyFileRepository(IDbContextFactory<AppDbContext> dbContextFactory)
         {
-            _dbContext = dbContext;
+            _dbContextFactory = dbContextFactory;
         }
 
         /// <inheritdoc />
         public async Task<StudyFile?> GetStudyFileAsync(int id)
         {
-            return await _dbContext.StudyFiles.FindAsync(id);
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            return await context.StudyFiles.FindAsync(id);
         }
 
         /// <inheritdoc />
         public async Task<List<StudyFile>> GetByFolderIdAsync(int folderId)
         {
-            return await _dbContext.StudyFiles
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            return await context.StudyFiles
                 .Where(f => f.FolderId == folderId)
                 .ToListAsync();
         }
@@ -32,26 +34,21 @@ namespace StudyMate.Wpf.Repositories
         /// <inheritdoc />
         public async Task<StudyFile> AddAsync(StudyFile studyFile)
         {
-            try
-            {
-                _dbContext.StudyFiles.Add(studyFile);
-                await _dbContext.SaveChangesAsync();
-                return studyFile;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            context.StudyFiles.Add(studyFile);
+            await context.SaveChangesAsync();
+            return studyFile;
         }
 
         /// <inheritdoc />
         public async Task DeleteAsync(int id)
         {
-            var file = await _dbContext.StudyFiles.FindAsync(id);
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            var file = await context.StudyFiles.FindAsync(id);
             if (file != null)
             {
-                _dbContext.StudyFiles.Remove(file);
-                await _dbContext.SaveChangesAsync();
+                context.StudyFiles.Remove(file);
+                await context.SaveChangesAsync();
             }
         }
     }

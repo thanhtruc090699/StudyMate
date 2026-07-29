@@ -8,17 +8,18 @@ namespace StudyMate.Wpf.Repositories
     /// <inheritdoc />
     public class StudyFolderRepository : IStudyFolderRepository
     {
-        private readonly AppDbContext _dbContext;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
 
-        public StudyFolderRepository(AppDbContext dbContext)
+        public StudyFolderRepository(IDbContextFactory<AppDbContext> dbContextFactory)
         {
-            _dbContext = dbContext;
+            _dbContextFactory = dbContextFactory;
         }
 
         /// <inheritdoc />
         public async Task<List<StudyFolder>> GetAllAsync()
         {
-            return await _dbContext.StudyFolders
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            return await context.StudyFolders
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
         }
@@ -26,8 +27,9 @@ namespace StudyMate.Wpf.Repositories
         /// <inheritdoc />
         public async Task<StudyFolder> AddAsync(StudyFolder folder)
         {
-            _dbContext.StudyFolders.Add(folder);
-            await _dbContext.SaveChangesAsync();
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            context.StudyFolders.Add(folder);
+            await context.SaveChangesAsync();
             return folder;
         }
     }
