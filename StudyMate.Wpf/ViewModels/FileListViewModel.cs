@@ -39,6 +39,8 @@ namespace StudyMate.Wpf.ViewModels
         [ObservableProperty] private string? successMessage;
         
         [ObservableProperty] private bool isLoading;
+        
+        public bool IsAnalyzing => _fileDetailViewModel.IsLoading;
 
         public FileListViewModel(
             IStudyFileService fileService,
@@ -112,6 +114,7 @@ namespace StudyMate.Wpf.ViewModels
         /// <summary>
         /// Opens a file dialog to upload a PDF file to the selected folder.
         /// Validates folder selection and file existence before uploading.
+        /// Prevents upload while another file is being analyzed.
         /// </summary>
         [RelayCommand]
         private async Task UploadFileAsync()
@@ -119,6 +122,15 @@ namespace StudyMate.Wpf.ViewModels
             if (SelectedFolder == null)
             {
                 ErrorMessage = "Please select a folder first";
+                return;
+            }
+
+            if (IsAnalyzing)
+            {
+                _dialogService.ShowError(
+                    "Another file is currently being analyzed. Please wait for the analysis to complete before uploading a new file.",
+                    "Analysis in Progress"
+                );
                 return;
             }
 

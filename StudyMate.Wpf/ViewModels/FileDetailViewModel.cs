@@ -16,16 +16,15 @@ namespace StudyMate.Wpf.ViewModels;
 /// ViewModel for displaying file analysis - summary, key points, and interactive quiz.
 /// Automatically generates or retrieves AI analysis when a file is selected.
 /// </summary>
-public class FileDetailViewModel : ViewModelBase
-{
-    private readonly IAiAnalysisService _aiAnalysisService;
-    private StudyFile? _selectedFile;
-    private string _summary = string.Empty;
-    private int _selectedTabIndex;
-    private bool _isLoading;
-    private int _currentQuestionIndex;
-    private string? _errorMessage;
-    private CancellationTokenSource? _analysisCancellationTokenSource;
+    public class FileDetailViewModel : ViewModelBase
+    {
+        private readonly IAiAnalysisService _aiAnalysisService;
+        private StudyFile? _selectedFile;
+        private string _summary = string.Empty;
+        private int _selectedTabIndex;
+        private bool _isLoading;
+        private int _currentQuestionIndex;
+        private string? _errorMessage;
 
     public string? ErrorMessage
     {
@@ -68,22 +67,12 @@ public class FileDetailViewModel : ViewModelBase
                 return;
             }
 
-            // Cancel any ongoing analysis when switching files
-            _analysisCancellationTokenSource?.Cancel();
-            _analysisCancellationTokenSource = new CancellationTokenSource();
-
             _selectedFile = value;
             OnPropertyChanged();
 
             if (_selectedFile != null)
             {
-                _ = LoadAnalysisAsync(_selectedFile, _analysisCancellationTokenSource.Token);
-            }
-            else
-            {
-                // Clear state when closing file
-                _analysisCancellationTokenSource?.Dispose();
-                _analysisCancellationTokenSource = null;
+                _ = LoadAnalysisAsync(_selectedFile);
             }
 
             SelectedTabIndex = 0;
@@ -292,7 +281,10 @@ public class FileDetailViewModel : ViewModelBase
     /// <summary>
     /// Loads existing AI analysis or generates a new one if not available or not completed.
     /// </summary>
-    private async Task LoadAnalysisAsync(StudyFile file, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Loads existing AI analysis or generates a new one if not available or not completed.
+    /// </summary>
+    private async Task LoadAnalysisAsync(StudyFile file)
     {
         if (file == null) return;
 
@@ -305,21 +297,14 @@ public class FileDetailViewModel : ViewModelBase
             
             if (analysis == null)
             {
-                analysis = await _aiAnalysisService.GenerateAnalysisAsync(file.Id, cancellationToken);
+                analysis = await _aiAnalysisService.GenerateAnalysisAsync(file.Id);
             }
             else if (analysis.Status != "Completed")
             {
-                analysis = await _aiAnalysisService.GenerateAnalysisAsync(file.Id, cancellationToken);
+                analysis = await _aiAnalysisService.GenerateAnalysisAsync(file.Id);
             }
 
-            // Check if operation was cancelled before applying results
-            cancellationToken.ThrowIfCancellationRequested();
-            
             ApplyAnalysis(analysis);
-        }
-        catch (OperationCanceledException)
-        {
-            // Silently ignore cancellation - user switched to another file
         }
         catch (Exception ex)
         {
