@@ -195,6 +195,9 @@ public partial class App : Application
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IStudyFileService, StudyFileService>();
 
+        // Services - UI abstractions
+        services.AddSingleton<IFileDialogService, FileDialogService>();
+
         // ViewModels - Singleton for shared instances across app
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<FileListViewModel>();

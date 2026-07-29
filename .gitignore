@@ -369,3 +369,7 @@ FodyWeavers.xsd
 
 # Uploaded files (user-specific content)
 uploads/
+
+# Environment configuration files (contain API keys and secrets)
+.env
+.env.*.local

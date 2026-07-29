@@ -1,11 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
 using StudyMate.Wpf.Models;
 using StudyMate.Wpf.Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Windows;
 
 namespace StudyMate.Wpf.ViewModels
 {
@@ -18,6 +16,7 @@ namespace StudyMate.Wpf.ViewModels
         private readonly IStudyFileService _fileService;
         private readonly IStudyFolderService _folderService;
         private readonly FileDetailViewModel _fileDetailViewModel;
+        private readonly IFileDialogService _dialogService;
 
         [ObservableProperty] private ObservableCollection<StudyFile> files = new();
         
@@ -44,11 +43,13 @@ namespace StudyMate.Wpf.ViewModels
         public FileListViewModel(
             IStudyFileService fileService,
             IStudyFolderService folderService,
-            FileDetailViewModel fileDetailViewModel)
+            FileDetailViewModel fileDetailViewModel,
+            IFileDialogService dialogService)
         {
             _fileService = fileService;
             _folderService = folderService;
             _fileDetailViewModel = fileDetailViewModel;
+            _dialogService = dialogService;
         }
 
         /// <summary>
@@ -121,51 +122,46 @@ namespace StudyMate.Wpf.ViewModels
                 return;
             }
 
-            var openFileDialog = new OpenFileDialog
+            var filePath = _dialogService.ShowOpenPdfFileDialog();
+            if (filePath == null)
             {
-                Filter = "PDF files (*.pdf)|*.pdf",
-                DefaultExt = ".pdf",
-                Title = "Select a PDF file to upload"
-            };
+                return; // User cancelled
+            }
 
-            if (openFileDialog.ShowDialog() == true)
+            try
             {
-                try
-                {
-                    IsLoading = true;
-                    ErrorMessage = null;
-                    SuccessMessage = null;
+                IsLoading = true;
+                ErrorMessage = null;
+                SuccessMessage = null;
 
-                    var filePath = openFileDialog.FileName;
-                    var fileName = Path.GetFileName(filePath);
-                    
-                    if (!File.Exists(filePath))
-                    {
-                        ErrorMessage = $"File not found: {filePath}";
-                        return;
-                    }
-
-                    using var fileStream = File.OpenRead(filePath);
-                    var contentType = GetContentType(fileName);
-                    
-                    var uploadedFile = await _fileService.UploadFileAsync(
-                        SelectedFolder.Id,
-                        fileStream,
-                        fileName,
-                        contentType
-                    );
-
-                    Files.Insert(0, uploadedFile);
-                    SuccessMessage = $"File '{fileName}' uploaded successfully!";
-                }
-                catch (Exception ex)
+                var fileName = Path.GetFileName(filePath);
+                
+                if (!_dialogService.FileExists(filePath))
                 {
-                    ErrorMessage = $"Error uploading file: {ex.Message}";
+                    ErrorMessage = $"File not found: {filePath}";
+                    return;
                 }
-                finally
-                {
-                    IsLoading = false;
-                }
+
+                using var fileStream = _dialogService.OpenReadFile(filePath);
+                var contentType = GetContentType(fileName);
+                
+                var uploadedFile = await _fileService.UploadFileAsync(
+                    SelectedFolder.Id,
+                    fileStream,
+                    fileName,
+                    contentType
+                );
+
+                Files.Insert(0, uploadedFile);
+                SuccessMessage = $"File '{fileName}' uploaded successfully!";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error uploading file: {ex.Message}";
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
@@ -181,38 +177,38 @@ namespace StudyMate.Wpf.ViewModels
                 return;
             }
 
-            var result = MessageBox.Show(
+            var confirmed = _dialogService.ShowConfirmation(
                 $"Are you sure you want to delete '{file.OriginalFileName}'?",
-                "Confirm Delete",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning
+                "Confirm Delete"
             );
 
-            if (result == MessageBoxResult.Yes)
+            if (!confirmed)
             {
-                try
-                {
-                    IsLoading = true;
-                    ErrorMessage = null;
-                    SuccessMessage = null;
+                return;
+            }
 
-                    await _fileService.DeleteFileAsync(file.Id);
-                    Files.Remove(file);
-                    if (SelectedFile?.Id == file.Id)
-                    {
-                        SelectedFile = null;
-                    }
+            try
+            {
+                IsLoading = true;
+                ErrorMessage = null;
+                SuccessMessage = null;
 
-                    SuccessMessage = "File deleted successfully!";
-                }
-                catch (Exception ex)
+                await _fileService.DeleteFileAsync(file.Id);
+                Files.Remove(file);
+                if (SelectedFile?.Id == file.Id)
                 {
-                    ErrorMessage = $"Error deleting file: {ex.Message}";
+                    SelectedFile = null;
                 }
-                finally
-                {
-                    IsLoading = false;
-                }
+
+                SuccessMessage = "File deleted successfully!";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error deleting file: {ex.Message}";
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 

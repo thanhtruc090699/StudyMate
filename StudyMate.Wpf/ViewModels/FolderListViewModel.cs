@@ -48,16 +48,19 @@ namespace StudyMate.Wpf.ViewModels
 
             ShowCreateFolderCommand = new RelayCommand(ShowCreateFolderForm);
             CancelCreateFolderCommand = new RelayCommand(CancelCreateFolder);
-
-            PropertyChanged += FolderListViewModel_PropertyChanged;
         }
 
-        private async void FolderListViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        partial void OnSelectedFolderChanged(StudyFolder? value)
         {
-            if (e.PropertyName == nameof(SelectedFolder) && SelectedFolder != null)
+            if (value != null)
             {
-                await _fileListViewModel.LoadFolderAsync(SelectedFolder);
+                _ = LoadFilesForSelectedFolderAsync(value);
             }
+        }
+
+        private async Task LoadFilesForSelectedFolderAsync(StudyFolder folder)
+        {
+            await _fileListViewModel.LoadFolderAsync(folder);
         }
 
         /// <summary>
