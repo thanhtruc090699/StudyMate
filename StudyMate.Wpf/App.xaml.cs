@@ -123,7 +123,7 @@ public partial class App : Application
 
         if (envPath == null)
         {
-            errorMessage = $".env file not found.\n\nPlease copy .env.template to .env and configure your API credentials.\n\nSearch location: {baseDirectory}";
+            errorMessage = $".env file not found.\n\nPlease copy .env.example to .env and configure your API credentials.\n\nSearch location: {baseDirectory}";
             return false;
         }
 
@@ -194,9 +194,7 @@ public partial class App : Application
         services.AddScoped<IStudyFolderService, StudyFolderService>();
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IStudyFileService, StudyFileService>();
-
-        // Services - UI abstractions
-        services.AddSingleton<IFileDialogService, FileDialogService>();
+        services.AddScoped<IFileDialogService, FileDialogService>();
 
         // ViewModels - Singleton for shared instances across app
         services.AddSingleton<MainViewModel>();
@@ -214,7 +212,21 @@ public partial class App : Application
         services.AddSingleton<CountToVisibilityConverter>();
         services.AddSingleton<BoolToVisibilityConverter>();
 
-        DotNetEnv.Env.Load();
+        var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        var envPath = Path.Combine(baseDir, ".env");
+        if (File.Exists(envPath))
+        {
+            DotNetEnv.Env.Load(envPath);
+        }
+        else
+        {
+            var projectPath = Path.GetFullPath(Path.Combine(baseDir, "..", "..", ".."));
+            var projectEnvPath = Path.Combine(projectPath, ".env");
+            if (File.Exists(projectEnvPath))
+            {
+                DotNetEnv.Env.Load(projectEnvPath);
+            }
+        }
 
 #pragma warning disable CS8601
         var AiSettings = new AiSettings()
