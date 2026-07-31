@@ -38,8 +38,9 @@ Maintain the protocol as promptly as possible so that the Git history makes the 
 
 ## Independence and Responsibility
 
-We confirm that the use of AI in this work has been fully and accurately documented to the best of our knowledge.
-We take responsibility for the technical accuracy, the selection of adopted content, and the entire submitted work.
+I confirm that the use of AI in this work has been fully and accurately documented to the best of my knowledge.
+I take responsibility for the technical accuracy, the selection of adopted content, and the entire submitted work.
 
-- Date: 21.07.2026 (last updated)
+- Date: 31.07.2026 (last updated)
+- Name: Truc Trinh
 - Group name: StudyMate
