@@ -61,15 +61,6 @@ Maintain the protocol as promptly as possible so that the Git history makes the 
 3. **ViewModel instance mismatch**: Using AddScoped caused different instances in different views - Changed to AddSingleton for shared state
 4. **API endpoint format**: .env had BaseUrl ending with /api AND endpoint starting with / causing malformed URLs - Standardized to BaseUrl without suffix, endpoint with full path
 
-**Critical issues I discovered independently:**
-1. **Upload conflict bug**: While testing on 29.07, I noticed users could upload multiple PDFs rapidly while AI was still analyzing. This caused file handle conflicts. My solution: Added IsAnalyzing state check before allowing upload.
-
-2. **async void memory leak**: While studying MVVM best practices, I identified that subscribing to PropertyChanged with async void handler in FolderListViewModel could cause memory leaks. I proactively refactored to use CommunityToolkit's partial method pattern.
-
-3. **EnsureCreated limitation**: After reading EF Core documentation about production deployments, I realized EnsureCreated() doesn't track schema changes. I initiated the migration to MigrateAsync pattern for proper version control.
-
-4. **ObjectDisposedException debugging**: When encountering this error, I traced through the code myself and discovered Singleton ViewModels were holding onto disposed Scoped DbContext. I proposed the fix by changing ViewModel lifetime to Singleton (since they don't directly hold DbContext anymore).
-
 ## Independence and Responsibility
 
 We confirm that the use of AI in this work has been fully and accurately documented to the best of our knowledge.
