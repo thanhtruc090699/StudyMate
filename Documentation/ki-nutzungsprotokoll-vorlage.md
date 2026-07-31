@@ -36,31 +36,6 @@ Maintain the protocol as promptly as possible so that the Git history makes the 
 | 29.07.2026 | Truc Trinh | Lisa Pro | EF Core Production Setup - Migrations & Configuration Validation | **My Initiative:**<br>- Read Microsoft EF Core documentation and realized EnsureCreated() is not suitable for production<br>- Decided to implement proper migration workflow for database schema management<br>- Noticed ObjectDisposedException when sharing DbContext across ViewModels - investigated root cause myself<br>- Designed configuration validation logic to fail fast at startup if .env misconfigured<br><br>**AI Guidance:**<br>- Explained IDbContextFactory pattern for short-lived contexts<br>- Confirmed my migration approach is correct for SQLite<br>- Suggested validating .env before creating MainWindow to show errors early<br>- Clarified Scoped vs Singleton lifetime for DbContext<br><br>**My Implementation:**<br>- Created migration `UpdateForEFCore10` with complete schema for all entities<br>- Implemented validation in App.xaml.cs: checks ApiKey, AiBaseUrl, AiEndpoint, AiModel<br>- Refactored repositories to use `_dbContextFactory.CreateDbContextAsync()`<br>- Changed ViewModel registration from Scoped to Singleton (confirmed no DbContext dependency)<br>- Updated README with setup instructions and migration commands<br>- Tested migration rollback and re-application |
 | 29.07.2026 | Truc Trinh | Lisa Pro | Error Handling & UX Polish | **My Initiative:**<br>- Discovered bug during testing: user can upload multiple files while AI is analyzing, causing conflicts<br>- Noticed JSON parsing exceptions show cryptic error messages to users<br>- Decided to add IsAnalyzing state tracking and user-friendly error handling<br><br>**AI Guidance:**<br>- Reviewed my error handling approach<br>- Suggested wrapping JsonSerializer.Deserialize in try-catch blocks<br>- Recommended showing ErrorMessage property in UI with visual feedback<br><br>**My Implementation:**<br>- Added IsAnalyzing computed property in FileListViewModel checking FileDetailViewModel.IsLoading<br>- Implemented validation in UploadFileCommand with dialog warning<br>- Added try-catch around all JSON parsing with specific error messages<br>- Tested error scenarios: invalid JSON, network timeout, API errors<br>- Removed unused using statements (code cleanup) |
 
-## Optional Supplementary Notes
-
-**Handling incorrect AI responses:**
-- The AI initially suggested `Mode=OneTime` for Files.Count binding, which prevented UI updates. I identified this issue during testing and changed it to `Mode=OneWay` to maintain reactivity while respecting the readonly property.
-- AI initially generated multipart/form-data request for file upload, but Lisa API only supports JSON chat completion format. Had to manually test with PowerShell to confirm API capabilities, then refactored to text extraction + JSON payload approach.
-- First implementation attempted to send file path directly to AI API, resulting in HTTP 405 Method Not Allowed. Solution: Extract PDF text client-side using PdfPig, then send text content in message body.
-
-**Deliberately rejected suggestions:**
-- Rejected using code-behind or converters for complex visibility logic. Instead, insisted on pure XAML MultiDataTriggers for better maintainability and separation of concerns.
-- Rejected keeping mock data auto-trigger when selecting files. Removed LoadMockData call from FileListViewModel.OpenFile to ensure only real AI analysis is displayed.
-- Rejected storing full file paths in database. Instead, build full path dynamically in AiClient using Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData).
-
-**AI as sparring partner:**
-- Used AI primarily for architecture review (Repository vs Service pattern)
-- Validated dependency injection lifetime choices (Scoped vs Singleton for ViewModels)
-- Code review and bug identification in existing implementations
-- Debugging HTTP 405 errors by analyzing API endpoint structure and expected payload format
-- Architecture design: Separated IPdfTextExtractor interface for testability and future extensibility (could add OCR support later)
-
-**Critical bugs found through AI collaboration:**
-1. **File path mismatch**: FileStorageService saves to `AppData/Local/StudyMate/uploads/` but AiClient was looking in `AppData/Local/Temp/uploads/` - Fixed by building full path dynamically
-2. **Database cache issue**: SelectedFile setter called GenerateAnalysisAsync every time, creating duplicate API calls - Refactored to check database first with LoadAnalysisAsync
-3. **ViewModel instance mismatch**: Using AddScoped caused different instances in different views - Changed to AddSingleton for shared state
-4. **API endpoint format**: .env had BaseUrl ending with /api AND endpoint starting with / causing malformed URLs - Standardized to BaseUrl without suffix, endpoint with full path
-
 ## Independence and Responsibility
 
 We confirm that the use of AI in this work has been fully and accurately documented to the best of our knowledge.
