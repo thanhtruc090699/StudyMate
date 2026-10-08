@@ -26,7 +26,7 @@ The full project documentation includes screenshots and a step-by-step walkthrou
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/NET-2026/thi-thanh-truc-trinh.git
+git clone https://github.com/thanhtruc090699/StudyMate.git
 cd StudyMate
 ```
 
