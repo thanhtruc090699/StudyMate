@@ -2,6 +2,18 @@
 
 A WPF application for learning support with AI, allowing management of learning materials (PDFs) and automatic generation of summaries, knowledge structures, and multiple-choice questions.
 
+## Documentation & Demo
+
+The full project documentation includes screenshots and a step-by-step walkthrough of the main application flows:
+
+- Folder management
+- PDF upload
+- AI-generated summaries
+- Quiz generation
+- Answer validation and explanations
+
+[Open Documentation](Documentation/Documentation.pdf)
+
 ## System Requirements
 
 - **.NET 10.0 Windows** (or later)
